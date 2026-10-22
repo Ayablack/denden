@@ -28,8 +28,9 @@ void main() {
     );
     expect(scaleDownFor(QualityProfile.high, 1280, 720), 1.0);
     expect(
+      // Ultrawide: a largura manda (3440 / 1280).
       scaleDownFor(QualityProfile.medium, 3440, 1440),
-      closeTo(2.0, 0.001),
+      closeTo(2.6875, 0.001),
     );
   });
 }
