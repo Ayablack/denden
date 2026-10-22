@@ -33,6 +33,12 @@ Map<String, Object?> displayMediaConstraints(
   'audio': audio,
 };
 
+/// Tamanho da fonte em pixels, quando se sabe. Para tela inteira é o
+/// monitor; para janela não há como saber (o plugin não informa), e usar o
+/// monitor reduziria demais uma janela menor que ele.
+(int, int)? knownSourceSize(CaptureSource s, int displayWidth, int displayHeight) =>
+    s.isWindow ? null : (displayWidth, displayHeight);
+
 /// Piso de quadros por segundo: o SFU descarta trilha sem pacotes por 30 s,
 /// e telas paradas quase não geram quadros.
 int minFrameRate(QualityProfile p) => 5;

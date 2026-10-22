@@ -55,4 +55,11 @@ void main() {
     expect(find.text('00:00:00.000'), findsOneWidget);
     expect(find.textContaining('não comprova'), findsOneWidget);
   });
+
+  testWidgets('dá para esconder o vídeo recebido (A4 mais justo)', (
+    tester,
+  ) async {
+    await pumpLab(tester);
+    expect(find.text('Mostrar vídeo recebido'), findsOneWidget);
+  });
 }

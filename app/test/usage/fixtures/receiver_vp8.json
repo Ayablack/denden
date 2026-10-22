@@ -3,7 +3,8 @@
    "bytesReceived": 1200000, "codecId": "CIT01", "frameWidth": 1280, "frameHeight": 720,
    "framesPerSecond": 59.5, "jitter": 0.004},
   {"id": "IT01A", "type": "inbound-rtp", "timestamp": 1000.0, "kind": "audio",
-   "bytesReceived": 30000, "codecId": "CIT02", "jitter": 0.002},
+   "bytesReceived": 30000, "codecId": "CIT02", "jitter": 0.002,
+   "audioLevel": 0.25},
   {"id": "CIT01", "type": "codec", "timestamp": 1000.0, "mimeType": "video/VP8"},
   {"id": "CIT02", "type": "codec", "timestamp": 1000.0, "mimeType": "audio/opus"}
 ]

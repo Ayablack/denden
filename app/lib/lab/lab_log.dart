@@ -43,7 +43,8 @@ String labCsv(List<LabSample> samples) {
   String n(num? v, [int digits = 1]) => v == null ? '' : v.toStringAsFixed(digits);
   final b = StringBuffer(
     'tempo_s,estado,largura,altura,fps_enviado,fps_recebido,codec,'
-    'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms\n',
+    'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms,'
+    'audio_recebido_kb,nivel_audio\n',
   );
   for (final s in samples) {
     final target = s.tx.targetBitrateBps;
@@ -62,6 +63,8 @@ String labCsv(List<LabSample> samples) {
         n(s.sendMbps, 2),
         n(s.receiveMbps, 2),
         n(s.rx.jitterMs),
+        n(s.rx.audioBytesReceived / 1000),
+        n(s.rx.audioLevel, 2),
       ].join(','),
     );
   }

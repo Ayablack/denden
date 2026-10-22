@@ -33,23 +33,17 @@ class _LabPageState extends State<LabPage> {
   QualityProfile _profile = QualityProfile.high;
   LoopbackSession? _session;
   Timer? _sampler;
-  Timer? _ticker;
-  final _clock = Stopwatch()..start();
   DateTime? _startedAt;
   MediaStatsSnapshot? _lastTx;
   MediaStatsSnapshot? _lastRx;
   final _samples = <LabSample>[];
   String? _error;
   bool _busy = false;
+  bool _showPreview = true;
 
   @override
   void initState() {
     super.initState();
-    if (widget.tickStopwatch) {
-      _ticker = Timer.periodic(const Duration(milliseconds: 16), (_) {
-        if (mounted) setState(() {});
-      });
-    }
     _loadSources();
   }
 
@@ -83,16 +77,25 @@ class _LabPageState extends State<LabPage> {
     });
     try {
       final display = View.of(context).display.size;
+      final size = knownSourceSize(
+        source,
+        display.width.round(),
+        display.height.round(),
+      );
       final stream = await widget.capture.start(source, _profile);
       final session = await LoopbackSession.start(
         stream,
         _profile,
-        sourceWidth: display.width.round(),
-        sourceHeight: display.height.round(),
+        sourceWidth: size?.$1,
+        sourceHeight: size?.$2,
       );
       session.states.listen((_) {
         if (mounted) setState(() {});
       });
+      if (!mounted) {
+        await session.close();
+        return;
+      }
       _startedAt = DateTime.now();
       _sampler = Timer.periodic(_sampleEvery, (_) => _sample());
       setState(() => _session = session);
@@ -164,7 +167,6 @@ class _LabPageState extends State<LabPage> {
 
   @override
   void dispose() {
-    _ticker?.cancel();
     _sampler?.cancel();
     _session?.close();
     widget.capture.stop();
@@ -187,15 +189,7 @@ class _LabPageState extends State<LabPage> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(
-                  formatStopwatch(
-                    widget.tickStopwatch ? _clock.elapsed : Duration.zero,
-                  ),
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontFeatures: [FontFeature.tabularFigures()],
-                  ),
-                ),
+                StopwatchText(ticking: widget.tickStopwatch),
                 const SizedBox(height: 8),
                 const Text(
                   'Laço local: o vídeo vai e volta dentro deste PC. '
@@ -255,7 +249,17 @@ class _LabPageState extends State<LabPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Mostrar vídeo recebido'),
+                  subtitle: const Text(
+                    'Desligue no teste de FPS (A4/A5): mostrar o vídeo também '
+                    'gasta o PC.',
+                  ),
+                  value: _showPreview,
+                  onChanged: (v) => setState(() => _showPreview = v ?? true),
+                ),
+                const SizedBox(height: 8),
                 if (session != null) Text('Estado: ${session.state.name}'),
                 if (last != null) ..._statsLines(last),
                 if (_error != null)
@@ -266,6 +270,8 @@ class _LabPageState extends State<LabPage> {
           Expanded(
             child: session == null
                 ? const Center(child: Text('Nada sendo recebido'))
+                : !_showPreview
+                ? const Center(child: Text('Vídeo recebido oculto'))
                 : RTCVideoView(
                     session.remoteRenderer,
                     objectFit:
@@ -290,11 +296,56 @@ class _LabPageState extends State<LabPage> {
       Text('Codec: ${s.rx.codec ?? '—'} (${s.tx.encoderImplementation ?? '—'})'),
       Text('Limitação: ${s.tx.qualityLimitationReason ?? '—'}'),
       Text(
-        'Bitrate: ${f(s.sendMbps, 2)} Mbps '
-        '(alvo ${target == null ? '—' : f(target / 1e6, 2)})',
+        'Bitrate (vídeo + áudio): ${f(s.sendMbps, 2)} Mbps '
+        '(alvo do vídeo ${target == null ? '—' : f(target / 1e6, 2)})',
+      ),
+      Text(
+        'Áudio recebido: ${f(s.rx.audioBytesReceived / 1000, 0)} KB '
+        '(nível ${f(s.rx.audioLevel, 2)})',
       ),
       Text('Jitter: ${f(s.rx.jitterMs)} ms'),
       Text('Amostras: ${_samples.length}'),
     ];
   }
+}
+
+/// Cronômetro grande para medir latência (A7). Widget próprio: só ele
+/// redesenha a cada quadro, não a página inteira.
+class StopwatchText extends StatefulWidget {
+  const StopwatchText({super.key, required this.ticking});
+
+  final bool ticking;
+
+  @override
+  State<StopwatchText> createState() => _StopwatchTextState();
+}
+
+class _StopwatchTextState extends State<StopwatchText> {
+  final _clock = Stopwatch()..start();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.ticking) {
+      _timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+        if (mounted) setState(() {});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Text(
+    formatStopwatch(widget.ticking ? _clock.elapsed : Duration.zero),
+    style: const TextStyle(
+      fontSize: 40,
+      fontFeatures: [FontFeature.tabularFigures()],
+    ),
+  );
 }

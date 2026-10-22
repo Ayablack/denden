@@ -35,4 +35,11 @@ void main() {
     const screen = CaptureSource(id: '0', name: 'Tela 1', isWindow: false);
     expect(screen.audioIsolated, isFalse);
   });
+
+  test('tamanho da fonte: tela usa o monitor, janela é desconhecida', () {
+    const screen = CaptureSource(id: '0', name: 'Tela 1', isWindow: false);
+    expect(knownSourceSize(screen, 3840, 2160), (3840, 2160));
+    // Janela de 1920×1080 num monitor 4K não pode virar 960×540.
+    expect(knownSourceSize(window, 3840, 2160), isNull);
+  });
 }

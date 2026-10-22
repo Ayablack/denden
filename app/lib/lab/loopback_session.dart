@@ -60,28 +60,37 @@ class LoopbackSession {
     };
     receiver.onConnectionState = session._onPcState;
 
-    // Vídeo e áudio no mesmo stream: o WebRTC sincroniza os dois.
-    final video = <(RTCRtpSender, MediaStreamTrack)>[];
-    for (final track in captured.getTracks()) {
-      final rtpSender = await sender.addTrack(track, captured);
-      if (track.kind == 'video') video.add((rtpSender, track));
-    }
+    // Qualquer falha daqui para baixo fecha tudo; senão sobram conexões
+    // nativas a cada "Iniciar" que falhar.
+    try {
+      // Vídeo e áudio no mesmo stream: o WebRTC sincroniza os dois.
+      final video = <(RTCRtpSender, MediaStreamTrack)>[];
+      for (final track in captured.getTracks()) {
+        final rtpSender = await sender.addTrack(track, captured);
+        if (track.kind == 'video') video.add((rtpSender, track));
+      }
 
-    final offer = await sender.createOffer();
-    await sender.setLocalDescription(offer);
-    await receiver.setRemoteDescription(offer);
-    final answer = await receiver.createAnswer();
-    await receiver.setLocalDescription(answer);
-    await sender.setRemoteDescription(
-      RTCSessionDescription(
-        withBitrateHints(answer.sdp!, maxBitrateBps: p.maxBitrateBps),
-        answer.type,
-      ),
-    );
-    // Só depois da negociação: antes dela, o scaleResolutionDownBy fica
-    // guardado nos parâmetros mas não chega ao codificador (medido).
-    for (final (rtpSender, track) in video) {
-      await session._tune(rtpSender, track, p, sourceWidth, sourceHeight);
+      final offer = await sender.createOffer();
+      await sender.setLocalDescription(offer);
+      await receiver.setRemoteDescription(offer);
+      final answer = await receiver.createAnswer();
+      await receiver.setLocalDescription(answer);
+      await sender.setRemoteDescription(
+        RTCSessionDescription(
+          withBitrateHints(answer.sdp!, maxBitrateBps: p.maxBitrateBps),
+          answer.type,
+        ),
+      );
+      // Só depois da negociação: antes dela, o scaleResolutionDownBy fica
+      // guardado nos parâmetros mas não chega ao codificador (medido).
+      for (final (rtpSender, track) in video) {
+        await session._tune(rtpSender, track, p, sourceWidth, sourceHeight);
+      }
+    } catch (_) {
+      await renderer.dispose();
+      await sender.close();
+      await receiver.close();
+      rethrow;
     }
     return session;
   }

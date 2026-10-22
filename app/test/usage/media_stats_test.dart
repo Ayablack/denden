@@ -33,6 +33,8 @@ void main() {
     expect(s.codec, 'video/VP8');
     expect(s.framesPerSecond, 59.5);
     expect(s.jitterMs, closeTo(4.0, 1e-9));
+    expect(s.audioBytesReceived, 30000);
+    expect(s.audioLevel, closeTo(0.25, 1e-9));
   });
 
   test('relatório vazio vira zeros, não erro', () {

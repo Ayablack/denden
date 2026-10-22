@@ -7,6 +7,8 @@ Tempo total estimado: **~1 h 30 min**.
 
 ## Antes de começar (10 min)
 
+0. Faça um teste rápido de **Exportar CSV** antes de tudo, para não perder os 30 min do A9 se a pasta Documentos estiver no OneDrive.
+
 1. Abra um terminal na pasta `C:\Projetos\denden\app`.
 2. Gere a versão de produção (mais fiel para medir CPU e FPS):
    ```bash
@@ -24,7 +26,8 @@ Tempo total estimado: **~1 h 30 min**.
 - **Perfil:** Alta (1080p60), Média (720p60) ou Economia (720p30).
 - **Iniciar / Parar.** À direita aparece o que "chegou" do outro lado.
 - **Exportar CSV:** salva as medições em `Documentos\denden-lab-<data>.csv`.
-- O painel mostra resolução, fps enviado e recebido, codec, **Limitação** (`none`, `cpu` ou `bandwidth`), bitrate e jitter.
+- O painel mostra resolução, fps enviado e recebido, codec, **Limitação** (`none`, `cpu` ou `bandwidth`), bitrate, jitter e **Áudio recebido** (KB e nível de 0 a 1).
+- **Mostrar vídeo recebido:** desligue nos testes de FPS. Mostrar o vídeo também gasta o PC.
 
 Durante o laço local, o som recebido também toca no seu PC. Você vai ouvir o som original e o recebido ao mesmo tempo, com um pequeno atraso. Isso é esperado.
 
@@ -36,13 +39,12 @@ Anote cada resultado em [resultados.md](resultados.md).
 1. Toque um vídeo com som no navegador.
 2. Fonte: **janela do navegador**. Perfil: Alta. Iniciar.
 3. Clique em **Parar** e depois em Iniciar com a fonte **Tela inteira**.
-- **Aprovado se:** nos dois casos o painel mostra a transmissão conectada e o som chega.
-- Para ter certeza de que é o som **recebido**: mande a saída do navegador para outro dispositivo, como no passo 2 do A8. Se ainda ouvir o vídeo nos fones, é o DenDen tocando o que recebeu. Se isso não funcionar no seu PC, anote no resultado.
+- **Aprovado se:** nos dois casos o **nível** em "Áudio recebido" sobe (acima de 0,05) enquanto o vídeo toca e volta para perto de 0 quando você pausa.
 
 ### A2 — Áudio do jogo (5 min)
 1. Abra o jogo em **modo janela ou janela sem bordas**.
 2. Fonte: **janela do jogo**. Iniciar.
-- **Aprovado se:** o som do jogo chega.
+- **Aprovado se:** o **nível** em "Áudio recebido" sobe com o som do jogo.
 
 ### A3 — Eco do Discord (10 min)
 Precisa de um amigo falando na chamada do Discord.
@@ -54,9 +56,11 @@ Precisa de um amigo falando na chamada do Discord.
 
 ### A4 — FPS do jogo em Alta (15 min)
 1. Feche o DenDen. Jogue **2 min na mesma cena** e anote o FPS médio.
-2. Abra o DenDen. Fonte: **janela do jogo**. Perfil: **Alta**. Iniciar.
-3. Jogue os **mesmos 2 min na mesma cena**. Anote o FPS médio, a CPU e o que o painel mostra (resolução, fps enviado, Limitação).
+2. Abra o DenDen. Fonte: **janela do jogo**. Perfil: **Alta**. **Desmarque "Mostrar vídeo recebido".** Iniciar.
+3. Jogue os **mesmos 2 min na mesma cena**. Anote o FPS médio, a CPU e o que o painel mostra (resolução **Enviado**, fps enviado, Limitação).
 4. Exportar CSV.
+- **Resolução precisa bater:** em Alta, "Enviado" deve ser 1920×1080 (ou o tamanho da janela do jogo, se for menor). Se aparecer menor que isso **com Limitação `none`**, o teste não vale: me avise.
+- **Leitura pessimista:** no laço local o mesmo PC também decodifica o vídeo recebido. Um transmissor de verdade gasta um pouco menos. Se o A4 passar aqui, passa na vida real.
 - **Conta:** queda = (FPS sem − FPS com) ÷ FPS sem × 100.
 - **Aprovado se:** queda ≤ **10%**.
 
@@ -91,7 +95,9 @@ Repita o A4 com o perfil **Média**.
 ### A10 — Tela parada (5 min)
 1. Fonte: janela do navegador com um vídeo **pausado** por 2 min.
 2. Observe "Recebido: fps" e o Estado.
-- **Aprovado se:** o estado continua `connected` e o vídeo volta a se mexer assim que você der play.
+3. Exportar CSV no fim.
+- **Aprovado se:** no CSV, a coluna `fps_recebido` nunca fica em 0 por mais de 5 s seguidos (mais de 2 linhas seguidas com 0), e o vídeo volta a se mexer assim que você der play.
+- Isso decide se o DenDen precisa forçar quadros mínimos em tela parada, porque o servidor da Fase B descarta vídeo parado por 30 s.
 
 ## Depois dos testes
 

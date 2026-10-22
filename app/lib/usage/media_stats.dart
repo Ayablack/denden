@@ -19,6 +19,8 @@ class MediaStatsSnapshot {
     this.encoderImplementation,
     this.qualityLimitationReason,
     this.targetBitrateBps,
+    this.audioBytesReceived = 0,
+    this.audioLevel,
   });
 
   final DateTime at;
@@ -46,6 +48,12 @@ class MediaStatsSnapshot {
   /// `none`, `cpu`, `bandwidth` ou `other`. Só no lado que envia.
   final String? qualityLimitationReason;
   final int? targetBitrateBps;
+
+  /// Bytes de áudio recebidos: prova objetiva de que o som chega (A1/A2).
+  final int audioBytesReceived;
+
+  /// Nível do áudio recebido, de 0 a 1. Perto de 0 quando a fonte está muda.
+  final double? audioLevel;
 }
 
 MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
@@ -55,6 +63,8 @@ MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
   };
   var sent = 0;
   var received = 0;
+  var audioReceived = 0;
+  double? audioLevel;
   Map<dynamic, dynamic>? video;
   for (final r in reports) {
     final v = r.values;
@@ -62,6 +72,10 @@ MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
       sent += (v['bytesSent'] as num? ?? 0).toInt();
     } else if (r.type == 'inbound-rtp') {
       received += (v['bytesReceived'] as num? ?? 0).toInt();
+      if (v['kind'] == 'audio') {
+        audioReceived += (v['bytesReceived'] as num? ?? 0).toInt();
+        audioLevel = (v['audioLevel'] as num?)?.toDouble() ?? audioLevel;
+      }
     } else {
       continue;
     }
@@ -80,6 +94,8 @@ MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
     encoderImplementation: video?['encoderImplementation'] as String?,
     qualityLimitationReason: video?['qualityLimitationReason'] as String?,
     targetBitrateBps: (video?['targetBitrate'] as num?)?.toInt(),
+    audioBytesReceived: audioReceived,
+    audioLevel: audioLevel,
   );
 }
 

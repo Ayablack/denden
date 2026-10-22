@@ -15,6 +15,8 @@ MediaStatsSnapshot snap(int sec, {int sent = 0, int received = 0}) =>
       qualityLimitationReason: 'cpu',
       targetBitrateBps: 5600000,
       jitterMs: 4,
+      audioBytesReceived: 12000,
+      audioLevel: 0.3,
     );
 
 void main() {
@@ -52,11 +54,13 @@ void main() {
     expect(
       lines.first,
       'tempo_s,estado,largura,altura,fps_enviado,fps_recebido,codec,'
-      'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms',
+      'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms,'
+      'audio_recebido_kb,nivel_audio',
     );
     expect(
       lines[1],
-      '2,connected,1920,1080,60.0,60.0,video/VP8,libvpx,cpu,5.60,6.00,5.60,4.0',
+      '2,connected,1920,1080,60.0,60.0,video/VP8,libvpx,cpu,5.60,6.00,5.60,4.0,'
+      '12.0,0.30',
     );
   });
 }
