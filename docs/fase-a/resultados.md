@@ -23,7 +23,16 @@ Testes: `integration_test/capture_windows_test.dart`, `loopback_windows_test.dar
 
 **Leitura:** a captura de tela e de áudio funciona. O gargalo de 1080p60 é o **processador**, porque não há codificação por hardware nesta versão do `flutter_webrtc`. O teste com jogo (A4) decide se a queda de FPS cabe nos 10%.
 
-## Manuais (preencher)
+## Manuais
+
+**Decisão do dono (2026-10-22):** só o A0 (CSV no Excel) foi feito: **aprovado**, abre em colunas com vírgula decimal. Os demais (A1–A10) foram **pulados**: no laço local o mesmo PC transmite e assiste, então o dono se ouvia duas vezes e não dava para avaliar. O dono considerou satisfatórios os testes automáticos e preferiu ajustar quando o app estiver funcionando de verdade.
+
+**O que continua sem medição (risco aberto para a Fase B):**
+- Queda de FPS do jogo com transmissão (critério ≤ 10%). Medir no B2.
+- Eco do Discord na prática (o código diz: janela isola, tela inteira não).
+- Latência, sincronia e estabilidade de 30 min.
+- Perfil Média com 720p real.
+
 
 | # | Teste | Resultado | Aprovado? | Observações |
 |---|---|---|---|---|
@@ -44,6 +53,7 @@ Jogo usado: ______ · Resolução do monitor: ______ · Processador / placa de v
 
 ## Decisões (preencher depois dos manuais)
 
-- Perfil padrão: ______
-- Modo de captura recomendado contra eco: ______
-- Plano B de áudio necessário? ______
+- **Perfil padrão: provisório Alta (1080p60).** Não aprovado: falta medir a queda de FPS. Se o B2 mostrar queda > 10%, revisar.
+- **Modo de captura recomendado contra eco:** janela do jogo ou do navegador (o áudio sai só daquele programa).
+- **Plano B de áudio necessário?** Não por enquanto: a captura de áudio funcionou nos testes automáticos.
+- **Nova regra do dono:** ninguém pode ouvir voz duplicada durante a transmissão. Ver seção 4.3.1 do design.

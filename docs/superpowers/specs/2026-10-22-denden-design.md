@@ -95,6 +95,15 @@ Referência de experiência: o Go Live do Discord. Imagem nítida, áudio sincro
 - **Eco do Discord:** capturar o áudio do PC inteiro inclui a voz dos amigos no Discord. Exigência: capturar só o áudio do jogo/navegador **ou** excluir o processo do Discord (o Windows tem loopback por processo, com modo de exclusão, desde a versão 2004).
 - **Plano B, se a Fase A reprovar:** plugin nativo próprio (WASAPI de loopback por processo) gerando uma trilha de áudio personalizada, ou trocar para `medea_flutter_webrtc` (anuncia captura de áudio do sistema no Windows desde 0.16.0).
 
+### 4.3.1 Sem voz duplicada (regra do dono, 2026-10-22)
+
+Na transmissão com os amigos, **ninguém ouve voz duas vezes**. A voz continua só no Discord.
+
+1. **Quem transmite não toca a própria transmissão.** A prévia no PC do transmissor é só vídeo, sem som. (No laboratório da Fase A o mesmo PC transmitia e assistia; por isso o dono se ouvia duas vezes.)
+2. **Captura padrão: janela.** O app abre sugerindo a janela do jogo ou do navegador; o áudio sai só daquele programa.
+3. **Tela inteira sai sem áudio por padrão.** Para ligar o áudio na tela inteira, o transmissor marca uma opção com o aviso "a voz do Discord vai junto e seus amigos vão ouvir duas vezes". *(Decisão minha: entre bloquear e avisar, escolhi desligar por padrão e permitir com aviso.)*
+4. Se um dia o plugin permitir excluir um processo específico (o Discord) do loopback, a tela inteira pode ganhar áudio sem a voz.
+
 ### 4.4 Qualidade
 
 | Perfil | Resolução | Taxa | Bitrate alvo | GB/h por espectador |
