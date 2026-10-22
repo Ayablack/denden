@@ -22,6 +22,9 @@ void main() {
     expect(s.frameWidth, 1920);
     expect(s.frameHeight, 1080);
     expect(s.framesPerSecond, 60);
+    expect(s.encoderImplementation, 'OpenH264');
+    expect(s.qualityLimitationReason, 'cpu');
+    expect(s.targetBitrateBps, 5600000);
   });
 
   test('lado receptor: bytes recebidos e jitter do vídeo em ms', () {

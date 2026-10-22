@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'capture/capture_service.dart';
+import 'lab/lab_page.dart';
+
 void main() => runApp(const DenDenApp());
 
 class DenDenApp extends StatelessWidget {
@@ -10,9 +13,8 @@ class DenDenApp extends StatelessWidget {
     return MaterialApp(
       title: 'DenDen',
       theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-      home: const Scaffold(
-        body: Center(child: Text('DenDen — Fase A (validação local)')),
-      ),
+      // Fase A: o app é só o laboratório.
+      home: LabPage(capture: CaptureService()),
     );
   }
 }

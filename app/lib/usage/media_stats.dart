@@ -16,6 +16,9 @@ class MediaStatsSnapshot {
     this.codec,
     this.jitterMs,
     this.audioVideoSkewMs,
+    this.encoderImplementation,
+    this.qualityLimitationReason,
+    this.targetBitrateBps,
   });
 
   final DateTime at;
@@ -33,8 +36,16 @@ class MediaStatsSnapshot {
   /// Jitter do vídeo recebido.
   final double? jitterMs;
 
-  /// O WebRTC não expõe isso; a sincronia é medida pelo bipe (Fase A, A8).
+  /// O WebRTC não expõe isso; a sincronia é medida com um vídeo de teste
+  /// (Fase A, A8).
   final double? audioVideoSkewMs;
+
+  /// Ex.: `libvpx`, `OpenH264` (software). Só no lado que envia.
+  final String? encoderImplementation;
+
+  /// `none`, `cpu`, `bandwidth` ou `other`. Só no lado que envia.
+  final String? qualityLimitationReason;
+  final int? targetBitrateBps;
 }
 
 MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
@@ -66,6 +77,9 @@ MediaStatsSnapshot parseStats(List<StatsReport> reports, DateTime at) {
     frameHeight: (video?['frameHeight'] as num?)?.toInt(),
     codec: codecs[video?['codecId']],
     jitterMs: jitter == null ? null : jitter * 1000,
+    encoderImplementation: video?['encoderImplementation'] as String?,
+    qualityLimitationReason: video?['qualityLimitationReason'] as String?,
+    targetBitrateBps: (video?['targetBitrate'] as num?)?.toInt(),
   );
 }
 
