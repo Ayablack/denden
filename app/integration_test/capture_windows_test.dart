@@ -8,9 +8,9 @@ void main() {
 
   testWidgets('captura a tela com vídeo e informa o áudio', (tester) async {
     final capture = CaptureService();
-    final sources = await capture
-        .listSources()
-        .timeout(const Duration(seconds: 15));
+    final sources = await capture.listSources().timeout(
+      const Duration(seconds: 15),
+    );
     expect(sources, isNotEmpty);
     final screen = sources.firstWhere(
       (s) => !s.isWindow,

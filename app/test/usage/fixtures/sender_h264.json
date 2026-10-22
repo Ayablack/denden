@@ -1,0 +1,10 @@
+[
+  {"id": "OT01V", "type": "outbound-rtp", "timestamp": 1000.0, "kind": "video",
+   "bytesSent": 1500000, "codecId": "COT01", "frameWidth": 1920, "frameHeight": 1080,
+   "framesPerSecond": 60},
+  {"id": "OT01A", "type": "outbound-rtp", "timestamp": 1000.0, "kind": "audio",
+   "bytesSent": 40000, "codecId": "COT02"},
+  {"id": "COT01", "type": "codec", "timestamp": 1000.0, "mimeType": "video/H264"},
+  {"id": "COT02", "type": "codec", "timestamp": 1000.0, "mimeType": "audio/opus"},
+  {"id": "CP01", "type": "candidate-pair", "timestamp": 1000.0, "bytesSent": 9999999}
+]
