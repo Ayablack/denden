@@ -1,0 +1,9 @@
+﻿tempo_s;estado;largura;altura;fps_enviado;fps_recebido;codec;codificador;limitacao;alvo_mbps;enviado_mbps;recebido_mbps;jitter_ms;audio_recebido_kb;nivel_audio
+4;connected;640;360;33,0;30,0;video/VP8;libvpx;bandwidth;2,44;2,32;2,32;28,0;15,3;0,02
+6;connected;640;360;31,0;31,0;video/VP8;libvpx;bandwidth;2,57;3,00;3,00;15,0;23,5;0,02
+8;connected;640;360;25,0;24,0;video/VP8;libvpx;bandwidth;2,86;2,25;2,25;15,0;31,6;0,02
+10;connected;640;360;32,0;31,0;video/VP8;libvpx;bandwidth;2,91;3,35;3,35;10,0;39,6;0,01
+12;connected;640;360;22,0;22,0;video/VP8;libvpx;bandwidth;2,95;2,28;2,28;7,0;47,8;0,02
+14;connected;640;360;28,0;29,0;video/VP8;libvpx;bandwidth;3,30;2,49;2,54;10,0;56,1;0,03
+16;connected;960;540;21,0;21,0;video/VP8;libvpx;bandwidth;1,73;1,60;1,55;40,0;63,9;0,00
+18;connected;960;540;32,0;33,0;video/VP8;libvpx;bandwidth;1,61;1,88;1,88;25,0;66,7;0,00

@@ -27,6 +27,13 @@ Testes: `integration_test/capture_windows_test.dart`, `loopback_windows_test.dar
 
 **Decisão do dono (2026-10-22):** só o A0 (CSV no Excel) foi feito: **aprovado**, abre em colunas com vírgula decimal. Os demais (A1–A10) foram **pulados**: no laço local o mesmo PC transmite e assiste, então o dono se ouvia duas vezes e não dava para avaliar. O dono considerou satisfatórios os testes automáticos e preferiu ajustar quando o app estiver funcionando de verdade.
 
+**CSVs do dono (pasta `csv/`, 2026-10-22 16:09–16:16, versão release):**
+- **Janela capturada (1928×1043) em Alta: 11–17 fps**, mesmo com Limitação `none`. A captura de janela do plugin usa GDI (lenta); a de tela usa DirectX e deu 31–49 fps nos testes automáticos. **Conflito:** a janela é o modo recomendado contra eco, mas é lenta demais para jogo.
+- **Início borrado:** ~25 s em 480×270 a 960×540 (`bandwidth`) até o estimador de banda subir.
+- No fim do CSV mais longo apareceu Limitação `cpu`.
+- Áudio enviado: ~4 KB/s (bytes sobem o tempo todo); nível quase sempre perto de 0 (fonte pouco barulhenta ou escala baixa; não conclusivo).
+- Jitter de até 80 ms.
+
 **O que continua sem medição (risco aberto para a Fase B):**
 - Queda de FPS do jogo com transmissão (critério ≤ 10%). Medir no B2.
 - Eco do Discord na prática (o código diz: janela isola, tela inteira não).
