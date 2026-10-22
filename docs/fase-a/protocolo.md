@@ -7,7 +7,11 @@ Tempo total estimado: **~1 h 30 min**.
 
 ## Antes de começar (10 min)
 
-0. Faça um teste rápido de **Exportar CSV** antes de tudo, para não perder os 30 min do A9 se a pasta Documentos estiver no OneDrive.
+0. **Teste do CSV (5 min), antes de tudo:**
+   1. Abra o DenDen, clique **Iniciar**, espere 10 s, clique **Parar** e depois **Exportar CSV**.
+   2. Uma mensagem embaixo mostra o caminho do arquivo. No seu PC deve ser `C:\Users\usuario\Documents\denden-lab-<data>.csv`. Essa **não** é a pasta Documentos do OneDrive.
+   3. Dê dois cliques no arquivo. **Aprovado se** o Excel abre com uma coluna por medida (tempo_s, estado, largura…) e números com vírgula (ex.: `5,60`).
+   4. Se falhar, pare e me avise antes dos outros testes.
 
 1. Abra um terminal na pasta `C:\Projetos\denden\app`.
 2. Gere a versão de produção (mais fiel para medir CPU e FPS):
@@ -25,7 +29,7 @@ Tempo total estimado: **~1 h 30 min**.
   - **Tela inteira:** o som do PC todo, **incluindo a voz do Discord**.
 - **Perfil:** Alta (1080p60), Média (720p60) ou Economia (720p30).
 - **Iniciar / Parar.** À direita aparece o que "chegou" do outro lado.
-- **Exportar CSV:** salva as medições em `Documentos\denden-lab-<data>.csv`.
+- **Exportar CSV:** salva as medições em `C:\Users\usuario\Documents\denden-lab-<data>.csv` (o caminho aparece na tela). O arquivo abre direto no Excel em português.
 - O painel mostra resolução, fps enviado e recebido, codec, **Limitação** (`none`, `cpu` ou `bandwidth`), bitrate, jitter e **Áudio recebido** (KB e nível de 0 a 1).
 - **Mostrar vídeo recebido:** desligue nos testes de FPS. Mostrar o vídeo também gasta o PC.
 

@@ -50,17 +50,25 @@ void main() {
         receiveMbps: 5.6,
       ),
     ]);
-    final lines = csv.trim().split('\n');
+    // Excel em português: BOM UTF-8, ";" entre colunas, vírgula decimal.
+    expect(csv.startsWith('﻿'), isTrue);
+    final lines = csv.substring(1).trim().split('\r\n');
     expect(
       lines.first,
-      'tempo_s,estado,largura,altura,fps_enviado,fps_recebido,codec,'
-      'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms,'
-      'audio_recebido_kb,nivel_audio',
+      'tempo_s;estado;largura;altura;fps_enviado;fps_recebido;codec;'
+      'codificador;limitacao;alvo_mbps;enviado_mbps;recebido_mbps;jitter_ms;'
+      'audio_recebido_kb;nivel_audio',
     );
     expect(
       lines[1],
-      '2,connected,1920,1080,60.0,60.0,video/VP8,libvpx,cpu,5.60,6.00,5.60,4.0,'
-      '12.0,0.30',
+      '2;connected;1920;1080;60,0;60,0;video/VP8;libvpx;cpu;5,60;6,00;5,60;4,0;'
+      '12,0;0,30',
     );
+  });
+
+  test('pasta do CSV: Documentos, ou a pasta do usuário se não existir', () {
+    const home = r'C:\Users\ana';
+    expect(csvFolder(home, (_) => true), r'C:\Users\ana\Documents');
+    expect(csvFolder(home, (_) => false), home);
   });
 }

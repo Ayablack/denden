@@ -153,7 +153,8 @@ class _LabPageState extends State<LabPage> {
         .toIso8601String()
         .replaceAll(RegExp(r'[:.]'), '-')
         .substring(0, 19);
-    final file = File('$home\\Documents\\denden-lab-$stamp.csv');
+    final folder = csvFolder(home, (p) => Directory(p).existsSync());
+    final file = File('$folder\\denden-lab-$stamp.csv');
     try {
       await file.writeAsString(labCsv(_samples));
       if (!mounted) return;

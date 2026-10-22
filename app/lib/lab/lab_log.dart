@@ -39,34 +39,57 @@ String formatStopwatch(Duration d) {
       '${(d.inMilliseconds % 1000).toString().padLeft(3, '0')}';
 }
 
+/// Pasta onde o CSV é salvo. Com o OneDrive, `Documents` pode não existir
+/// dentro da pasta do usuário; aí vai na própria pasta do usuário.
+String csvFolder(String home, bool Function(String path) exists) {
+  final documents = '$home\\Documents';
+  return exists(documents) ? documents : home;
+}
+
+/// CSV para o Excel em português: BOM UTF-8, ";" entre colunas, vírgula
+/// decimal e quebra de linha do Windows.
 String labCsv(List<LabSample> samples) {
-  String n(num? v, [int digits = 1]) => v == null ? '' : v.toStringAsFixed(digits);
-  final b = StringBuffer(
-    'tempo_s,estado,largura,altura,fps_enviado,fps_recebido,codec,'
-    'codificador,limitacao,alvo_mbps,enviado_mbps,recebido_mbps,jitter_ms,'
-    'audio_recebido_kb,nivel_audio\n',
-  );
+  const nl = '\r\n';
+  String n(num? v, [int digits = 1]) =>
+      v == null ? '' : v.toStringAsFixed(digits).replaceAll('.', ',');
+  const header = [
+    'tempo_s',
+    'estado',
+    'largura',
+    'altura',
+    'fps_enviado',
+    'fps_recebido',
+    'codec',
+    'codificador',
+    'limitacao',
+    'alvo_mbps',
+    'enviado_mbps',
+    'recebido_mbps',
+    'jitter_ms',
+    'audio_recebido_kb',
+    'nivel_audio',
+  ];
+  final b = StringBuffer('﻿${header.join(';')}$nl');
   for (final s in samples) {
     final target = s.tx.targetBitrateBps;
-    b.writeln(
-      [
-        s.elapsed.inSeconds,
-        s.state,
-        s.tx.frameWidth ?? '',
-        s.tx.frameHeight ?? '',
-        n(s.tx.framesPerSecond),
-        n(s.rx.framesPerSecond),
-        s.rx.codec ?? '',
-        s.tx.encoderImplementation ?? '',
-        s.tx.qualityLimitationReason ?? '',
-        target == null ? '' : n(target / 1e6, 2),
-        n(s.sendMbps, 2),
-        n(s.receiveMbps, 2),
-        n(s.rx.jitterMs),
-        n(s.rx.audioBytesReceived / 1000),
-        n(s.rx.audioLevel, 2),
-      ].join(','),
-    );
+    final row = [
+      s.elapsed.inSeconds,
+      s.state,
+      s.tx.frameWidth ?? '',
+      s.tx.frameHeight ?? '',
+      n(s.tx.framesPerSecond),
+      n(s.rx.framesPerSecond),
+      s.rx.codec ?? '',
+      s.tx.encoderImplementation ?? '',
+      s.tx.qualityLimitationReason ?? '',
+      target == null ? '' : n(target / 1e6, 2),
+      n(s.sendMbps, 2),
+      n(s.receiveMbps, 2),
+      n(s.rx.jitterMs),
+      n(s.rx.audioBytesReceived / 1000),
+      n(s.rx.audioLevel, 2),
+    ];
+    b.write('${row.join(';')}$nl');
   }
   return b.toString();
 }

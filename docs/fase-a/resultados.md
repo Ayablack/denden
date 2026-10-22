@@ -27,6 +27,7 @@ Testes: `integration_test/capture_windows_test.dart`, `loopback_windows_test.dar
 
 | # | Teste | Resultado | Aprovado? | Observações |
 |---|---|---|---|---|
+| A0 | CSV abre no Excel pt-BR (colunas e vírgula decimal) | | | Caminho: |
 | A1 | Áudio do navegador (janela / tela) | | | |
 | A2 | Áudio do jogo (janela) | | | |
 | A3 | Eco do Discord: janela | | | |
