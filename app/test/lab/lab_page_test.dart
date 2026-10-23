@@ -17,6 +17,7 @@ class FakeCapture implements CaptureService {
     CaptureSource s,
     QualityProfile p, {
     bool audio = true,
+    int? excludeProcessId,
   }) => throw UnimplementedError();
 
   @override

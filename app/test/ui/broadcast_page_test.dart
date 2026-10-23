@@ -1,6 +1,7 @@
 import 'package:denden/capture/capture_service.dart';
 import 'package:denden/rooms/worker_api.dart';
 import 'package:denden/ui/broadcast_page.dart';
+import 'package:denden/ui/capture_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,12 +21,26 @@ Future<void> open(
 }
 
 void main() {
-  testWidgets('sugere uma janela que não é o DenDen como fonte do áudio', (
+  testWidgets('padrão: som do PC menos o Discord', (tester) async {
+    await open(tester, FakeMedia(), FakeCapture());
+    expect(find.text('PC inteiro, menos o Discord'), findsOneWidget);
+    expect(find.textContaining('menos o Discord. Outros'), findsOneWidget);
+  });
+
+  testWidgets('dá para escolher só uma janela, mas não o DenDen', (
     tester,
   ) async {
-    await open(tester, FakeMedia(), FakeCapture());
-    expect(find.text('Jogo'), findsOneWidget);
+    final c = FakeCapture();
+    await open(tester, FakeMedia(), c);
+    await tester.tap(find.text('PC inteiro, menos o Discord'));
+    await tester.pumpAndSettle();
+    expect(find.text('DenDen'), findsNothing);
+    await tester.tap(find.text('Jogo').last);
+    await tester.pumpAndSettle();
     expect(find.textContaining('Só o som desta janela'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+    expect((c.lastAudio! as WindowAudio).window.name, 'Jogo');
   });
 
   testWidgets('transmitir mostra o código formatado e Copiar', (tester) async {
@@ -35,7 +50,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('K7P-92Q'), findsOneWidget);
     expect(find.text('Copiar'), findsOneWidget);
-    expect(c.lastAudioWindow?.name, 'Jogo');
+    expect(c.lastAudio, isA<PcAudio>());
   });
 
   testWidgets('janela do jogo fechou: aviso claro na tela', (tester) async {
@@ -71,6 +86,52 @@ void main() {
       findsOneWidget,
     );
     expect(c.stopped, isTrue);
+  });
+
+  group('voltar durante a transmissão', () {
+    Future<(FakeMedia, FakeCapture)> live(WidgetTester tester) async {
+      final c = FakeCapture();
+      final m = FakeMedia();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => BroadcastPage(media: m, capture: c),
+                ),
+              ),
+              child: const Text('Abrir'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Abrir'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      return (m, c);
+    }
+
+    testWidgets('pergunta antes de sair e continua no ar', (tester) async {
+      final (m, _) = await live(tester);
+      expect(find.text('Parar a transmissão?'), findsOneWidget);
+      await tester.tap(find.text('Continuar transmitindo'));
+      await tester.pumpAndSettle();
+      expect(m.broadcast.stopped, isFalse);
+      expect(find.text('K7P-92Q'), findsOneWidget);
+    });
+
+    testWidgets('confirmar para a transmissão e volta', (tester) async {
+      final (m, c) = await live(tester);
+      await tester.tap(find.text('Parar e sair'));
+      await tester.pumpAndSettle();
+      expect(m.broadcast.stopped, isTrue);
+      expect(c.stopped, isTrue);
+      expect(find.text('Abrir'), findsOneWidget);
+    });
   });
 
   testWidgets('parar encerra a transmissão e a captura', (tester) async {

@@ -24,7 +24,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
   List<CaptureSource> _screens = const [];
   List<CaptureSource> _windows = const [];
   CaptureSource? _screen;
-  CaptureSource? _audioWindow;
+  AudioChoice _audio = const PcAudio();
   QualityProfile _profile = QualityProfile.high;
   BroadcastHandle? _broadcast;
   final _subs = <StreamSubscription<Object>>[];
@@ -50,7 +50,6 @@ class _BroadcastPageState extends State<BroadcastPage> {
           .where((s) => s.isWindow && !s.name.contains('DenDen'))
           .toList();
       _screen = _screens.firstOrNull;
-      _audioWindow = _windows.firstOrNull;
     });
   }
 
@@ -64,7 +63,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
     });
     try {
       final size = View.of(context).display.size;
-      final stream = await widget.capture.start(screen, _audioWindow, _profile);
+      final stream = await widget.capture.start(screen, _audio, _profile);
       final b = await widget.media.publish(
         stream,
         _profile,
@@ -118,13 +117,45 @@ class _BroadcastPageState extends State<BroadcastPage> {
     super.dispose();
   }
 
+  /// Sair da tela derruba a transmissão: com ela no ar (ou conectando), a
+  /// seta de voltar e o Esc perguntam antes.
+  bool get _canLeave => _broadcast == null && !_busy;
+
+  Future<void> _onLeaveAttempt(bool didPop, Object? _) async {
+    if (didPop || _busy) return;
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Parar a transmissão?'),
+        content: const Text('Quem está assistindo vai perder a imagem.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Continuar transmitindo'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Parar e sair'),
+          ),
+        ],
+      ),
+    );
+    if (leave != true || !mounted) return;
+    await _stop();
+    if (mounted) Navigator.of(context).pop();
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Transmitir')),
-    body: Center(
-      child: SizedBox(
-        width: 460,
-        child: _broadcast == null ? _setup() : _live(_broadcast!),
+  Widget build(BuildContext context) => PopScope(
+    canPop: _canLeave,
+    onPopInvokedWithResult: _onLeaveAttempt,
+    child: Scaffold(
+      appBar: AppBar(title: const Text('Transmitir')),
+      body: Center(
+        child: SizedBox(
+          width: 460,
+          child: _broadcast == null ? _setup() : _live(_broadcast!),
+        ),
       ),
     ),
   );
@@ -143,27 +174,33 @@ class _BroadcastPageState extends State<BroadcastPage> {
           ],
           onChanged: (s) => setState(() => _screen = s),
         ),
-      DropdownButtonFormField<CaptureSource?>(
-        initialValue: _audioWindow,
+      DropdownButtonFormField<AudioChoice>(
+        initialValue: _audio,
         isExpanded: true,
         decoration: const InputDecoration(labelText: 'Áudio de'),
         items: [
+          const DropdownMenuItem(
+            value: PcAudio(),
+            child: Text('PC inteiro, menos o Discord'),
+          ),
           for (final w in _windows)
             DropdownMenuItem(
-              value: w,
+              value: WindowAudio(w),
               child: Text(w.name, overflow: TextOverflow.ellipsis),
             ),
-          const DropdownMenuItem(value: null, child: Text('Sem áudio')),
+          const DropdownMenuItem(value: NoAudio(), child: Text('Sem áudio')),
         ],
-        onChanged: (w) => setState(() => _audioWindow = w),
+        onChanged: (a) => setState(() => _audio = a ?? _audio),
       ),
       const SizedBox(height: 4),
-      Text(
-        _audioWindow == null
-            ? 'Sem áudio.'
-            : 'Só o som desta janela vai junto. A voz do Discord não entra.',
-        style: const TextStyle(fontSize: 12),
-      ),
+      Text(switch (_audio) {
+        PcAudio() =>
+          'Vai todo o som do PC, menos o Discord. Outros apps de voz '
+              '(WhatsApp, Discord no navegador) entram.',
+        WindowAudio() =>
+          'Só o som desta janela vai junto. A voz do Discord não entra.',
+        NoAudio() => 'Sem áudio.',
+      }, style: const TextStyle(fontSize: 12)),
       const SizedBox(height: 12),
       DropdownButtonFormField<QualityProfile>(
         initialValue: _profile,

@@ -20,17 +20,23 @@ class CaptureSource {
   bool get audioIsolated => isWindow;
 }
 
+/// Com [excludeProcessId] (só na tela inteira), o som do PC vai sem a árvore
+/// desse processo: é assim que o Discord fica de fora (plugin local, ver
+/// `packages/flutter_webrtc/DENDEN.md`).
 Map<String, Object?> displayMediaConstraints(
   CaptureSource s,
   QualityProfile p, {
   required bool audio,
+  int? excludeProcessId,
 }) => {
   'video': {
     'deviceId': {'exact': s.id},
     // O plugin Windows lê com findDouble: inteiro seria ignorado.
     'mandatory': {'frameRate': p.frameRate.toDouble()},
   },
-  'audio': audio,
+  'audio': audio && excludeProcessId != null
+      ? {'excludeProcessId': excludeProcessId}
+      : audio,
 };
 
 /// Tamanho da fonte em pixels, quando se sabe. Para tela inteira é o
@@ -108,11 +114,17 @@ class CaptureService {
     CaptureSource s,
     QualityProfile p, {
     bool audio = true,
+    int? excludeProcessId,
   }) async {
     await stop();
     if (s.isWindow && audio) await ensureWindowExists(listSources, s);
     return _stream = await _getDisplayMedia(
-      displayMediaConstraints(s, p, audio: audio),
+      displayMediaConstraints(
+        s,
+        p,
+        audio: audio,
+        excludeProcessId: excludeProcessId,
+      ),
     );
   }
 
