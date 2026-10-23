@@ -20,19 +20,28 @@ class CaptureSource {
   bool get audioIsolated => isWindow;
 }
 
+/// Quadros por segundo pedidos ao capturador: o do perfil.
+///
+/// Medido em 2026-10-23 (monitor 1080p, fonte a 60 fps, jogo aberto): pedir
+/// 120 ou ligar o relógio de 1 ms do Windows não mudou nada (~44 fps nos
+/// dois casos) e gastou mais CPU. O limite é o custo da captura.
+int captureFrameRate(QualityProfile p) => p.frameRate;
+
 /// Com [excludeProcessId] (só na tela inteira), o som do PC vai sem a árvore
 /// desse processo: é assim que o Discord fica de fora (plugin local, ver
-/// `packages/flutter_webrtc/DENDEN.md`).
+/// `packages/flutter_webrtc/DENDEN.md`). [captureFps] troca o padrão de
+/// [captureFrameRate] (modo de diagnóstico).
 Map<String, Object?> displayMediaConstraints(
   CaptureSource s,
   QualityProfile p, {
   required bool audio,
   int? excludeProcessId,
+  int? captureFps,
 }) => {
   'video': {
     'deviceId': {'exact': s.id},
     // O plugin Windows lê com findDouble: inteiro seria ignorado.
-    'mandatory': {'frameRate': p.frameRate.toDouble()},
+    'mandatory': {'frameRate': (captureFps ?? captureFrameRate(p)).toDouble()},
   },
   'audio': audio && excludeProcessId != null
       ? {'excludeProcessId': excludeProcessId}
@@ -115,6 +124,7 @@ class CaptureService {
     QualityProfile p, {
     bool audio = true,
     int? excludeProcessId,
+    int? captureFps,
   }) async {
     await stop();
     if (s.isWindow && audio) await ensureWindowExists(listSources, s);
@@ -124,6 +134,7 @@ class CaptureService {
         p,
         audio: audio,
         excludeProcessId: excludeProcessId,
+        captureFps: captureFps,
       ),
     );
   }

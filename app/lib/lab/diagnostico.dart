@@ -20,6 +20,9 @@ import '../rooms/worker_api.dart';
 /// `pc-excluindo` com `excluir=<pid>` (para testar a exclusão com um
 /// processo qualquer; `excluir=0` não exclui nada além do DenDen).
 ///
+/// `fpscaptura`: troca os quadros por segundo pedidos ao capturador (padrão:
+/// `captureFrameRate`, o dobro do perfil). Só vale para `audio=nao`.
+///
 /// Usa o endereço e a chave salvos no app; a chave não vai para o CSV.
 class DiagConfig {
   const DiagConfig({
@@ -28,6 +31,9 @@ class DiagConfig {
     this.profile = QualityProfile.high,
     this.audio = 'nao',
     this.excludePid,
+    this.captureFps,
+    this.screenIndex = 1,
+    this.sourceSize,
   });
 
   final Duration duration;
@@ -35,6 +41,14 @@ class DiagConfig {
   final QualityProfile profile;
   final String audio;
   final int? excludePid;
+  final int? captureFps;
+
+  /// `tela=2`: qual tela transmitir (1 = a primeira da lista do plugin).
+  final int screenIndex;
+
+  /// `fonte=1920x1080`: tamanho da tela transmitida, quando não é a da
+  /// janela do DenDen (ex.: monitor secundário).
+  final (int, int)? sourceSize;
 
   static DiagConfig? fromEnvironment() =>
       parse(Platform.environment['DENDEN_DIAG']);
@@ -60,6 +74,15 @@ class DiagConfig {
           QualityProfile.high,
       audio: kv['audio'] ?? 'nao',
       excludePid: int.tryParse(kv['excluir'] ?? ''),
+      captureFps: int.tryParse(kv['fpscaptura'] ?? ''),
+      screenIndex: int.tryParse(kv['tela'] ?? '') ?? 1,
+      sourceSize: switch (kv['fonte']?.split('x')) {
+        [final w, final h] when int.tryParse(w) != null => (
+          int.parse(w),
+          int.tryParse(h) ?? 0,
+        ),
+        _ => null,
+      },
     );
   }
 }
@@ -91,6 +114,7 @@ class DiagRow {
     'codec',
     'audio_energia_enviada',
     'audio_kbps',
+    'capturado_fps',
   ];
 
   /// Excel pt-BR: separador `;` e vírgula decimal.
@@ -206,6 +230,11 @@ DiagRow diagRow({
         8 /
         1000 /
         secs,
+    // Quadros que o capturador entregou ao WebRTC (antes do codificador).
+    'capturado_fps':
+        (_sum(tx, 'media-source', 'video', 'frames') -
+            _sum(prevTx, 'media-source', 'video', 'frames')) /
+        secs,
   });
 }
 
@@ -227,6 +256,7 @@ Future<Never> runDiagnostic(
 
   csv.writeAsStringSync(
     '# perfil=${c.profile.name} seg=${c.duration.inSeconds} '
+    'fpscaptura=${c.captureFps ?? captureFrameRate(c.profile)} '
     'tela=${width}x$height início=${DateTime.now().toIso8601String()}\n',
   );
   write(DiagRow.columns.join(';'));
@@ -242,7 +272,13 @@ Future<Never> runDiagnostic(
       throw StateError('Configure o endereço e a chave antes.');
     }
     final media = CloudflareMedia(WorkerApi(s.workerUrl!), s.key!);
-    final screen = (await capture.listSources()).firstWhere((x) => !x.isWindow);
+    final screens = [
+      for (final x in await capture.listSources())
+        if (!x.isWindow) x,
+    ];
+    final screen = screens[c.screenIndex - 1];
+    final (srcW, srcH) = c.sourceSize ?? (width, height);
+    write('# tela: ${screen.name} ${srcW}x$srcH');
     final stream = switch (c.audio) {
       'pc' => await pcAudio.start(screen, c.profile),
       'pc-excluindo' => await capture.start(
@@ -250,14 +286,19 @@ Future<Never> runDiagnostic(
         c.profile,
         excludeProcessId: c.excludePid == 0 ? null : c.excludePid,
       ),
-      _ => await capture.start(screen, c.profile, audio: false),
+      _ => await capture.start(
+        screen,
+        c.profile,
+        audio: false,
+        captureFps: c.captureFps,
+      ),
     };
     pcAudio.errors.listen((e) => write('# AVISO ${e.code}: ${e.message}'));
     broadcast = await media.publish(
       stream,
       c.profile,
-      sourceWidth: width,
-      sourceHeight: height,
+      sourceWidth: srcW,
+      sourceHeight: srcH,
     );
     await renderer.initialize();
     viewing = await media.watch(broadcast.roomCode, renderer);
