@@ -158,9 +158,8 @@ class _LabPageState extends State<LabPage> {
     try {
       await file.writeAsString(labCsv(_samples));
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('CSV salvo em ${file.path}')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('CSV salvo em ${file.path}')));
     } catch (e, st) {
       _fail(e, st);
     }
@@ -208,7 +207,9 @@ class _LabPageState extends State<LabPage> {
                         child: Text(s.name, overflow: TextOverflow.ellipsis),
                       ),
                   ],
-                  onChanged: running ? null : (s) => setState(() => _source = s),
+                  onChanged: running
+                      ? null
+                      : (s) => setState(() => _source = s),
                 ),
                 if (source != null)
                   Text(
@@ -294,7 +295,9 @@ class _LabPageState extends State<LabPage> {
         '@ ${f(s.tx.framesPerSecond, 0)} fps',
       ),
       Text('Recebido: ${f(s.rx.framesPerSecond, 0)} fps'),
-      Text('Codec: ${s.rx.codec ?? '—'} (${s.tx.encoderImplementation ?? '—'})'),
+      Text(
+        'Codec: ${s.rx.codec ?? '—'} (${s.tx.encoderImplementation ?? '—'})',
+      ),
       Text('Limitação: ${s.tx.qualityLimitationReason ?? '—'}'),
       Text(
         'Bitrate (vídeo + áudio): ${f(s.sendMbps, 2)} Mbps '

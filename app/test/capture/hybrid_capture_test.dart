@@ -58,6 +58,7 @@ void main() {
   late FakeStream combined;
   Object? windowError;
   late bool windowHasAudio;
+  late List<CaptureSource> sourcesNow;
 
   HybridCapture make() => HybridCapture(
     getDisplayMedia: (c) async {
@@ -71,6 +72,8 @@ void main() {
       return windowStream;
     },
     createStream: (_) async => combined,
+    listSources: () async => sourcesNow,
+    watchEvery: const Duration(milliseconds: 10),
   );
 
   setUp(() {
@@ -83,6 +86,7 @@ void main() {
     combined = FakeStream('c');
     windowError = null;
     windowHasAudio = true;
+    sourcesNow = [screen, game];
   });
 
   test('pede a tela sem áudio e a janela com áudio a 1 fps', () async {
@@ -193,5 +197,60 @@ void main() {
       throwsArgumentError,
     );
     expect(calls, isEmpty);
+  });
+
+  test('recusa iniciar se a janela do jogo não existe mais', () async {
+    sourcesNow = [screen];
+    await expectLater(
+      make().start(
+        screen: screen,
+        audioWindow: game,
+        profile: QualityProfile.high,
+      ),
+      throwsA(
+        isA<HybridCaptureError>().having(
+          (e) => e.code,
+          'code',
+          'janela_inexistente',
+        ),
+      ),
+    );
+    // Nada foi capturado: nem o áudio geral do computador.
+    expect(calls, isEmpty);
+  });
+
+  test(
+    'janela fecha durante a transmissão: para o áudio, mantém o vídeo e avisa',
+    () async {
+      final h = make();
+      await h.start(
+        screen: screen,
+        audioWindow: game,
+        profile: QualityProfile.high,
+      );
+      final erro = h.errors.first;
+      sourcesNow = [screen];
+      final e = await erro.timeout(const Duration(seconds: 2));
+      expect(e.code, 'janela_fechou');
+      expect(e.message, contains('áudio foi interrompido'));
+      expect(windowStream.tracks.every((t) => t.stopped), isTrue);
+      expect(screenStream.tracks.single.stopped, isFalse);
+      expect(h.audioActive, isFalse);
+    },
+  );
+
+  test('depois de parar, a vigilância também para', () async {
+    final h = make();
+    final erros = <HybridCaptureError>[];
+    h.errors.listen(erros.add);
+    await h.start(
+      screen: screen,
+      audioWindow: game,
+      profile: QualityProfile.high,
+    );
+    await h.stop();
+    sourcesNow = [screen];
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    expect(erros, isEmpty);
   });
 }

@@ -66,7 +66,8 @@ class SoakConfig {
       hold: Duration(seconds: int.tryParse(kv['seg'] ?? '') ?? 5),
       logPath: log,
       windowTitle: window,
-      profile: QualityProfile.values
+      profile:
+          QualityProfile.values
               .where((p) => p.name == kv['perfil'])
               .firstOrNull ??
           QualityProfile.high,
@@ -76,7 +77,11 @@ class SoakConfig {
 
 /// Roda os ciclos e encerra o processo: código 0 se todos terminaram,
 /// 2 se algum ciclo lançou exceção. Queda nativa aparece como outro código.
-Future<Never> runSoak(SoakConfig c, {required int width, required int height}) async {
+Future<Never> runSoak(
+  SoakConfig c, {
+  required int width,
+  required int height,
+}) async {
   final log = File(c.logPath);
   void mark(String m) => log.writeAsStringSync(
     '${DateTime.now().toIso8601String()} $m\n',
@@ -84,10 +89,13 @@ Future<Never> runSoak(SoakConfig c, {required int width, required int height}) a
     flush: true,
   );
 
-  mark('INÍCIO modo=${c.mode.key} perfil=${c.profile.name} ciclos=${c.cycles} seg=${c.hold.inSeconds} '
-      'pid=$pid');
+  mark(
+    'INÍCIO modo=${c.mode.key} perfil=${c.profile.name} ciclos=${c.cycles} seg=${c.hold.inSeconds} '
+    'pid=$pid',
+  );
   final capture = CaptureService();
   final hybrid = HybridCapture();
+  hybrid.errors.listen((e) => mark('AVISO ${e.code}: ${e.message}'));
   var code = 0;
   try {
     final sources = await capture.listSources();
@@ -98,8 +106,11 @@ Future<Never> runSoak(SoakConfig c, {required int width, required int height}) a
           sources.firstWhere((s) => s.isWindow && s.name == c.windowTitle);
       final MediaStream stream = switch (c.mode) {
         SoakMode.tela => await capture.start(screen, c.profile),
-        SoakMode.telaMudo =>
-          await capture.start(screen, c.profile, audio: false),
+        SoakMode.telaMudo => await capture.start(
+          screen,
+          c.profile,
+          audio: false,
+        ),
         SoakMode.janela => await capture.start(window(), c.profile),
         SoakMode.hibrido => await hybrid.start(
           screen: screen,
@@ -115,7 +126,26 @@ Future<Never> runSoak(SoakConfig c, {required int width, required int height}) a
         sourceHeight: c.mode == SoakMode.janela ? null : height,
       );
       mark('ciclo $i: transmitindo');
-      await Future<void>.delayed(c.hold);
+      // Em blocos de 5 s, para ver o áudio parar se a janela fechar.
+      final end = DateTime.now().add(c.hold);
+      while (DateTime.now().isBefore(end)) {
+        final left = end.difference(DateTime.now());
+        await Future<void>.delayed(
+          left < const Duration(seconds: 5) ? left : const Duration(seconds: 5),
+        );
+        if (c.hold > const Duration(seconds: 10)) {
+          final rs = await session.receiver.getStats();
+          final e = rs
+              .where(
+                (r) => r.type == 'inbound-rtp' && r.values['kind'] == 'audio',
+              )
+              .fold<num>(
+                0,
+                (a, r) => a + ((r.values['totalAudioEnergy'] as num?) ?? 0),
+              );
+          mark('ciclo $i: energia acumulada=$e áudio=${hybrid.audioActive}');
+        }
+      }
       final rx = await session.receiver.getStats();
       final tx = await session.sender.getStats();
       num sum(List<StatsReport> rs, String type, String kind, String f) => rs

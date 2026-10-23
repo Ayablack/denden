@@ -23,7 +23,11 @@ void main() {
   test('Mbps entre duas leituras', () {
     expect(mbpsBetween(snap(0, sent: 0), snap(2, sent: 1500000)), 6.0);
     expect(
-      mbpsBetween(snap(0, received: 0), snap(1, received: 250000), received: true),
+      mbpsBetween(
+        snap(0, received: 0),
+        snap(1, received: 250000),
+        received: true,
+      ),
       2.0,
     );
   });

@@ -36,17 +36,61 @@ Map<String, Object?> displayMediaConstraints(
 /// Tamanho da fonte em pixels, quando se sabe. Para tela inteira é o
 /// monitor; para janela não há como saber (o plugin não informa), e usar o
 /// monitor reduziria demais uma janela menor que ele.
-(int, int)? knownSourceSize(CaptureSource s, int displayWidth, int displayHeight) =>
-    s.isWindow ? null : (displayWidth, displayHeight);
+(int, int)? knownSourceSize(
+  CaptureSource s,
+  int displayWidth,
+  int displayHeight,
+) => s.isWindow ? null : (displayWidth, displayHeight);
 
 /// Piso de quadros por segundo: o SFU descarta trilha sem pacotes por 30 s,
 /// e telas paradas quase não geram quadros.
 int minFrameRate(QualityProfile p) => 5;
 
+/// Erro de captura com código estável (para a interface) e texto claro.
+class CaptureError implements Exception {
+  const CaptureError(this.code, this.message);
+
+  final String code;
+  final String message;
+
+  @override
+  String toString() => 'CaptureError($code): $message';
+}
+
+typedef SourceListFn = Future<List<CaptureSource>> Function();
+typedef DisplayMediaFn = Future<MediaStream> Function(
+  Map<String, Object?> constraints,
+);
+
+/// Se a janela não existe mais, o plugin cai no áudio do **computador
+/// inteiro** (Discord incluído). Por isso: conferir antes de capturar.
+Future<void> ensureWindowExists(SourceListFn list, CaptureSource window) async {
+  final current = await list();
+  if (!current.any((s) => s.isWindow && s.id == window.id)) {
+    throw CaptureError(
+      'janela_inexistente',
+      'A janela "${window.name}" não existe mais. Abra o jogo e escolha a '
+          'janela de novo.',
+    );
+  }
+}
+
 class CaptureService {
+  CaptureService({SourceListFn? sourceLister, DisplayMediaFn? getDisplayMedia})
+    // Parâmetro nomeado não pode ser privado, então não dá `this._`.
+    // ignore: prefer_initializing_formals
+    : _sourceLister = sourceLister,
+      _getDisplayMedia =
+          getDisplayMedia ?? navigator.mediaDevices.getDisplayMedia;
+
+  /// Só para testes; sem ele, lista as fontes reais do Windows.
+  final SourceListFn? _sourceLister;
+  final DisplayMediaFn _getDisplayMedia;
   MediaStream? _stream;
 
   Future<List<CaptureSource>> listSources() async {
+    final lister = _sourceLister;
+    if (lister != null) return lister();
     final sources = await desktopCapturer.getSources(
       types: [SourceType.Screen, SourceType.Window],
     );
@@ -66,7 +110,8 @@ class CaptureService {
     bool audio = true,
   }) async {
     await stop();
-    return _stream = await navigator.mediaDevices.getDisplayMedia(
+    if (s.isWindow && audio) await ensureWindowExists(listSources, s);
+    return _stream = await _getDisplayMedia(
       displayMediaConstraints(s, p, audio: audio),
     );
   }

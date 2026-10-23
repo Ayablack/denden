@@ -4,6 +4,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../capture/quality_profile.dart';
 import 'sdp_hints.dart';
+import 'session_lock.dart';
 
 enum LoopbackState { connecting, connected, disconnected, closed }
 
@@ -36,7 +37,29 @@ class LoopbackSession {
   LoopbackState get state => _state;
   Stream<LoopbackState> get states => _states.stream;
 
+  /// Uma operação por vez em todo o app: uma sessão só começa depois que a
+  /// anterior terminou de liberar tudo. Medido: abrir a 2ª sessão logo após
+  /// encerrar a 1ª derrubava o processo (0xC0000005 na worker_thread do
+  /// WebRTC) sob o `flutter test`.
+  static final _lock = SessionLock();
+
+  bool _closing = false;
+
   static Future<LoopbackSession> start(
+    MediaStream captured,
+    QualityProfile p, {
+    int? sourceWidth,
+    int? sourceHeight,
+  }) => _lock.run(
+    () => _start(
+      captured,
+      p,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
+    ),
+  );
+
+  static Future<LoopbackSession> _start(
     MediaStream captured,
     QualityProfile p, {
     int? sourceWidth,
@@ -49,11 +72,14 @@ class LoopbackSession {
     await renderer.initialize();
     final session = LoopbackSession._(sender, receiver, renderer);
 
+    // Candidatos atrasados não podem chegar a uma conexão em encerramento.
     sender.onIceCandidate = (c) {
-      if (c.candidate != null) receiver.addCandidate(c);
+      if (c.candidate == null || session._closing) return;
+      receiver.addCandidate(c).catchError((Object _) {});
     };
     receiver.onIceCandidate = (c) {
-      if (c.candidate != null) sender.addCandidate(c);
+      if (c.candidate == null || session._closing) return;
+      sender.addCandidate(c).catchError((Object _) {});
     };
     receiver.onTrack = (e) {
       if (e.streams.isNotEmpty) renderer.srcObject = e.streams.first;
@@ -87,9 +113,7 @@ class LoopbackSession {
         await session._tune(rtpSender, track, p, sourceWidth, sourceHeight);
       }
     } catch (_) {
-      await renderer.dispose();
-      await sender.close();
-      await receiver.close();
+      await session._teardown();
       rethrow;
     }
     return session;
@@ -140,15 +164,34 @@ class LoopbackSession {
     _states.add(next);
   }
 
-  Future<void> close() async {
+  Future<void> close() => _lock.run(() async {
+    if (_closing) return;
+    await _teardown();
     if (_state != LoopbackState.closed) {
       _state = LoopbackState.closed;
       _states.add(LoopbackState.closed);
     }
+    await _states.close();
+  });
+
+  /// Ordem de encerramento: nenhum retorno de chamada novo, tirar as trilhas
+  /// do envio, fechar e liberar as conexões e só então o renderizador. A
+  /// captura é parada por quem a abriu, depois disto.
+  Future<void> _teardown() async {
+    _closing = true;
+    for (final pc in [sender, receiver]) {
+      pc.onIceCandidate = null;
+      pc.onTrack = null;
+      pc.onConnectionState = null;
+    }
+    for (final s in await sender.getSenders()) {
+      await sender.removeTrack(s);
+    }
     remoteRenderer.srcObject = null;
-    await remoteRenderer.dispose();
     await sender.close();
     await receiver.close();
-    await _states.close();
+    await sender.dispose();
+    await receiver.dispose();
+    await remoteRenderer.dispose();
   }
 }
