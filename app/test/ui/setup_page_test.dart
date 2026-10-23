@@ -81,6 +81,9 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Salvar'));
     await tester.pump();
     expect(called, isFalse);
-    expect(find.text('O endereço precisa começar com https://'), findsOneWidget);
+    expect(
+      find.text('O endereço precisa começar com https://'),
+      findsOneWidget,
+    );
   });
 }
