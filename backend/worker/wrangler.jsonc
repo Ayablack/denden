@@ -1,0 +1,12 @@
+{
+  // DenDen — salas, chaves, consumo e limites. Plano Free; nenhum recurso pago.
+  "name": "denden-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "durable_objects": {
+    "bindings": [{ "name": "GROUP", "class_name": "GroupState" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GroupState"] }]
+  // Segredos (só via `wrangler secret put`, nunca em arquivo):
+  // REALTIME_APP_ID, REALTIME_APP_TOKEN, TURN_KEY_ID, TURN_KEY_API_TOKEN, ADMIN_KEY_HASH
+}

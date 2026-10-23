@@ -1,0 +1,7 @@
+# Copie para .dev.vars (ignorado pelo git) só para testes locais com valores falsos.
+# Em produção os valores entram só por `wrangler secret put`.
+REALTIME_APP_ID=
+REALTIME_APP_TOKEN=
+TURN_KEY_ID=
+TURN_KEY_API_TOKEN=
+ADMIN_KEY_HASH=
