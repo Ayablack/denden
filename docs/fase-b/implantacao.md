@@ -3,7 +3,7 @@
 > Quem faz: **o dono do projeto**. Todo passo que mexe na conta Cloudflare é seu. Os comandos já estão prontos.
 > Regra: **R$ 0**. Se qualquer tela pedir cartão, plano pago ou "upgrade": **pare** e me avise (veja [ponto-de-parada.md](ponto-de-parada.md)).
 
-Tempo estimado: **~40 min**, sendo 25 de configuração e 15 do teste com um amigo.
+Tempo estimado: **~45 min**, sendo 30 de configuração e 15 do teste com um amigo.
 
 Use o PowerShell, dentro de `C:\Projetos\denden\backend\worker`.
 
@@ -61,21 +61,28 @@ No fim aparece o endereço, algo como `https://denden-worker.<seu-nome>.workers.
 - **Se pedir para escolher plano pago ou cadastrar cartão:** pare e me avise.
 - O Worker usa só recursos do plano **Free**: Workers, um Durable Object com SQLite e o Realtime.
 
-## 6. Criar as chaves dos amigos (1 min por pessoa)
+## 6. Configurar o DenDen no seu PC e criar as chaves (5 min)
 
-```powershell
-$env:DENDEN_ADMIN = Read-Host "Chave de administrador"
-```
+1. Abra `C:\Projetos\dendenppuild\windowsdunner\Release\denden.exe`.
+2. Na tela **Configurar**, preencha:
+   - **Endereço do servidor:** o endereço do passo 5;
+   - **Sua chave:** deixe para o item 4 abaixo (a tela pede uma; use temporariamente a chave de administrador só para entrar?). Não: crie a sua chave primeiro pelo terminal:
 
-```bash
-npm run criar-chave -- https://denden-worker.SEU-NOME.workers.dev "Seu nome"
-```
+   ```powershell
+   $env:DENDEN_ADMIN = Read-Host "Chave de administrador"
+   ```
 
-```bash
-npm run criar-chave -- https://denden-worker.SEU-NOME.workers.dev "Nome do amigo"
-```
+   ```bash
+   npm run criar-chave -- https://denden-worker.SEU-NOME.workers.dev "Seu nome"
+   ```
 
-Cada chave aparece **uma vez**: mande por mensagem privada só para a pessoa. Crie uma para você também, porque a chave de administrador não serve para transmitir.
+   - **Chave de administrador:** a do passo 3.
+3. Clique **Salvar**. O DenDen testa a chave no Worker antes de salvar.
+4. No menu, abra **Administração**:
+   - **Chaves dos amigos:** digite o nome e clique **Criar chave**. A chave aparece **uma vez**: copie e mande por mensagem privada só para a pessoa.
+   - **Limites:** confira orçamento **900 GB**, avisos **50, 75, 90, 100**, teto **105%**. Salve se mudar algo.
+   - **Emergência:** o botão vermelho desliga todas as transmissões na hora.
+6. Opcional, no painel do Cloudflare: crie um **alerta de cobrança por e-mail** (Notificações → Billing). Ele é independente do DenDen. Lembre: o bloqueio do DenDen **não** é um limite garantido de faturamento do Cloudflare.
 
 ## 7. Levar o DenDen para o PC do amigo (5 min)
 
@@ -108,5 +115,6 @@ O Windows pode mostrar um aviso de "aplicativo não reconhecido", porque o app n
 | Atraso aproximado (ex.: bater palmas no jogo/vídeo) | |
 | Travou ou caiu em algum momento? | |
 | FPS do seu jogo com e sem transmissão | |
+| Consumo mostrado no painel depois de 10 min (GB) | |
 
 Se der erro, a tela mostra uma mensagem. Copie a mensagem exata.
