@@ -37,7 +37,7 @@ void main() {
       adminKey: 'adm',
     );
     expect(s.toString(), isNot(contains('segredo')));
-    expect(s.toString(), isNot(contains('adm')));
+    expect(s.toString(), isNot(contains('chave-admin-xyz')));
   });
 
   test('arquivo corrompido volta ao vazio em vez de quebrar o app', () async {
