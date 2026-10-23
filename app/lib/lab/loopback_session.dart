@@ -3,23 +3,13 @@ import 'dart:async';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../capture/quality_profile.dart';
+import '../media/tuning.dart';
 import 'sdp_hints.dart';
 import 'session_lock.dart';
 
-enum LoopbackState { connecting, connected, disconnected, closed }
+export '../media/tuning.dart' show encodingFor;
 
-RTCRtpEncoding encodingFor(
-  QualityProfile p, {
-  int? sourceWidth,
-  int? sourceHeight,
-}) => RTCRtpEncoding(
-  active: true,
-  maxBitrate: p.maxBitrateBps,
-  maxFramerate: p.frameRate,
-  scaleResolutionDownBy: sourceWidth == null || sourceHeight == null
-      ? 1.0
-      : scaleDownFor(p, sourceWidth, sourceHeight),
-);
+enum LoopbackState { connecting, connected, disconnected, closed }
 
 /// Duas conexões WebRTC no mesmo processo, sem servidor: valida captura,
 /// codificação e reprodução (Fase A). **Não** comprova a transmissão pelo
@@ -110,37 +100,19 @@ class LoopbackSession {
       // Só depois da negociação: antes dela, o scaleResolutionDownBy fica
       // guardado nos parâmetros mas não chega ao codificador (medido).
       for (final (rtpSender, track) in video) {
-        await session._tune(rtpSender, track, p, sourceWidth, sourceHeight);
+        await tuneVideoSender(
+          rtpSender,
+          track,
+          p,
+          sourceWidth: sourceWidth,
+          sourceHeight: sourceHeight,
+        );
       }
     } catch (_) {
       await session._teardown();
       rethrow;
     }
     return session;
-  }
-
-  Future<void> _tune(
-    RTCRtpSender rtpSender,
-    MediaStreamTrack track,
-    QualityProfile p,
-    int? sourceWidth,
-    int? sourceHeight,
-  ) async {
-    // No Windows o getSettings não existe: vale o tamanho informado (tela).
-    var w = sourceWidth;
-    var h = sourceHeight;
-    try {
-      final s = track.getSettings();
-      w = (s['width'] as num?)?.toInt() ?? w;
-      h = (s['height'] as num?)?.toInt() ?? h;
-    } catch (_) {
-      // getSettings não existe em todas as plataformas nativas.
-    }
-    final params = rtpSender.parameters;
-    params.encodings = [encodingFor(p, sourceWidth: w, sourceHeight: h)];
-    // Jogo rápido: preferir manter a taxa de quadros a manter a resolução.
-    params.degradationPreference = RTCDegradationPreference.MAINTAIN_FRAMERATE;
-    await rtpSender.setParameters(params);
   }
 
   /// Mesma regra do `WebRtcPeerLink` do AppMusica: depois de conectar,
