@@ -1,0 +1,360 @@
+2026-10-23T12:13:08.819042 INÍCIO modo=hibrido perfil=high ciclos=1 seg=1800 pid=22748
+2026-10-23T12:13:09.148650 ciclo 1: iniciar captura
+2026-10-23T12:13:09.451950 ciclo 1: iniciar laço
+2026-10-23T12:13:09.839400 ciclo 1: transmitindo
+2026-10-23T12:13:22.105015 ciclo 1: fps=46.5 640x360 lim=bandwidth codificar=2.3ms buffer_video=34ms buffer_audio=46ms playout_v-a=43 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:13:27.132421 ciclo 1: fps=45.8 1280x720 lim=bandwidth codificar=3.7ms buffer_video=26ms buffer_audio=47ms playout_v-a=34 ms energia+=2.69e-3 áudio=true
+2026-10-23T12:13:32.143848 ciclo 1: fps=46.9 1920x1080 lim=none codificar=14.8ms buffer_video=27ms buffer_audio=47ms playout_v-a=26 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:13:37.158102 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.9ms buffer_video=32ms buffer_audio=48ms playout_v-a=24 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:13:42.170882 ciclo 1: fps=50.9 1920x1080 lim=none codificar=13.5ms buffer_video=32ms buffer_audio=48ms playout_v-a=13 ms energia+=2.31e-3 áudio=true
+2026-10-23T12:13:47.192020 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.1ms buffer_video=38ms buffer_audio=48ms playout_v-a=8 ms energia+=2.21e-3 áudio=true
+2026-10-23T12:13:52.203419 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.8ms buffer_video=47ms buffer_audio=48ms playout_v-a=7 ms energia+=1.94e-3 áudio=true
+2026-10-23T12:13:57.218671 ciclo 1: fps=52.5 1920x1080 lim=none codificar=13.1ms buffer_video=47ms buffer_audio=48ms playout_v-a=8 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:14:02.227544 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.5ms buffer_video=45ms buffer_audio=48ms playout_v-a=8 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:14:07.275638 ciclo 1: fps=52.2 1920x1080 lim=none codificar=13.0ms buffer_video=47ms buffer_audio=48ms playout_v-a=-3 ms energia+=1.95e-3 áudio=true
+2026-10-23T12:14:12.292889 ciclo 1: fps=51.1 1920x1080 lim=none codificar=14.2ms buffer_video=44ms buffer_audio=48ms playout_v-a=16 ms energia+=2.29e-3 áudio=true
+2026-10-23T12:14:17.330185 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.7ms buffer_video=47ms buffer_audio=58ms playout_v-a=2 ms energia+=2.41e-3 áudio=true
+2026-10-23T12:14:23.900177 ciclo 1: fps=51.7 1920x1080 lim=none codificar=13.8ms buffer_video=60ms buffer_audio=58ms playout_v-a=2 ms energia+=2.41e-3 áudio=true cpu=184%núcleo
+2026-10-23T12:14:28.923311 ciclo 1: fps=51.7 1920x1080 lim=none codificar=14.4ms buffer_video=59ms buffer_audio=57ms playout_v-a=-1 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:14:33.935131 ciclo 1: fps=52.1 1920x1080 lim=none codificar=13.3ms buffer_video=62ms buffer_audio=58ms playout_v-a=2 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:14:38.955733 ciclo 1: fps=51.6 1920x1080 lim=none codificar=13.8ms buffer_video=62ms buffer_audio=58ms playout_v-a=-3 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:14:43.966399 ciclo 1: fps=50.4 1920x1080 lim=none codificar=15.5ms buffer_video=59ms buffer_audio=57ms playout_v-a=2 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:14:48.980164 ciclo 1: fps=52.3 1920x1080 lim=none codificar=13.0ms buffer_video=63ms buffer_audio=42ms playout_v-a=-21 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:14:53.993705 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.8ms buffer_video=62ms buffer_audio=38ms playout_v-a=-21 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:14:59.009111 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.6ms buffer_video=62ms buffer_audio=38ms playout_v-a=-19 ms energia+=1.89e-3 áudio=true
+2026-10-23T12:15:04.030156 ciclo 1: fps=52.3 1920x1080 lim=none codificar=13.0ms buffer_video=60ms buffer_audio=38ms playout_v-a=-20 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:15:09.044072 ciclo 1: fps=51.2 1920x1080 lim=none codificar=13.1ms buffer_video=60ms buffer_audio=37ms playout_v-a=-20 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:15:14.053228 ciclo 1: fps=51.3 1920x1080 lim=none codificar=13.5ms buffer_video=59ms buffer_audio=38ms playout_v-a=-20 ms energia+=2.07e-3 áudio=true
+2026-10-23T12:15:19.106120 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.9ms buffer_video=60ms buffer_audio=38ms playout_v-a=-20 ms energia+=2.34e-3 áudio=true
+2026-10-23T12:15:24.931397 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.9ms buffer_video=59ms buffer_audio=38ms playout_v-a=-19 ms energia+=2.43e-3 áudio=true cpu=186%núcleo
+2026-10-23T12:15:29.942402 ciclo 1: fps=51.3 1920x1080 lim=none codificar=13.1ms buffer_video=56ms buffer_audio=38ms playout_v-a=-18 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:15:34.965303 ciclo 1: fps=51.2 1920x1080 lim=none codificar=12.9ms buffer_video=58ms buffer_audio=38ms playout_v-a=-22 ms energia+=2.57e-3 áudio=true
+2026-10-23T12:15:39.977971 ciclo 1: fps=50.9 1920x1080 lim=none codificar=12.9ms buffer_video=59ms buffer_audio=38ms playout_v-a=-18 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:15:44.988525 ciclo 1: fps=50.9 1920x1080 lim=none codificar=13.0ms buffer_video=57ms buffer_audio=38ms playout_v-a=-16 ms energia+=2.35e-3 áudio=true
+2026-10-23T12:15:50.006405 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.6ms buffer_video=59ms buffer_audio=38ms playout_v-a=-18 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:15:55.030923 ciclo 1: fps=51.2 1920x1080 lim=none codificar=12.5ms buffer_video=57ms buffer_audio=38ms playout_v-a=-25 ms energia+=2.08e-3 áudio=true
+2026-10-23T12:16:00.057858 ciclo 1: fps=50.9 1920x1080 lim=none codificar=13.0ms buffer_video=57ms buffer_audio=38ms playout_v-a=-16 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:16:05.069815 ciclo 1: fps=51.9 1920x1080 lim=none codificar=12.2ms buffer_video=57ms buffer_audio=38ms playout_v-a=-15 ms energia+=2.02e-3 áudio=true
+2026-10-23T12:16:10.086689 ciclo 1: fps=51.7 1920x1080 lim=none codificar=11.9ms buffer_video=58ms buffer_audio=39ms playout_v-a=-25 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:16:15.111050 ciclo 1: fps=51.9 1920x1080 lim=none codificar=12.0ms buffer_video=58ms buffer_audio=38ms playout_v-a=-13 ms energia+=2.11e-3 áudio=true
+2026-10-23T12:16:20.135187 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.2ms buffer_video=56ms buffer_audio=38ms playout_v-a=-16 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:16:26.228242 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.7ms buffer_video=50ms buffer_audio=38ms playout_v-a=-17 ms energia+=2.45e-3 áudio=true cpu=190%núcleo
+2026-10-23T12:16:31.316238 ciclo 1: fps=51.4 1920x1080 lim=none codificar=13.8ms buffer_video=44ms buffer_audio=38ms playout_v-a=-14 ms energia+=2.38e-3 áudio=true
+2026-10-23T12:16:36.329424 ciclo 1: fps=52.8 1920x1080 lim=none codificar=13.0ms buffer_video=45ms buffer_audio=38ms playout_v-a=-2 ms energia+=2.51e-3 áudio=true
+2026-10-23T12:16:41.340248 ciclo 1: fps=52.1 1920x1080 lim=none codificar=13.5ms buffer_video=44ms buffer_audio=38ms playout_v-a=0 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:16:46.349613 ciclo 1: fps=52.3 1920x1080 lim=none codificar=13.8ms buffer_video=42ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.35e-3 áudio=true
+2026-10-23T12:16:51.362048 ciclo 1: fps=52.7 1920x1080 lim=none codificar=12.9ms buffer_video=42ms buffer_audio=38ms playout_v-a=-2 ms energia+=2.18e-3 áudio=true
+2026-10-23T12:16:56.372443 ciclo 1: fps=50.9 1920x1080 lim=none codificar=15.1ms buffer_video=39ms buffer_audio=37ms playout_v-a=-3 ms energia+=2.03e-3 áudio=true
+2026-10-23T12:17:01.409731 ciclo 1: fps=50.6 1920x1080 lim=none codificar=15.0ms buffer_video=38ms buffer_audio=37ms playout_v-a=0 ms energia+=1.91e-3 áudio=true
+2026-10-23T12:17:06.419572 ciclo 1: fps=51.1 1920x1080 lim=none codificar=14.1ms buffer_video=39ms buffer_audio=38ms playout_v-a=-1 ms energia+=1.85e-3 áudio=true
+2026-10-23T12:17:11.435978 ciclo 1: fps=50.9 1920x1080 lim=none codificar=13.2ms buffer_video=39ms buffer_audio=38ms playout_v-a=1 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:17:16.446866 ciclo 1: fps=51.5 1920x1080 lim=none codificar=12.8ms buffer_video=40ms buffer_audio=38ms playout_v-a=-10 ms energia+=2.16e-3 áudio=true
+2026-10-23T12:17:21.522479 ciclo 1: fps=51.1 1920x1080 lim=none codificar=12.8ms buffer_video=40ms buffer_audio=37ms playout_v-a=-10 ms energia+=2.30e-3 áudio=true
+2026-10-23T12:17:27.517028 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.1ms buffer_video=49ms buffer_audio=38ms playout_v-a=-8 ms energia+=2.44e-3 áudio=true cpu=192%núcleo
+2026-10-23T12:17:32.549058 ciclo 1: fps=51.4 1920x1080 lim=none codificar=14.4ms buffer_video=47ms buffer_audio=38ms playout_v-a=-14 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:17:37.569923 ciclo 1: fps=50.0 1920x1080 lim=none codificar=16.7ms buffer_video=43ms buffer_audio=37ms playout_v-a=-13 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:17:42.589043 ciclo 1: fps=51.4 1920x1080 lim=none codificar=15.2ms buffer_video=44ms buffer_audio=38ms playout_v-a=-11 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:17:47.601808 ciclo 1: fps=50.8 1920x1080 lim=none codificar=15.6ms buffer_video=43ms buffer_audio=38ms playout_v-a=-2 ms energia+=2.31e-3 áudio=true
+2026-10-23T12:17:52.613511 ciclo 1: fps=53.1 1920x1080 lim=none codificar=12.6ms buffer_video=44ms buffer_audio=38ms playout_v-a=1 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:17:57.644863 ciclo 1: fps=50.3 1920x1080 lim=none codificar=15.3ms buffer_video=41ms buffer_audio=37ms playout_v-a=-7 ms energia+=2.04e-3 áudio=true
+2026-10-23T12:18:02.660464 ciclo 1: fps=50.9 1920x1080 lim=none codificar=13.7ms buffer_video=34ms buffer_audio=38ms playout_v-a=9 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:18:07.673531 ciclo 1: fps=51.5 1920x1080 lim=none codificar=12.9ms buffer_video=35ms buffer_audio=38ms playout_v-a=9 ms energia+=1.99e-3 áudio=true
+2026-10-23T12:18:12.695673 ciclo 1: fps=50.8 1920x1080 lim=none codificar=12.7ms buffer_video=34ms buffer_audio=38ms playout_v-a=12 ms energia+=1.95e-3 áudio=true
+2026-10-23T12:18:17.713941 ciclo 1: fps=51.2 1920x1080 lim=none codificar=13.6ms buffer_video=32ms buffer_audio=38ms playout_v-a=11 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:18:22.786408 ciclo 1: fps=49.9 1920x1080 lim=none codificar=15.1ms buffer_video=32ms buffer_audio=37ms playout_v-a=6 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:18:29.120979 ciclo 1: fps=50.2 1920x1080 lim=none codificar=14.7ms buffer_video=33ms buffer_audio=38ms playout_v-a=9 ms energia+=2.38e-3 áudio=true cpu=180%núcleo
+2026-10-23T12:18:34.139172 ciclo 1: fps=49.0 1920x1080 lim=none codificar=16.3ms buffer_video=30ms buffer_audio=37ms playout_v-a=11 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:18:39.158139 ciclo 1: fps=49.8 1920x1080 lim=none codificar=16.2ms buffer_video=28ms buffer_audio=38ms playout_v-a=12 ms energia+=2.33e-3 áudio=true
+2026-10-23T12:18:44.178905 ciclo 1: fps=49.2 1920x1080 lim=none codificar=16.6ms buffer_video=28ms buffer_audio=37ms playout_v-a=10 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:18:49.193390 ciclo 1: fps=49.6 1920x1080 lim=none codificar=16.3ms buffer_video=28ms buffer_audio=38ms playout_v-a=11 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:18:54.209733 ciclo 1: fps=46.3 1280x720 lim=cpu codificar=9.5ms buffer_video=38ms buffer_audio=39ms playout_v-a=4 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:18:59.218140 ciclo 1: fps=47.3 1280x720 lim=cpu codificar=7.8ms buffer_video=41ms buffer_audio=39ms playout_v-a=8 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:19:04.243620 ciclo 1: fps=47.2 1280x720 lim=cpu codificar=7.0ms buffer_video=41ms buffer_audio=39ms playout_v-a=11 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:19:09.262777 ciclo 1: fps=47.0 1280x720 lim=cpu codificar=7.3ms buffer_video=41ms buffer_audio=39ms playout_v-a=-4 ms energia+=2.03e-3 áudio=true
+2026-10-23T12:19:14.277832 ciclo 1: fps=49.9 1920x1080 lim=none codificar=13.8ms buffer_video=44ms buffer_audio=38ms playout_v-a=-5 ms energia+=1.91e-3 áudio=true
+2026-10-23T12:19:19.291683 ciclo 1: fps=49.3 1920x1080 lim=none codificar=15.3ms buffer_video=43ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.14e-3 áudio=true
+2026-10-23T12:19:24.305565 ciclo 1: fps=51.1 1920x1080 lim=none codificar=15.7ms buffer_video=43ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.33e-3 áudio=true
+2026-10-23T12:19:30.651206 ciclo 1: fps=50.5 1920x1080 lim=none codificar=14.8ms buffer_video=44ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.43e-3 áudio=true cpu=164%núcleo
+2026-10-23T12:19:35.666683 ciclo 1: fps=51.5 1920x1080 lim=none codificar=13.8ms buffer_video=46ms buffer_audio=38ms playout_v-a=-13 ms energia+=2.41e-3 áudio=true
+2026-10-23T12:19:40.682464 ciclo 1: fps=51.2 1920x1080 lim=none codificar=15.4ms buffer_video=43ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:19:45.701272 ciclo 1: fps=50.6 1920x1080 lim=none codificar=15.5ms buffer_video=43ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:19:50.713634 ciclo 1: fps=51.6 1920x1080 lim=none codificar=14.1ms buffer_video=44ms buffer_audio=37ms playout_v-a=-6 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:19:55.747392 ciclo 1: fps=53.1 1920x1080 lim=none codificar=12.5ms buffer_video=46ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.28e-3 áudio=true
+2026-10-23T12:20:00.761158 ciclo 1: fps=53.1 1920x1080 lim=none codificar=13.1ms buffer_video=45ms buffer_audio=38ms playout_v-a=-3 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:20:05.779673 ciclo 1: fps=52.2 1920x1080 lim=none codificar=14.3ms buffer_video=44ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.13e-3 áudio=true
+2026-10-23T12:20:10.792737 ciclo 1: fps=51.9 1920x1080 lim=none codificar=13.5ms buffer_video=44ms buffer_audio=38ms playout_v-a=-5 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:20:15.806250 ciclo 1: fps=52.1 1920x1080 lim=none codificar=12.4ms buffer_video=48ms buffer_audio=38ms playout_v-a=-6 ms energia+=1.94e-3 áudio=true
+2026-10-23T12:20:20.815487 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.9ms buffer_video=46ms buffer_audio=38ms playout_v-a=-14 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:20:25.830988 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.7ms buffer_video=45ms buffer_audio=38ms playout_v-a=-3 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:20:31.856558 ciclo 1: fps=52.6 1920x1080 lim=none codificar=13.0ms buffer_video=44ms buffer_audio=38ms playout_v-a=-3 ms energia+=2.41e-3 áudio=true cpu=188%núcleo
+2026-10-23T12:20:36.870224 ciclo 1: fps=52.1 1920x1080 lim=none codificar=14.0ms buffer_video=41ms buffer_audio=38ms playout_v-a=-3 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:20:41.880225 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.8ms buffer_video=42ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:20:46.907858 ciclo 1: fps=51.5 1920x1080 lim=none codificar=12.9ms buffer_video=40ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:20:51.919683 ciclo 1: fps=51.3 1920x1080 lim=none codificar=12.5ms buffer_video=41ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:20:56.938719 ciclo 1: fps=51.2 1920x1080 lim=none codificar=12.7ms buffer_video=39ms buffer_audio=38ms playout_v-a=3 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:21:01.970786 ciclo 1: fps=48.9 1920x1080 lim=none codificar=14.3ms buffer_video=37ms buffer_audio=38ms playout_v-a=2 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:21:06.982241 ciclo 1: fps=51.3 1920x1080 lim=none codificar=12.6ms buffer_video=36ms buffer_audio=38ms playout_v-a=-175 ms energia+=2.02e-3 áudio=true
+2026-10-23T12:21:11.993320 ciclo 1: fps=52.1 1920x1080 lim=none codificar=11.9ms buffer_video=50ms buffer_audio=39ms playout_v-a=-9 ms energia+=2.10e-3 áudio=true
+2026-10-23T12:21:17.006763 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.1ms buffer_video=51ms buffer_audio=38ms playout_v-a=-17 ms energia+=2.02e-3 áudio=true
+2026-10-23T12:21:22.054839 ciclo 1: fps=50.5 1920x1080 lim=none codificar=15.0ms buffer_video=46ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.03e-3 áudio=true
+2026-10-23T12:21:27.068330 ciclo 1: fps=50.1 1920x1080 lim=none codificar=16.3ms buffer_video=44ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.12e-3 áudio=true
+2026-10-23T12:21:33.606372 ciclo 1: fps=49.8 1920x1080 lim=none codificar=16.5ms buffer_video=43ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.44e-3 áudio=true cpu=193%núcleo
+2026-10-23T12:21:38.629270 ciclo 1: fps=49.4 1920x1080 lim=none codificar=16.8ms buffer_video=40ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.58e-3 áudio=true
+2026-10-23T12:21:43.646590 ciclo 1: fps=47.4 1280x720 lim=cpu codificar=10.6ms buffer_video=47ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:21:48.664328 ciclo 1: fps=45.3 1280x720 lim=cpu codificar=6.9ms buffer_video=50ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.49e-3 áudio=true
+2026-10-23T12:21:53.675781 ciclo 1: fps=44.1 1280x720 lim=cpu codificar=6.9ms buffer_video=49ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.38e-3 áudio=true
+2026-10-23T12:21:58.689891 ciclo 1: fps=44.9 1280x720 lim=cpu codificar=6.2ms buffer_video=49ms buffer_audio=39ms playout_v-a=0 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:22:03.699794 ciclo 1: fps=49.9 1920x1080 lim=none codificar=11.8ms buffer_video=46ms buffer_audio=38ms playout_v-a=-7 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:22:08.712730 ciclo 1: fps=52.9 1920x1080 lim=none codificar=12.4ms buffer_video=47ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:22:13.734325 ciclo 1: fps=52.8 1920x1080 lim=none codificar=12.2ms buffer_video=46ms buffer_audio=39ms playout_v-a=-14 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:22:18.747 ciclo 1: fps=52.7 1920x1080 lim=none codificar=12.9ms buffer_video=45ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.04e-3 áudio=true
+2026-10-23T12:22:23.755397 ciclo 1: fps=52.7 1920x1080 lim=none codificar=13.3ms buffer_video=43ms buffer_audio=38ms playout_v-a=-3 ms energia+=1.94e-3 áudio=true
+2026-10-23T12:22:28.771258 ciclo 1: fps=51.9 1920x1080 lim=none codificar=13.6ms buffer_video=42ms buffer_audio=38ms playout_v-a=-3 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:22:35.769838 ciclo 1: fps=51.8 1920x1080 lim=none codificar=13.7ms buffer_video=42ms buffer_audio=38ms playout_v-a=-1 ms energia+=2.30e-3 áudio=true cpu=173%núcleo
+2026-10-23T12:22:40.783935 ciclo 1: fps=48.0 1920x1080 lim=none codificar=15.4ms buffer_video=36ms buffer_audio=50ms playout_v-a=23 ms energia+=3.32e-3 áudio=true
+2026-10-23T12:22:45.795136 ciclo 1: fps=48.7 1920x1080 lim=none codificar=13.8ms buffer_video=37ms buffer_audio=58ms playout_v-a=21 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:22:50.818853 ciclo 1: fps=48.4 1920x1080 lim=none codificar=14.9ms buffer_video=35ms buffer_audio=58ms playout_v-a=22 ms energia+=2.21e-3 áudio=true
+2026-10-23T12:22:55.836068 ciclo 1: fps=49.6 1920x1080 lim=none codificar=15.6ms buffer_video=42ms buffer_audio=58ms playout_v-a=2 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:23:00.855065 ciclo 1: fps=49.6 1920x1080 lim=none codificar=15.2ms buffer_video=48ms buffer_audio=58ms playout_v-a=8 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:23:05.904855 ciclo 1: fps=50.9 1920x1080 lim=none codificar=14.4ms buffer_video=49ms buffer_audio=58ms playout_v-a=10 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:23:10.920757 ciclo 1: fps=51.3 1920x1080 lim=none codificar=14.1ms buffer_video=49ms buffer_audio=58ms playout_v-a=9 ms energia+=2.28e-3 áudio=true
+2026-10-23T12:23:15.942692 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.5ms buffer_video=53ms buffer_audio=59ms playout_v-a=6 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:23:20.956014 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.2ms buffer_video=53ms buffer_audio=56ms playout_v-a=-13 ms energia+=2.10e-3 áudio=true
+2026-10-23T12:23:25.966650 ciclo 1: fps=53.1 1920x1080 lim=none codificar=11.1ms buffer_video=53ms buffer_audio=39ms playout_v-a=-14 ms energia+=1.91e-3 áudio=true
+2026-10-23T12:23:30.980505 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.2ms buffer_video=53ms buffer_audio=39ms playout_v-a=-13 ms energia+=1.99e-3 áudio=true
+2026-10-23T12:23:36.829161 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.0ms buffer_video=51ms buffer_audio=39ms playout_v-a=-12 ms energia+=1.80e-3 áudio=true cpu=182%núcleo
+2026-10-23T12:23:41.846339 ciclo 1: fps=51.6 1920x1080 lim=none codificar=13.0ms buffer_video=50ms buffer_audio=39ms playout_v-a=-12 ms energia+=2.82e-3 áudio=true
+2026-10-23T12:23:46.854628 ciclo 1: fps=51.9 1920x1080 lim=none codificar=12.4ms buffer_video=51ms buffer_audio=39ms playout_v-a=-11 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:23:51.886749 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.0ms buffer_video=52ms buffer_audio=39ms playout_v-a=-9 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:23:56.907248 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.0ms buffer_video=69ms buffer_audio=159ms playout_v-a=7 ms energia+=2.52e-3 áudio=true
+2026-10-23T12:24:01.921940 ciclo 1: fps=51.6 1920x1080 lim=none codificar=13.3ms buffer_video=80ms buffer_audio=57ms playout_v-a=-31 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:24:06.936121 ciclo 1: fps=52.9 1920x1080 lim=none codificar=11.6ms buffer_video=86ms buffer_audio=43ms playout_v-a=-42 ms energia+=2.36e-3 áudio=true
+2026-10-23T12:24:11.955224 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.1ms buffer_video=84ms buffer_audio=39ms playout_v-a=-43 ms energia+=2.33e-3 áudio=true
+2026-10-23T12:24:16.966184 ciclo 1: fps=52.2 1920x1080 lim=none codificar=12.4ms buffer_video=85ms buffer_audio=38ms playout_v-a=-40 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:24:21.978476 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.1ms buffer_video=85ms buffer_audio=38ms playout_v-a=-42 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:24:26.991567 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.1ms buffer_video=85ms buffer_audio=38ms playout_v-a=-43 ms energia+=2.11e-3 áudio=true
+2026-10-23T12:24:32.010052 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.2ms buffer_video=84ms buffer_audio=38ms playout_v-a=-44 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:24:38.346672 ciclo 1: fps=52.7 1920x1080 lim=none codificar=12.0ms buffer_video=85ms buffer_audio=39ms playout_v-a=-41 ms energia+=2.00e-3 áudio=true cpu=181%núcleo
+2026-10-23T12:24:43.356980 ciclo 1: fps=51.1 1920x1080 lim=none codificar=13.3ms buffer_video=85ms buffer_audio=45ms playout_v-a=-45 ms energia+=3.06e-3 áudio=true
+2026-10-23T12:24:48.370680 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.6ms buffer_video=87ms buffer_audio=39ms playout_v-a=-46 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:24:53.383070 ciclo 1: fps=52.3 1920x1080 lim=none codificar=11.6ms buffer_video=74ms buffer_audio=39ms playout_v-a=-28 ms energia+=2.10e-3 áudio=true
+2026-10-23T12:24:58.394036 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.4ms buffer_video=52ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:25:03.404360 ciclo 1: fps=52.7 1920x1080 lim=none codificar=12.2ms buffer_video=47ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:25:08.413910 ciclo 1: fps=52.7 1920x1080 lim=none codificar=12.7ms buffer_video=45ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:25:13.433651 ciclo 1: fps=52.6 1920x1080 lim=none codificar=12.6ms buffer_video=45ms buffer_audio=38ms playout_v-a=-7 ms energia+=2.33e-3 áudio=true
+2026-10-23T12:25:18.447211 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.8ms buffer_video=43ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.21e-3 áudio=true
+2026-10-23T12:25:23.522473 ciclo 1: fps=53.0 1920x1080 lim=none codificar=12.6ms buffer_video=43ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.21e-3 áudio=true
+2026-10-23T12:25:28.535566 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.7ms buffer_video=42ms buffer_audio=39ms playout_v-a=-1 ms energia+=1.86e-3 áudio=true
+2026-10-23T12:25:33.551597 ciclo 1: fps=51.9 1920x1080 lim=none codificar=12.6ms buffer_video=41ms buffer_audio=39ms playout_v-a=-2 ms energia+=2.06e-3 áudio=true
+2026-10-23T12:25:39.356319 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.3ms buffer_video=41ms buffer_audio=39ms playout_v-a=0 ms energia+=1.94e-3 áudio=true cpu=187%núcleo
+2026-10-23T12:25:44.373496 ciclo 1: fps=51.0 1920x1080 lim=none codificar=12.5ms buffer_video=39ms buffer_audio=39ms playout_v-a=0 ms energia+=2.68e-3 áudio=true
+2026-10-23T12:25:49.385548 ciclo 1: fps=50.7 1920x1080 lim=none codificar=12.7ms buffer_video=37ms buffer_audio=38ms playout_v-a=1 ms energia+=2.10e-3 áudio=true
+2026-10-23T12:25:54.412561 ciclo 1: fps=52.0 1920x1080 lim=none codificar=11.8ms buffer_video=42ms buffer_audio=39ms playout_v-a=-13 ms energia+=2.31e-3 áudio=true
+2026-10-23T12:25:59.429997 ciclo 1: fps=52.7 1920x1080 lim=none codificar=11.0ms buffer_video=51ms buffer_audio=39ms playout_v-a=-9 ms energia+=2.36e-3 áudio=true
+2026-10-23T12:26:04.460773 ciclo 1: fps=52.4 1920x1080 lim=none codificar=12.1ms buffer_video=49ms buffer_audio=39ms playout_v-a=-14 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:26:09.535514 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.8ms buffer_video=46ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:26:14.550706 ciclo 1: fps=52.9 1920x1080 lim=none codificar=12.4ms buffer_video=45ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.17e-3 áudio=true
+2026-10-23T12:26:19.564297 ciclo 1: fps=52.6 1920x1080 lim=none codificar=12.3ms buffer_video=44ms buffer_audio=38ms playout_v-a=-4 ms energia+=2.24e-3 áudio=true
+2026-10-23T12:26:24.589156 ciclo 1: fps=53.3 1920x1080 lim=none codificar=12.0ms buffer_video=43ms buffer_audio=39ms playout_v-a=-3 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:26:29.602984 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.9ms buffer_video=40ms buffer_audio=39ms playout_v-a=-2 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:26:34.621024 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.3ms buffer_video=40ms buffer_audio=39ms playout_v-a=-3 ms energia+=1.89e-3 áudio=true
+2026-10-23T12:26:40.413288 ciclo 1: fps=51.5 1920x1080 lim=none codificar=11.7ms buffer_video=41ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.05e-3 áudio=true cpu=188%núcleo
+2026-10-23T12:26:45.430668 ciclo 1: fps=50.7 1920x1080 lim=none codificar=12.4ms buffer_video=40ms buffer_audio=39ms playout_v-a=-2 ms energia+=2.60e-3 áudio=true
+2026-10-23T12:26:50.442876 ciclo 1: fps=51.3 1920x1080 lim=none codificar=12.3ms buffer_video=43ms buffer_audio=39ms playout_v-a=-8 ms energia+=1.99e-3 áudio=true
+2026-10-23T12:26:55.523831 ciclo 1: fps=52.4 1920x1080 lim=none codificar=12.5ms buffer_video=47ms buffer_audio=39ms playout_v-a=-8 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:27:00.537798 ciclo 1: fps=52.8 1920x1080 lim=none codificar=12.5ms buffer_video=46ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:27:05.554621 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.8ms buffer_video=44ms buffer_audio=38ms playout_v-a=-6 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:27:10.566445 ciclo 1: fps=52.8 1920x1080 lim=none codificar=12.7ms buffer_video=44ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:27:15.586405 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.1ms buffer_video=42ms buffer_audio=39ms playout_v-a=-4 ms energia+=2.27e-3 áudio=true
+2026-10-23T12:27:20.598766 ciclo 1: fps=52.1 1920x1080 lim=none codificar=12.8ms buffer_video=42ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:27:25.612561 ciclo 1: fps=51.7 1920x1080 lim=none codificar=13.5ms buffer_video=40ms buffer_audio=38ms playout_v-a=-4 ms energia+=1.89e-3 áudio=true
+2026-10-23T12:27:30.635460 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.7ms buffer_video=40ms buffer_audio=39ms playout_v-a=0 ms energia+=2.08e-3 áudio=true
+2026-10-23T12:27:35.661196 ciclo 1: fps=51.1 1920x1080 lim=none codificar=12.7ms buffer_video=39ms buffer_audio=39ms playout_v-a=0 ms energia+=1.86e-3 áudio=true
+2026-10-23T12:27:41.270527 ciclo 1: fps=51.0 1920x1080 lim=none codificar=11.9ms buffer_video=40ms buffer_audio=39ms playout_v-a=0 ms energia+=2.10e-3 áudio=true cpu=191%núcleo
+2026-10-23T12:27:46.285479 ciclo 1: fps=50.7 1920x1080 lim=none codificar=12.1ms buffer_video=38ms buffer_audio=39ms playout_v-a=0 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:27:51.303644 ciclo 1: fps=52.7 1920x1080 lim=none codificar=11.9ms buffer_video=46ms buffer_audio=39ms playout_v-a=-9 ms energia+=2.28e-3 áudio=true
+2026-10-23T12:27:56.319338 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.8ms buffer_video=44ms buffer_audio=38ms playout_v-a=-9 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:28:01.331213 ciclo 1: fps=52.0 1920x1080 lim=none codificar=13.2ms buffer_video=44ms buffer_audio=38ms playout_v-a=-7 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:28:06.345069 ciclo 1: fps=52.3 1920x1080 lim=none codificar=13.3ms buffer_video=43ms buffer_audio=39ms playout_v-a=-11 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:28:11.355954 ciclo 1: fps=53.1 1920x1080 lim=none codificar=13.2ms buffer_video=42ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.24e-3 áudio=true
+2026-10-23T12:28:16.373274 ciclo 1: fps=53.0 1920x1080 lim=none codificar=12.9ms buffer_video=42ms buffer_audio=39ms playout_v-a=0 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:28:21.384674 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.9ms buffer_video=40ms buffer_audio=39ms playout_v-a=-1 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:28:26.399640 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.8ms buffer_video=40ms buffer_audio=39ms playout_v-a=-3 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:28:31.413074 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.9ms buffer_video=39ms buffer_audio=39ms playout_v-a=-3 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:28:36.426771 ciclo 1: fps=51.3 1920x1080 lim=none codificar=13.3ms buffer_video=36ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:28:42.292015 ciclo 1: fps=51.4 1920x1080 lim=none codificar=12.0ms buffer_video=37ms buffer_audio=39ms playout_v-a=-2 ms energia+=2.22e-3 áudio=true cpu=209%núcleo
+2026-10-23T12:28:47.305728 ciclo 1: fps=51.2 1920x1080 lim=none codificar=12.5ms buffer_video=36ms buffer_audio=39ms playout_v-a=0 ms energia+=2.53e-3 áudio=true
+2026-10-23T12:28:52.343196 ciclo 1: fps=51.3 1920x1080 lim=none codificar=12.4ms buffer_video=38ms buffer_audio=39ms playout_v-a=1 ms energia+=2.43e-3 áudio=true
+2026-10-23T12:28:57.362146 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.5ms buffer_video=38ms buffer_audio=39ms playout_v-a=3 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:29:02.374455 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.9ms buffer_video=37ms buffer_audio=39ms playout_v-a=3 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:29:07.394 ciclo 1: fps=52.0 1920x1080 lim=none codificar=11.8ms buffer_video=36ms buffer_audio=39ms playout_v-a=4 ms energia+=2.30e-3 áudio=true
+2026-10-23T12:29:12.417276 ciclo 1: fps=51.0 1920x1080 lim=none codificar=12.8ms buffer_video=35ms buffer_audio=39ms playout_v-a=7 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:29:17.433804 ciclo 1: fps=51.0 1920x1080 lim=none codificar=12.4ms buffer_video=34ms buffer_audio=39ms playout_v-a=8 ms energia+=2.09e-3 áudio=true
+2026-10-23T12:29:22.444206 ciclo 1: fps=52.7 1920x1080 lim=none codificar=11.1ms buffer_video=34ms buffer_audio=39ms playout_v-a=6 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:29:27.516205 ciclo 1: fps=53.1 1920x1080 lim=none codificar=10.8ms buffer_video=34ms buffer_audio=39ms playout_v-a=10 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:29:32.526174 ciclo 1: fps=52.4 1920x1080 lim=none codificar=11.9ms buffer_video=32ms buffer_audio=39ms playout_v-a=10 ms energia+=1.85e-3 áudio=true
+2026-10-23T12:29:37.540211 ciclo 1: fps=52.9 1920x1080 lim=none codificar=11.4ms buffer_video=33ms buffer_audio=39ms playout_v-a=11 ms energia+=2.15e-3 áudio=true
+2026-10-23T12:29:43.510219 ciclo 1: fps=52.3 1920x1080 lim=none codificar=12.0ms buffer_video=31ms buffer_audio=39ms playout_v-a=12 ms energia+=2.40e-3 áudio=true cpu=180%núcleo
+2026-10-23T12:29:48.523063 ciclo 1: fps=51.4 1920x1080 lim=none codificar=12.3ms buffer_video=37ms buffer_audio=38ms playout_v-a=2 ms energia+=2.33e-3 áudio=true
+2026-10-23T12:29:53.534400 ciclo 1: fps=51.5 1920x1080 lim=none codificar=11.5ms buffer_video=38ms buffer_audio=39ms playout_v-a=3 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:29:58.546593 ciclo 1: fps=52.1 1920x1080 lim=none codificar=10.5ms buffer_video=39ms buffer_audio=39ms playout_v-a=4 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:30:03.556980 ciclo 1: fps=51.1 1920x1080 lim=none codificar=12.4ms buffer_video=36ms buffer_audio=39ms playout_v-a=8 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:30:08.566736 ciclo 1: fps=51.3 1920x1080 lim=none codificar=11.8ms buffer_video=35ms buffer_audio=39ms playout_v-a=8 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:30:13.578014 ciclo 1: fps=52.3 1920x1080 lim=none codificar=11.3ms buffer_video=35ms buffer_audio=39ms playout_v-a=9 ms energia+=2.32e-3 áudio=true
+2026-10-23T12:30:18.604581 ciclo 1: fps=51.8 1920x1080 lim=none codificar=11.2ms buffer_video=34ms buffer_audio=39ms playout_v-a=0 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:30:23.618283 ciclo 1: fps=52.2 1920x1080 lim=none codificar=12.0ms buffer_video=32ms buffer_audio=39ms playout_v-a=8 ms energia+=2.12e-3 áudio=true
+2026-10-23T12:30:28.632160 ciclo 1: fps=52.9 1920x1080 lim=none codificar=11.3ms buffer_video=33ms buffer_audio=39ms playout_v-a=10 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:30:33.645034 ciclo 1: fps=52.1 1920x1080 lim=none codificar=11.9ms buffer_video=31ms buffer_audio=39ms playout_v-a=10 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:30:38.665671 ciclo 1: fps=52.4 1920x1080 lim=none codificar=12.3ms buffer_video=29ms buffer_audio=39ms playout_v-a=6 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:30:44.537714 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.3ms buffer_video=34ms buffer_audio=39ms playout_v-a=5 ms energia+=2.46e-3 áudio=true cpu=177%núcleo
+2026-10-23T12:30:49.553349 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.7ms buffer_video=37ms buffer_audio=39ms playout_v-a=6 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:30:54.576823 ciclo 1: fps=52.1 1920x1080 lim=none codificar=10.9ms buffer_video=37ms buffer_audio=39ms playout_v-a=4 ms energia+=2.41e-3 áudio=true
+2026-10-23T12:30:59.596724 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.1ms buffer_video=36ms buffer_audio=39ms playout_v-a=9 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:31:04.610778 ciclo 1: fps=51.4 1920x1080 lim=none codificar=12.3ms buffer_video=34ms buffer_audio=39ms playout_v-a=8 ms energia+=2.38e-3 áudio=true
+2026-10-23T12:31:09.631847 ciclo 1: fps=52.6 1920x1080 lim=none codificar=11.5ms buffer_video=34ms buffer_audio=39ms playout_v-a=9 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:31:14.642349 ciclo 1: fps=52.2 1920x1080 lim=none codificar=12.3ms buffer_video=36ms buffer_audio=60ms playout_v-a=16 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:31:19.664632 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.3ms buffer_video=41ms buffer_audio=59ms playout_v-a=15 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:31:24.680750 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.8ms buffer_video=47ms buffer_audio=55ms playout_v-a=-29 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:31:29.699907 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.1ms buffer_video=54ms buffer_audio=29ms playout_v-a=-20 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:31:34.710854 ciclo 1: fps=51.6 1920x1080 lim=none codificar=11.8ms buffer_video=55ms buffer_audio=29ms playout_v-a=-20 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:31:39.740966 ciclo 1: fps=50.9 1920x1080 lim=none codificar=12.4ms buffer_video=51ms buffer_audio=30ms playout_v-a=7 ms energia+=2.30e-3 áudio=true
+2026-10-23T12:31:46.048203 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.6ms buffer_video=33ms buffer_audio=39ms playout_v-a=8 ms energia+=2.50e-3 áudio=true cpu=182%núcleo
+2026-10-23T12:31:51.062336 ciclo 1: fps=52.2 1920x1080 lim=none codificar=12.8ms buffer_video=31ms buffer_audio=41ms playout_v-a=21 ms energia+=2.47e-3 áudio=true
+2026-10-23T12:31:56.073603 ciclo 1: fps=51.7 1920x1080 lim=none codificar=13.0ms buffer_video=30ms buffer_audio=49ms playout_v-a=17 ms energia+=2.45e-3 áudio=true
+2026-10-23T12:32:01.091144 ciclo 1: fps=52.5 1920x1080 lim=none codificar=12.2ms buffer_video=31ms buffer_audio=49ms playout_v-a=16 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:32:06.101986 ciclo 1: fps=51.4 1920x1080 lim=none codificar=14.1ms buffer_video=28ms buffer_audio=48ms playout_v-a=19 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:32:11.121773 ciclo 1: fps=52.1 1920x1080 lim=none codificar=13.5ms buffer_video=28ms buffer_audio=49ms playout_v-a=21 ms energia+=2.24e-3 áudio=true
+2026-10-23T12:32:16.134669 ciclo 1: fps=50.0 1920x1080 lim=none codificar=15.3ms buffer_video=24ms buffer_audio=48ms playout_v-a=22 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:32:21.147566 ciclo 1: fps=53.5 1920x1080 lim=none codificar=12.3ms buffer_video=28ms buffer_audio=49ms playout_v-a=22 ms energia+=1.90e-3 áudio=true
+2026-10-23T12:32:26.158057 ciclo 1: fps=52.1 1920x1080 lim=none codificar=13.1ms buffer_video=26ms buffer_audio=49ms playout_v-a=21 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:32:31.173943 ciclo 1: fps=52.9 1920x1080 lim=none codificar=13.3ms buffer_video=26ms buffer_audio=46ms playout_v-a=13 ms energia+=1.91e-3 áudio=true
+2026-10-23T12:32:36.187320 ciclo 1: fps=51.9 1920x1080 lim=none codificar=14.3ms buffer_video=25ms buffer_audio=39ms playout_v-a=15 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:32:41.210612 ciclo 1: fps=52.6 1920x1080 lim=none codificar=12.4ms buffer_video=30ms buffer_audio=39ms playout_v-a=8 ms energia+=2.24e-3 áudio=true
+2026-10-23T12:32:47.515280 ciclo 1: fps=51.0 1920x1080 lim=none codificar=11.9ms buffer_video=38ms buffer_audio=39ms playout_v-a=6 ms energia+=2.36e-3 áudio=true cpu=194%núcleo
+2026-10-23T12:32:52.531935 ciclo 1: fps=50.8 1920x1080 lim=none codificar=12.3ms buffer_video=37ms buffer_audio=39ms playout_v-a=8 ms energia+=2.51e-3 áudio=true
+2026-10-23T12:32:57.545381 ciclo 1: fps=51.6 1920x1080 lim=none codificar=11.9ms buffer_video=36ms buffer_audio=39ms playout_v-a=6 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:33:02.560723 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.0ms buffer_video=35ms buffer_audio=39ms playout_v-a=6 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:33:07.571247 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.1ms buffer_video=36ms buffer_audio=39ms playout_v-a=8 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:33:12.587338 ciclo 1: fps=50.7 1920x1080 lim=none codificar=12.0ms buffer_video=38ms buffer_audio=39ms playout_v-a=6 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:33:17.602883 ciclo 1: fps=51.1 1920x1080 lim=none codificar=11.7ms buffer_video=39ms buffer_audio=39ms playout_v-a=7 ms energia+=2.18e-3 áudio=true
+2026-10-23T12:33:22.630191 ciclo 1: fps=51.5 1920x1080 lim=none codificar=12.1ms buffer_video=36ms buffer_audio=39ms playout_v-a=8 ms energia+=2.09e-3 áudio=true
+2026-10-23T12:33:27.641673 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.4ms buffer_video=37ms buffer_audio=39ms playout_v-a=7 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:33:32.672824 ciclo 1: fps=52.0 1920x1080 lim=none codificar=11.3ms buffer_video=37ms buffer_audio=39ms playout_v-a=5 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:33:37.703523 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.6ms buffer_video=32ms buffer_audio=39ms playout_v-a=3 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:33:42.726217 ciclo 1: fps=52.2 1920x1080 lim=none codificar=13.0ms buffer_video=28ms buffer_audio=39ms playout_v-a=14 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:33:49.213518 ciclo 1: fps=49.4 1920x1080 lim=none codificar=13.8ms buffer_video=27ms buffer_audio=43ms playout_v-a=44 ms energia+=2.52e-3 áudio=true cpu=183%núcleo
+2026-10-23T12:33:54.226649 ciclo 1: fps=48.9 1920x1080 lim=none codificar=13.5ms buffer_video=34ms buffer_audio=61ms playout_v-a=21 ms energia+=2.57e-3 áudio=true
+2026-10-23T12:33:59.238852 ciclo 1: fps=51.4 1920x1080 lim=none codificar=11.9ms buffer_video=46ms buffer_audio=59ms playout_v-a=6 ms energia+=2.30e-3 áudio=true
+2026-10-23T12:34:04.251619 ciclo 1: fps=53.7 1920x1080 lim=none codificar=11.0ms buffer_video=53ms buffer_audio=60ms playout_v-a=6 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:34:09.265614 ciclo 1: fps=48.5 1920x1080 lim=none codificar=15.5ms buffer_video=48ms buffer_audio=58ms playout_v-a=6 ms energia+=2.35e-3 áudio=true
+2026-10-23T12:34:14.281579 ciclo 1: fps=51.5 1920x1080 lim=none codificar=13.2ms buffer_video=52ms buffer_audio=59ms playout_v-a=8 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:34:19.295975 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.8ms buffer_video=53ms buffer_audio=59ms playout_v-a=8 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:34:24.307002 ciclo 1: fps=53.1 1920x1080 lim=none codificar=10.6ms buffer_video=53ms buffer_audio=59ms playout_v-a=6 ms energia+=2.15e-3 áudio=true
+2026-10-23T12:34:29.320811 ciclo 1: fps=52.7 1920x1080 lim=none codificar=11.0ms buffer_video=53ms buffer_audio=59ms playout_v-a=6 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:34:34.343015 ciclo 1: fps=52.9 1920x1080 lim=none codificar=10.9ms buffer_video=53ms buffer_audio=59ms playout_v-a=-2 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:34:39.352630 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.0ms buffer_video=54ms buffer_audio=55ms playout_v-a=-19 ms energia+=1.95e-3 áudio=true
+2026-10-23T12:34:44.367309 ciclo 1: fps=52.7 1920x1080 lim=none codificar=11.2ms buffer_video=53ms buffer_audio=30ms playout_v-a=-17 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:34:50.576590 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.2ms buffer_video=53ms buffer_audio=29ms playout_v-a=-19 ms energia+=2.29e-3 áudio=true cpu=179%núcleo
+2026-10-23T12:34:55.589829 ciclo 1: fps=52.0 1920x1080 lim=none codificar=12.0ms buffer_video=52ms buffer_audio=29ms playout_v-a=-19 ms energia+=2.67e-3 áudio=true
+2026-10-23T12:35:00.602180 ciclo 1: fps=51.9 1920x1080 lim=none codificar=12.4ms buffer_video=52ms buffer_audio=29ms playout_v-a=-18 ms energia+=2.27e-3 áudio=true
+2026-10-23T12:35:05.627516 ciclo 1: fps=51.8 1920x1080 lim=none codificar=12.3ms buffer_video=53ms buffer_audio=29ms playout_v-a=-26 ms energia+=2.32e-3 áudio=true
+2026-10-23T12:35:10.639462 ciclo 1: fps=51.7 1920x1080 lim=none codificar=11.9ms buffer_video=53ms buffer_audio=29ms playout_v-a=-20 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:35:15.652684 ciclo 1: fps=52.1 1920x1080 lim=none codificar=11.1ms buffer_video=54ms buffer_audio=42ms playout_v-a=4 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:35:20.662232 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.2ms buffer_video=54ms buffer_audio=42ms playout_v-a=-6 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:35:25.678823 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.1ms buffer_video=54ms buffer_audio=40ms playout_v-a=-7 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:35:30.693123 ciclo 1: fps=52.4 1920x1080 lim=none codificar=11.5ms buffer_video=52ms buffer_audio=40ms playout_v-a=-6 ms energia+=1.99e-3 áudio=true
+2026-10-23T12:35:35.707792 ciclo 1: fps=52.3 1920x1080 lim=none codificar=11.3ms buffer_video=54ms buffer_audio=40ms playout_v-a=-5 ms energia+=2.04e-3 áudio=true
+2026-10-23T12:35:40.726384 ciclo 1: fps=52.4 1920x1080 lim=none codificar=11.1ms buffer_video=55ms buffer_audio=39ms playout_v-a=-8 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:35:45.737911 ciclo 1: fps=52.7 1920x1080 lim=none codificar=10.8ms buffer_video=55ms buffer_audio=39ms playout_v-a=-5 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:35:52.086462 ciclo 1: fps=52.3 1920x1080 lim=none codificar=10.6ms buffer_video=55ms buffer_audio=40ms playout_v-a=-6 ms energia+=2.28e-3 áudio=true cpu=179%núcleo
+2026-10-23T12:35:57.118106 ciclo 1: fps=52.3 1920x1080 lim=none codificar=11.9ms buffer_video=52ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.76e-3 áudio=true
+2026-10-23T12:36:02.131488 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.1ms buffer_video=53ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.07e-3 áudio=true
+2026-10-23T12:36:07.150822 ciclo 1: fps=52.5 1920x1080 lim=none codificar=11.0ms buffer_video=55ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.37e-3 áudio=true
+2026-10-23T12:36:12.164547 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.7ms buffer_video=53ms buffer_audio=39ms playout_v-a=-8 ms energia+=2.34e-3 áudio=true
+2026-10-23T12:36:17.178814 ciclo 1: fps=52.9 1920x1080 lim=none codificar=10.5ms buffer_video=54ms buffer_audio=40ms playout_v-a=-6 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:36:22.192651 ciclo 1: fps=52.4 1920x1080 lim=none codificar=11.6ms buffer_video=53ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:36:27.213394 ciclo 1: fps=51.4 1920x1080 lim=none codificar=12.5ms buffer_video=53ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.27e-3 áudio=true
+2026-10-23T12:36:32.225360 ciclo 1: fps=52.2 1920x1080 lim=none codificar=11.2ms buffer_video=52ms buffer_audio=40ms playout_v-a=-6 ms energia+=2.06e-3 áudio=true
+2026-10-23T12:36:37.249118 ciclo 1: fps=52.6 1920x1080 lim=none codificar=11.1ms buffer_video=53ms buffer_audio=39ms playout_v-a=-5 ms energia+=1.93e-3 áudio=true
+2026-10-23T12:36:42.260787 ciclo 1: fps=53.2 1920x1080 lim=none codificar=10.4ms buffer_video=54ms buffer_audio=40ms playout_v-a=-4 ms energia+=2.00e-3 áudio=true
+2026-10-23T12:36:47.280060 ciclo 1: fps=52.8 1920x1080 lim=none codificar=10.5ms buffer_video=55ms buffer_audio=40ms playout_v-a=-5 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:36:53.814188 ciclo 1: fps=50.4 1920x1080 lim=none codificar=13.4ms buffer_video=53ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.04e-3 áudio=true cpu=169%núcleo
+2026-10-23T12:36:58.830914 ciclo 1: fps=50.4 1920x1080 lim=none codificar=14.2ms buffer_video=52ms buffer_audio=39ms playout_v-a=-4 ms energia+=3.17e-3 áudio=true
+2026-10-23T12:37:03.842306 ciclo 1: fps=50.1 1920x1080 lim=none codificar=14.1ms buffer_video=52ms buffer_audio=39ms playout_v-a=-5 ms energia+=1.95e-3 áudio=true
+2026-10-23T12:37:08.856380 ciclo 1: fps=49.7 1920x1080 lim=none codificar=15.1ms buffer_video=50ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.17e-3 áudio=true
+2026-10-23T12:37:13.875622 ciclo 1: fps=49.6 1920x1080 lim=none codificar=15.2ms buffer_video=49ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:37:18.901115 ciclo 1: fps=51.7 1920x1080 lim=none codificar=12.0ms buffer_video=53ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:37:23.914389 ciclo 1: fps=52.1 1920x1080 lim=none codificar=12.4ms buffer_video=51ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.41e-3 áudio=true
+2026-10-23T12:37:28.933648 ciclo 1: fps=51.6 1920x1080 lim=none codificar=12.1ms buffer_video=50ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.35e-3 áudio=true
+2026-10-23T12:37:33.945747 ciclo 1: fps=51.8 1920x1080 lim=none codificar=13.0ms buffer_video=50ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.23e-3 áudio=true
+2026-10-23T12:37:38.978931 ciclo 1: fps=51.2 1920x1080 lim=none codificar=12.6ms buffer_video=51ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.11e-3 áudio=true
+2026-10-23T12:37:43.994104 ciclo 1: fps=45.6 1920x1080 lim=none codificar=14.9ms buffer_video=48ms buffer_audio=38ms playout_v-a=-5 ms energia+=1.86e-3 áudio=true
+2026-10-23T12:37:49.017406 ciclo 1: fps=43.4 1920x1080 lim=none codificar=15.7ms buffer_video=47ms buffer_audio=39ms playout_v-a=-12 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:37:55.520759 ciclo 1: fps=43.4 1920x1080 lim=none codificar=15.6ms buffer_video=48ms buffer_audio=38ms playout_v-a=-7 ms energia+=1.95e-3 áudio=true cpu=187%núcleo
+2026-10-23T12:38:00.535517 ciclo 1: fps=42.9 1920x1080 lim=none codificar=16.0ms buffer_video=47ms buffer_audio=38ms playout_v-a=-7 ms energia+=3.32e-3 áudio=true
+2026-10-23T12:38:05.554627 ciclo 1: fps=45.2 1920x1080 lim=none codificar=13.5ms buffer_video=51ms buffer_audio=39ms playout_v-a=-6 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:38:10.574669 ciclo 1: fps=44.3 1920x1080 lim=none codificar=14.4ms buffer_video=50ms buffer_audio=39ms playout_v-a=-6 ms energia+=1.96e-3 áudio=true
+2026-10-23T12:38:15.589763 ciclo 1: fps=42.9 1920x1080 lim=none codificar=13.3ms buffer_video=52ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.29e-3 áudio=true
+2026-10-23T12:38:20.606741 ciclo 1: fps=39.5 1920x1080 lim=none codificar=13.3ms buffer_video=52ms buffer_audio=40ms playout_v-a=-7 ms energia+=2.52e-3 áudio=true
+2026-10-23T12:38:25.621334 ciclo 1: fps=38.9 1920x1080 lim=none codificar=13.9ms buffer_video=52ms buffer_audio=39ms playout_v-a=-8 ms energia+=2.41e-3 áudio=true
+2026-10-23T12:38:30.637039 ciclo 1: fps=38.7 1920x1080 lim=none codificar=14.1ms buffer_video=52ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.49e-3 áudio=true
+2026-10-23T12:38:35.674668 ciclo 1: fps=38.9 1920x1080 lim=none codificar=14.9ms buffer_video=51ms buffer_audio=39ms playout_v-a=-10 ms energia+=2.28e-3 áudio=true
+2026-10-23T12:38:40.734818 ciclo 1: fps=38.4 1920x1080 lim=none codificar=15.5ms buffer_video=49ms buffer_audio=39ms playout_v-a=-13 ms energia+=2.23e-3 áudio=true
+2026-10-23T12:38:45.747875 ciclo 1: fps=39.9 1920x1080 lim=none codificar=12.0ms buffer_video=54ms buffer_audio=39ms playout_v-a=-13 ms energia+=2.02e-3 áudio=true
+2026-10-23T12:38:50.761608 ciclo 1: fps=39.3 1920x1080 lim=none codificar=12.7ms buffer_video=53ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.03e-3 áudio=true
+2026-10-23T12:38:56.759060 ciclo 1: fps=42.1 1920x1080 lim=none codificar=12.9ms buffer_video=52ms buffer_audio=39ms playout_v-a=-5 ms energia+=1.94e-3 áudio=true cpu=161%núcleo
+2026-10-23T12:39:01.794168 ciclo 1: fps=45.2 1920x1080 lim=none codificar=13.9ms buffer_video=51ms buffer_audio=39ms playout_v-a=-8 ms energia+=2.82e-3 áudio=true
+2026-10-23T12:39:06.804346 ciclo 1: fps=40.1 1920x1080 lim=none codificar=11.4ms buffer_video=54ms buffer_audio=39ms playout_v-a=-6 ms energia+=1.95e-3 áudio=true
+2026-10-23T12:39:11.820842 ciclo 1: fps=39.7 1920x1080 lim=none codificar=12.0ms buffer_video=52ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.01e-3 áudio=true
+2026-10-23T12:39:16.831127 ciclo 1: fps=40.3 1920x1080 lim=none codificar=11.4ms buffer_video=53ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.13e-3 áudio=true
+2026-10-23T12:39:21.851731 ciclo 1: fps=39.5 1920x1080 lim=none codificar=13.1ms buffer_video=50ms buffer_audio=39ms playout_v-a=-4 ms energia+=2.50e-3 áudio=true
+2026-10-23T12:39:26.864118 ciclo 1: fps=43.9 1920x1080 lim=none codificar=12.2ms buffer_video=51ms buffer_audio=39ms playout_v-a=-6 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:39:31.875790 ciclo 1: fps=45.1 1920x1080 lim=none codificar=13.7ms buffer_video=51ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.38e-3 áudio=true
+2026-10-23T12:39:36.887730 ciclo 1: fps=46.1 1920x1080 lim=none codificar=12.9ms buffer_video=53ms buffer_audio=39ms playout_v-a=-7 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:39:41.905153 ciclo 1: fps=45.5 1920x1080 lim=none codificar=13.2ms buffer_video=52ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.23e-3 áudio=true
+2026-10-23T12:39:46.915530 ciclo 1: fps=45.7 1920x1080 lim=none codificar=13.1ms buffer_video=46ms buffer_audio=39ms playout_v-a=17 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:39:51.929032 ciclo 1: fps=43.3 1920x1080 lim=none codificar=12.4ms buffer_video=29ms buffer_audio=39ms playout_v-a=18 ms energia+=1.90e-3 áudio=true
+2026-10-23T12:39:57.966990 ciclo 1: fps=39.9 1920x1080 lim=none codificar=11.9ms buffer_video=35ms buffer_audio=39ms playout_v-a=4 ms energia+=2.02e-3 áudio=true cpu=172%núcleo
+2026-10-23T12:40:02.979563 ciclo 1: fps=39.9 1920x1080 lim=none codificar=13.5ms buffer_video=43ms buffer_audio=39ms playout_v-a=-4 ms energia+=2.77e-3 áudio=true
+2026-10-23T12:40:08.002732 ciclo 1: fps=40.0 1920x1080 lim=none codificar=12.3ms buffer_video=45ms buffer_audio=39ms playout_v-a=4 ms energia+=1.97e-3 áudio=true
+2026-10-23T12:40:13.022141 ciclo 1: fps=40.2 1920x1080 lim=none codificar=12.8ms buffer_video=44ms buffer_audio=39ms playout_v-a=6 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:40:18.032669 ciclo 1: fps=44.3 1920x1080 lim=none codificar=12.7ms buffer_video=43ms buffer_audio=39ms playout_v-a=4 ms energia+=2.29e-3 áudio=true
+2026-10-23T12:40:23.061365 ciclo 1: fps=45.0 1920x1080 lim=none codificar=11.6ms buffer_video=44ms buffer_audio=39ms playout_v-a=3 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:40:28.076330 ciclo 1: fps=45.4 1920x1080 lim=none codificar=11.7ms buffer_video=44ms buffer_audio=39ms playout_v-a=4 ms energia+=2.46e-3 áudio=true
+2026-10-23T12:40:33.097489 ciclo 1: fps=45.4 1920x1080 lim=none codificar=12.0ms buffer_video=42ms buffer_audio=39ms playout_v-a=3 ms energia+=2.39e-3 áudio=true
+2026-10-23T12:40:38.112568 ciclo 1: fps=45.0 1920x1080 lim=none codificar=11.9ms buffer_video=43ms buffer_audio=39ms playout_v-a=4 ms energia+=2.19e-3 áudio=true
+2026-10-23T12:40:43.129276 ciclo 1: fps=42.7 1920x1080 lim=none codificar=12.5ms buffer_video=43ms buffer_audio=39ms playout_v-a=3 ms energia+=2.16e-3 áudio=true
+2026-10-23T12:40:48.139683 ciclo 1: fps=39.5 1920x1080 lim=none codificar=13.5ms buffer_video=43ms buffer_audio=39ms playout_v-a=-2 ms energia+=2.03e-3 áudio=true
+2026-10-23T12:40:53.154720 ciclo 1: fps=39.5 1920x1080 lim=none codificar=13.6ms buffer_video=43ms buffer_audio=39ms playout_v-a=3 ms energia+=1.89e-3 áudio=true
+2026-10-23T12:40:58.874450 ciclo 1: fps=39.8 1920x1080 lim=none codificar=13.3ms buffer_video=43ms buffer_audio=39ms playout_v-a=4 ms energia+=2.01e-3 áudio=true cpu=164%núcleo
+2026-10-23T12:41:03.887721 ciclo 1: fps=40.1 1920x1080 lim=none codificar=13.3ms buffer_video=43ms buffer_audio=39ms playout_v-a=3 ms energia+=2.65e-3 áudio=true
+2026-10-23T12:41:08.898383 ciclo 1: fps=40.5 1920x1080 lim=none codificar=12.7ms buffer_video=44ms buffer_audio=39ms playout_v-a=3 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:41:13.916672 ciclo 1: fps=40.1 1920x1080 lim=none codificar=13.1ms buffer_video=43ms buffer_audio=39ms playout_v-a=-5 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:41:18.930035 ciclo 1: fps=39.3 1920x1080 lim=none codificar=14.6ms buffer_video=41ms buffer_audio=39ms playout_v-a=4 ms energia+=2.48e-3 áudio=true
+2026-10-23T12:41:23.948033 ciclo 1: fps=38.1 1920x1080 lim=none codificar=17.0ms buffer_video=38ms buffer_audio=38ms playout_v-a=-5 ms energia+=2.35e-3 áudio=true
+2026-10-23T12:41:28.963459 ciclo 1: fps=40.5 1920x1080 lim=none codificar=12.4ms buffer_video=43ms buffer_audio=39ms playout_v-a=4 ms energia+=2.44e-3 áudio=true
+2026-10-23T12:41:34.005613 ciclo 1: fps=40.1 1920x1080 lim=none codificar=13.4ms buffer_video=42ms buffer_audio=39ms playout_v-a=-3 ms energia+=2.25e-3 áudio=true
+2026-10-23T12:41:39.029905 ciclo 1: fps=41.8 1920x1080 lim=none codificar=13.1ms buffer_video=42ms buffer_audio=39ms playout_v-a=4 ms energia+=2.20e-3 áudio=true
+2026-10-23T12:41:44.094064 ciclo 1: fps=42.9 1920x1080 lim=none codificar=15.1ms buffer_video=40ms buffer_audio=39ms playout_v-a=1 ms energia+=2.10e-3 áudio=true
+2026-10-23T12:41:49.123010 ciclo 1: fps=39.2 1920x1080 lim=none codificar=16.2ms buffer_video=39ms buffer_audio=39ms playout_v-a=4 ms energia+=1.98e-3 áudio=true
+2026-10-23T12:41:54.168148 ciclo 1: fps=37.4 1920x1080 lim=none codificar=18.1ms buffer_video=37ms buffer_audio=38ms playout_v-a=1 ms energia+=2.05e-3 áudio=true
+2026-10-23T12:42:00.917895 ciclo 1: fps=37.8 1920x1080 lim=none codificar=18.3ms buffer_video=37ms buffer_audio=38ms playout_v-a=2 ms energia+=1.93e-3 áudio=true cpu=176%núcleo
+2026-10-23T12:42:05.952706 ciclo 1: fps=37.2 1920x1080 lim=none codificar=18.3ms buffer_video=36ms buffer_audio=40ms playout_v-a=20 ms energia+=3.47e-3 áudio=true
+2026-10-23T12:42:10.965919 ciclo 1: fps=38.3 1920x1080 lim=none codificar=16.7ms buffer_video=39ms buffer_audio=59ms playout_v-a=19 ms energia+=2.05e-3 áudio=true
+2026-10-23T12:42:16.075378 ciclo 1: fps=38.0 1920x1080 lim=none codificar=17.6ms buffer_video=37ms buffer_audio=58ms playout_v-a=19 ms energia+=1.99e-3 áudio=true
+2026-10-23T12:42:21.112144 ciclo 1: fps=38.1 1920x1080 lim=none codificar=18.9ms buffer_video=35ms buffer_audio=58ms playout_v-a=20 ms energia+=2.02e-3 áudio=true
+2026-10-23T12:42:26.125953 ciclo 1: fps=39.3 1920x1080 lim=none codificar=16.1ms buffer_video=41ms buffer_audio=59ms playout_v-a=21 ms energia+=2.51e-3 áudio=true
+2026-10-23T12:42:31.137352 ciclo 1: fps=39.1 1920x1080 lim=none codificar=15.9ms buffer_video=41ms buffer_audio=59ms playout_v-a=20 ms energia+=2.40e-3 áudio=true
+2026-10-23T12:42:36.158184 ciclo 1: fps=39.7 1920x1080 lim=none codificar=14.2ms buffer_video=53ms buffer_audio=59ms playout_v-a=7 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:42:41.167272 ciclo 1: fps=45.0 1920x1080 lim=none codificar=13.7ms buffer_video=58ms buffer_audio=59ms playout_v-a=4 ms energia+=2.42e-3 áudio=true
+2026-10-23T12:42:46.187216 ciclo 1: fps=39.3 1920x1080 lim=none codificar=12.9ms buffer_video=60ms buffer_audio=59ms playout_v-a=6 ms energia+=2.26e-3 áudio=true
+2026-10-23T12:42:51.199253 ciclo 1: fps=37.9 1920x1080 lim=none codificar=14.3ms buffer_video=58ms buffer_audio=59ms playout_v-a=7 ms energia+=2.22e-3 áudio=true
+2026-10-23T12:42:56.213603 ciclo 1: fps=37.7 1920x1080 lim=none codificar=14.5ms buffer_video=57ms buffer_audio=59ms playout_v-a=5 ms energia+=1.92e-3 áudio=true
+2026-10-23T12:43:02.537749 ciclo 1: fps=36.9 1920x1080 lim=none codificar=16.0ms buffer_video=55ms buffer_audio=58ms playout_v-a=7 ms energia+=2.00e-3 áudio=true cpu=165%núcleo
+2026-10-23T12:43:07.551406 ciclo 1: fps=36.7 1920x1080 lim=none codificar=17.3ms buffer_video=58ms buffer_audio=87ms playout_v-a=-2 ms energia+=2.95e-3 áudio=true
+2026-10-23T12:43:09.860293 ciclo 1: fps=38.1 1920x1080 lim=none codificar=15.8ms buffer_video=72ms buffer_audio=59ms playout_v-a=-16 ms energia+=9.27e-4 áudio=true
+2026-10-23T12:43:09.868892 ciclo 1: quadros=89095 energia=0.7874507773914605
+2026-10-23T12:43:09.885029 ciclo 1: parar laço
+2026-10-23T12:43:10.057150 ciclo 1: parar captura
+2026-10-23T12:43:10.078262 ciclo 1: ok
+2026-10-23T12:43:10.080279 FIM ok

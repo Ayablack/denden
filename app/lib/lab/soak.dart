@@ -126,6 +126,7 @@ Future<Never> runSoak(
         sourceHeight: c.mode == SoakMode.janela ? null : height,
       );
       mark('ciclo $i: transmitindo');
+      final metrics = _Metrics();
       // Em blocos de 5 s, para ver o áudio parar se a janela fechar.
       final end = DateTime.now().add(c.hold);
       while (DateTime.now().isBefore(end)) {
@@ -134,16 +135,7 @@ Future<Never> runSoak(
           left < const Duration(seconds: 5) ? left : const Duration(seconds: 5),
         );
         if (c.hold > const Duration(seconds: 10)) {
-          final rs = await session.receiver.getStats();
-          final e = rs
-              .where(
-                (r) => r.type == 'inbound-rtp' && r.values['kind'] == 'audio',
-              )
-              .fold<num>(
-                0,
-                (a, r) => a + ((r.values['totalAudioEnergy'] as num?) ?? 0),
-              );
-          mark('ciclo $i: energia acumulada=$e áudio=${hybrid.audioActive}');
+          await metrics.sample(session, hybrid.audioActive, mark, i);
         }
       }
       final rx = await session.receiver.getStats();
@@ -170,4 +162,111 @@ Future<Never> runSoak(
     await hybrid.stop();
   }
   exit(code);
+}
+
+/// Medidas periódicas da sessão longa: fps, resolução, limitação, áudio,
+/// atraso de reprodução de áudio e de vídeo (indício de sincronia) e CPU.
+class _Metrics {
+  List<StatsReport>? _tx;
+  List<StatsReport>? _rx;
+  DateTime? _at;
+  double? _cpuMs;
+  DateTime? _cpuAt;
+
+  static num _sum(List<StatsReport> rs, String type, String kind, String f) =>
+      rs
+          .where((r) => r.type == type && r.values['kind'] == kind)
+          .fold<num>(0, (a, r) => a + ((r.values[f] as num?) ?? 0));
+
+  static StatsReport? _first(List<StatsReport> rs, String type, String kind) =>
+      rs.where((r) => r.type == type && r.values['kind'] == kind).firstOrNull;
+
+  Future<void> sample(
+    LoopbackSession session,
+    bool audioActive,
+    void Function(String) mark,
+    int cycle,
+  ) async {
+    final now = DateTime.now();
+    final tx = await session.sender.getStats();
+    final rx = await session.receiver.getStats();
+    final prevTx = _tx;
+    final prevRx = _rx;
+    final prevAt = _at;
+    _tx = tx;
+    _rx = rx;
+    _at = now;
+    if (prevTx == null || prevRx == null || prevAt == null) return;
+    final secs = now.difference(prevAt).inMilliseconds / 1000;
+    double delta(
+      List<StatsReport> a,
+      List<StatsReport> b,
+      String t,
+      String k,
+      String f,
+    ) => (_sum(b, t, k, f) - _sum(a, t, k, f)).toDouble();
+    final frames = delta(prevTx, tx, 'outbound-rtp', 'video', 'framesEncoded');
+    double bufferMs(String kind) {
+      final n = delta(
+        prevRx,
+        rx,
+        'inbound-rtp',
+        kind,
+        'jitterBufferEmittedCount',
+      );
+      return n == 0
+          ? 0
+          : delta(prevRx, rx, 'inbound-rtp', kind, 'jitterBufferDelay') *
+                1000 /
+                n;
+    }
+
+    final v = _first(tx, 'outbound-rtp', 'video')?.values ?? const {};
+    final encodeMs = frames == 0
+        ? 0
+        : delta(prevTx, tx, 'outbound-rtp', 'video', 'totalEncodeTime') *
+              1000 /
+              frames;
+    final va = _first(
+      rx,
+      'inbound-rtp',
+      'video',
+    )?.values['estimatedPlayoutTimestamp'];
+    final aa = _first(
+      rx,
+      'inbound-rtp',
+      'audio',
+    )?.values['estimatedPlayoutTimestamp'];
+    final playout = va is num && aa is num
+        ? '${(va - aa).toStringAsFixed(0)} ms'
+        : '—';
+    var cpu = '';
+    if (_cpuAt == null ||
+        now.difference(_cpuAt!) >= const Duration(seconds: 60)) {
+      final r = await Process.run('powershell', [
+        '-NoProfile',
+        '-c',
+        '(Get-Process -Id $pid).TotalProcessorTime.TotalMilliseconds',
+      ]);
+      final ms = double.tryParse(
+        (r.stdout as String).trim().replaceAll(',', '.'),
+      );
+      if (ms != null && _cpuMs != null && _cpuAt != null) {
+        final wall = now.difference(_cpuAt!).inMilliseconds;
+        cpu = ' cpu=${((ms - _cpuMs!) / wall * 100).toStringAsFixed(0)}%núcleo';
+      }
+      _cpuMs = ms;
+      _cpuAt = now;
+    }
+    mark(
+      'ciclo $cycle: fps=${(frames / secs).toStringAsFixed(1)} '
+      '${v['frameWidth']}x${v['frameHeight']} lim=${v['qualityLimitationReason']} '
+      'codificar=${encodeMs.toStringAsFixed(1)}ms '
+      'buffer_video=${bufferMs('video').toStringAsFixed(0)}ms '
+      'buffer_audio=${bufferMs('audio').toStringAsFixed(0)}ms '
+      'playout_v-a=$playout '
+      'energia+=${delta(prevRx, rx, 'inbound-rtp', 'audio', 'totalAudioEnergy').toStringAsExponential(2)} '
+      'áudio=$audioActive$cpu',
+    );
+  }
 }

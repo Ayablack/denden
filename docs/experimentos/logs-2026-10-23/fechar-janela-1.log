@@ -1,0 +1,19 @@
+2026-10-23T11:57:01.829697 INÍCIO modo=hibrido perfil=high ciclos=2 seg=12 pid=33464
+2026-10-23T11:57:02.277886 ciclo 1: iniciar captura
+2026-10-23T11:57:02.854599 ciclo 1: iniciar laço
+2026-10-23T11:57:03.632668 ciclo 1: transmitindo
+2026-10-23T11:57:06.1462518-03:00 TESTE: fechando a janela do jogo
+2026-10-23T11:57:07.260984 AVISO janela_fechou: A janela "DenDen Jogo Externo" fechou. O áudio foi interrompido para não capturar o som do computador inteiro.
+2026-10-23T11:57:08.656359 ciclo 1: energia acumulada=0.030400422868982577 áudio=false
+2026-10-23T11:57:13.666803 ciclo 1: energia acumulada=0.030400422868982577 áudio=false
+2026-10-23T11:57:15.651288 ciclo 1: energia acumulada=0.030400422868982577 áudio=false
+2026-10-23T11:57:15.675475 ciclo 1: quadros=281 energia=0.030400422868982577
+2026-10-23T11:57:15.680001 ciclo 1: parar laço
+2026-10-23T11:57:15.984598 ciclo 1: parar captura
+2026-10-23T11:57:16.049056 ciclo 1: ok
+2026-10-23T11:57:16.053592 ciclo 2: iniciar captura
+2026-10-23T11:57:16.153617 ERRO CaptureError: CaptureError(janela_inexistente): A janela "DenDen Jogo Externo" não existe mais. Abra o jogo e escolha a janela de novo.
+  em #0      ensureWindowExists (package:denden/capture/capture_service.dart:70)
+  em #1      HybridCapture.start (package:denden/capture/hybrid_capture.dart:67)
+  em #2      runSoak (package:denden/lab/soak.dart:115)
+2026-10-23T11:57:16.4017771-03:00 TESTE: saída 0x00000002

@@ -1,0 +1,41 @@
+rodada 1: capture_windows_test.dart  -> passou
+rodada 1: loopback_windows_test.dart Alta -> passou
+rodada 1: loopback_windows_test.dart Média -> passou
+rodada 1: lab_page_windows_test.dart  -> FALHOU
+rodada 2: capture_windows_test.dart  -> passou
+rodada 2: loopback_windows_test.dart Alta -> FALHOU
+rodada 2: loopback_windows_test.dart Média -> passou
+rodada 2: lab_page_windows_test.dart  -> passou
+rodada 3: capture_windows_test.dart  -> passou
+rodada 3: loopback_windows_test.dart Alta -> passou
+rodada 3: loopback_windows_test.dart Média -> passou
+rodada 3: lab_page_windows_test.dart  -> passou
+rodada 4: capture_windows_test.dart  -> passou
+rodada 4: loopback_windows_test.dart Alta -> passou
+rodada 4: loopback_windows_test.dart Média -> passou
+rodada 4: lab_page_windows_test.dart  -> FALHOU
+rodada 5: capture_windows_test.dart  -> passou
+rodada 5: loopback_windows_test.dart Alta -> passou
+rodada 5: loopback_windows_test.dart Média -> passou
+rodada 5: lab_page_windows_test.dart  -> passou
+rodada 6: capture_windows_test.dart  -> passou
+rodada 6: loopback_windows_test.dart Alta -> passou
+rodada 6: loopback_windows_test.dart Média -> passou
+rodada 6: lab_page_windows_test.dart  -> passou
+rodada 7: capture_windows_test.dart  -> passou
+rodada 7: loopback_windows_test.dart Alta -> passou
+rodada 7: loopback_windows_test.dart Média -> passou
+rodada 7: lab_page_windows_test.dart  -> FALHOU
+rodada 8: capture_windows_test.dart  -> passou
+rodada 8: loopback_windows_test.dart Alta -> FALHOU
+rodada 8: loopback_windows_test.dart Média -> FALHOU
+rodada 8: lab_page_windows_test.dart  -> passou
+rodada 9: capture_windows_test.dart  -> passou
+rodada 9: loopback_windows_test.dart Alta -> passou
+rodada 9: loopback_windows_test.dart Média -> passou
+rodada 9: lab_page_windows_test.dart  -> passou
+rodada 10: capture_windows_test.dart  -> passou
+rodada 10: loopback_windows_test.dart Alta -> passou
+rodada 10: loopback_windows_test.dart Média -> passou
+rodada 10: lab_page_windows_test.dart  -> passou
+total: 34/40 passaram

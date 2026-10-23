@@ -65,6 +65,10 @@ Um vigia pegou o `denden.exe` assim que ele abriu e registrou o código de saíd
 
 Nos dois casos de queda o primeiro teste terminou e o segundo estava começando. Isso aponta para **parar uma sessão e iniciar outra no mesmo processo**, com o ritmo da ferramenta.
 
+## Atualização (correções e validação)
+
+Ver [2026-10-23-estabilidade-resultados.md](2026-10-23-estabilidade-resultados.md): a correção 1 não resolveu a queda sob o `flutter test` (3/10); app normal sem quedas em 100 ciclos + 30 min.
+
 ## Problema confirmado à parte (não é queda)
 
 - **Janela fechada:** pelo código do plugin (`loopback_capturer_factory.cc`), se a janela não existe mais, o áudio volta para o **sistema todo** e pega o Discord. Isso precisa de proteção no DenDen, seja qual for a causa das quedas.

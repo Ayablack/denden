@@ -1,0 +1,20 @@
+2026-10-23T11:55:53.103794 INÍCIO modo=hibrido perfil=high ciclos=1 seg=40 pid=33088
+2026-10-23T11:55:53.580448 ciclo 1: iniciar captura
+2026-10-23T11:55:54.080604 ciclo 1: iniciar laço
+2026-10-23T11:55:55.023412 ciclo 1: transmitindo
+2026-10-23T11:56:00.046697 ciclo 1: energia acumulada=0.01714733883817756 áudio=true
+2026-10-23T11:56:05.239571 ciclo 1: energia acumulada=0.019500794042402583 áudio=true
+2026-10-23T11:56:08.0924762-03:00 TESTE: fechando a janela do jogo
+2026-10-23T11:56:08.453346 AVISO janela_fechou: A janela "DenDen Jogo Externo" fechou. O áudio foi interrompido para não capturar o som do computador inteiro.
+2026-10-23T11:56:10.251496 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:15.264496 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:20.274114 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:25.293986 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:30.375334 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:35.045156 ciclo 1: energia acumulada=0.021874452896668253 áudio=false
+2026-10-23T11:56:35.109069 ciclo 1: quadros=974 energia=0.021874452896668253
+2026-10-23T11:56:35.112595 ciclo 1: parar laço
+2026-10-23T11:56:35.360728 ciclo 1: parar captura
+2026-10-23T11:56:35.377301 ciclo 1: ok
+2026-10-23T11:56:35.382819 FIM ok
+2026-10-23T11:56:36.0594400-03:00 TESTE: saída 0x00000000

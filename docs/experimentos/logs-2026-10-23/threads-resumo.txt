@@ -1,0 +1,85 @@
+   0  Id: 83a8.1844 Suspend: 0 Teb: 00000062`ff472000 Unfrozen
+   1  Id: 83a8.d94 Suspend: 0 Teb: 00000062`ff474000 Unfrozen
+   2  Id: 83a8.39f0 Suspend: 0 Teb: 00000062`ff476000 Unfrozen
+   3  Id: 83a8.8aac Suspend: 0 Teb: 00000062`ff478000 Unfrozen
+   4  Id: 83a8.5158 Suspend: 0 Teb: 00000062`ff47c000 Unfrozen
+   5  Id: 83a8.5c94 Suspend: 0 Teb: 00000062`ff482000 Unfrozen
+   6  Id: 83a8.3ddc Suspend: 0 Teb: 00000062`ff484000 Unfrozen
+   7  Id: 83a8.2250 Suspend: 0 Teb: 00000062`ff486000 Unfrozen
+   8  Id: 83a8.a38 Suspend: 0 Teb: 00000062`ff488000 Unfrozen
+   9  Id: 83a8.4fdc Suspend: 0 Teb: 00000062`ff48a000 Unfrozen
+  10  Id: 83a8.93f4 Suspend: 0 Teb: 00000062`ff48c000 Unfrozen
+  11  Id: 83a8.1f40 Suspend: 0 Teb: 00000062`ff48e000 Unfrozen
+  12  Id: 83a8.3f48 Suspend: 0 Teb: 00000062`ff490000 Unfrozen
+  13  Id: 83a8.49b8 Suspend: 0 Teb: 00000062`ff492000 Unfrozen
+  14  Id: 83a8.4fe8 Suspend: 0 Teb: 00000062`ff494000 Unfrozen
+  15  Id: 83a8.50ec Suspend: 0 Teb: 00000062`ff496000 Unfrozen
+  16  Id: 83a8.1c40 Suspend: 0 Teb: 00000062`ff498000 Unfrozen "DManip Delegate Thread"
+  17  Id: 83a8.83d4 Suspend: 0 Teb: 00000062`ff49a000 Unfrozen
+  18  Id: 83a8.652c Suspend: 0 Teb: 00000062`ff49c000 Unfrozen
+  19  Id: 83a8.4dbc Suspend: 0 Teb: 00000062`ff49e000 Unfrozen
+  20  Id: 83a8.4540 Suspend: 0 Teb: 00000062`ff4a0000 Unfrozen
+  21  Id: 83a8.3af4 Suspend: 0 Teb: 00000062`ff4a2000 Unfrozen
+  22  Id: 83a8.937c Suspend: 0 Teb: 00000062`ff4a4000 Unfrozen
+  23  Id: 83a8.5844 Suspend: 0 Teb: 00000062`ff4a6000 Unfrozen
+  24  Id: 83a8.6e4c Suspend: 0 Teb: 00000062`ff4aa000 Unfrozen
+  25  Id: 83a8.5ff8 Suspend: 0 Teb: 00000062`ff4ac000 Unfrozen
+  26  Id: 83a8.6a58 Suspend: 0 Teb: 00000062`ff4ae000 Unfrozen
+  27  Id: 83a8.8fec Suspend: 0 Teb: 00000062`ff4b0000 Unfrozen
+  28  Id: 83a8.815c Suspend: 0 Teb: 00000062`ff4b2000 Unfrozen
+  29  Id: 83a8.8e08 Suspend: 0 Teb: 00000062`ff4b4000 Unfrozen
+  30  Id: 83a8.69d4 Suspend: 0 Teb: 00000062`ff4b6000 Unfrozen
+  31  Id: 83a8.5288 Suspend: 0 Teb: 00000062`ff4b8000 Unfrozen
+  32  Id: 83a8.8204 Suspend: 0 Teb: 00000062`ff4ba000 Unfrozen
+  33  Id: 83a8.3388 Suspend: 0 Teb: 00000062`ff4bc000 Unfrozen
+  34  Id: 83a8.1e0 Suspend: 0 Teb: 00000062`ff4be000 Unfrozen
+  35  Id: 83a8.5d98 Suspend: 0 Teb: 00000062`ff4c0000 Unfrozen
+  36  Id: 83a8.5334 Suspend: 0 Teb: 00000062`ff4c2000 Unfrozen
+  37  Id: 83a8.4150 Suspend: 0 Teb: 00000062`ff4c6000 Unfrozen
+  38  Id: 83a8.23f4 Suspend: 0 Teb: 00000062`ff4cc000 Unfrozen
+  39  Id: 83a8.8804 Suspend: 0 Teb: 00000062`ff4ce000 Unfrozen
+  40  Id: 83a8.7434 Suspend: 0 Teb: 00000062`ff4d0000 Unfrozen
+  41  Id: 83a8.8de4 Suspend: 0 Teb: 00000062`ff4d2000 Unfrozen
+  42  Id: 83a8.7d34 Suspend: 0 Teb: 00000062`ff4d4000 Unfrozen
+  43  Id: 83a8.9264 Suspend: 0 Teb: 00000062`ff4d6000 Unfrozen
+  44  Id: 83a8.91bc Suspend: 0 Teb: 00000062`ff4d8000 Unfrozen
+  45  Id: 83a8.32bc Suspend: 0 Teb: 00000062`ff4da000 Unfrozen
+# 46  Id: 83a8.3db4 Suspend: 0 Teb: 00000062`ff4dc000 Unfrozen "worker_thread"
+  47  Id: 83a8.5c5c Suspend: 0 Teb: 00000062`ff4de000 Unfrozen "signaling_thread"
+  48  Id: 83a8.904c Suspend: 0 Teb: 00000062`ff4e0000 Unfrozen "network_thread"
+  49  Id: 83a8.8528 Suspend: 0 Teb: 00000062`ff4e2000 Unfrozen "AudioDeviceBufferTimer"
+  50  Id: 83a8.3a48 Suspend: 0 Teb: 00000062`ff4e8000 Unfrozen
+  51  Id: 83a8.4a64 Suspend: 0 Teb: 00000062`ff4ea000 Unfrozen
+  52  Id: 83a8.7f2c Suspend: 0 Teb: 00000062`ff4fe000 Unfrozen "Thread 0x00000220EF119AA0"
+  53  Id: 83a8.711c Suspend: 0 Teb: 00000062`ff500000 Unfrozen
+  54  Id: 83a8.2918 Suspend: 0 Teb: 00000062`ff502000 Unfrozen
+  55  Id: 83a8.5f90 Suspend: 0 Teb: 00000062`ff504000 Unfrozen
+  56  Id: 83a8.9378 Suspend: 0 Teb: 00000062`ff506000 Unfrozen
+  57  Id: 83a8.6bcc Suspend: 0 Teb: 00000062`ff508000 Unfrozen
+  58  Id: 83a8.7084 Suspend: 0 Teb: 00000062`ff50a000 Unfrozen
+  59  Id: 83a8.62fc Suspend: 0 Teb: 00000062`ff50c000 Unfrozen
+  60  Id: 83a8.8504 Suspend: 0 Teb: 00000062`ff50e000 Unfrozen
+  61  Id: 83a8.7e1c Suspend: 0 Teb: 00000062`ff510000 Unfrozen
+  62  Id: 83a8.8734 Suspend: 0 Teb: 00000062`ff512000 Unfrozen
+  63  Id: 83a8.47d8 Suspend: 0 Teb: 00000062`ff514000 Unfrozen
+  64  Id: 83a8.3bec Suspend: 0 Teb: 00000062`ff516000 Unfrozen "Thread 0x00000220EF1185A0"
+  65  Id: 83a8.d40 Suspend: 0 Teb: 00000062`ff52a000 Unfrozen
+  66  Id: 83a8.65d8 Suspend: 0 Teb: 00000062`ff532000 Unfrozen
+  67  Id: 83a8.4724 Suspend: 0 Teb: 00000062`ff550000 Unfrozen
+  68  Id: 83a8.852c Suspend: 0 Teb: 00000062`ff560000 Unfrozen
+  69  Id: 83a8.732c Suspend: 0 Teb: 00000062`ff564000 Unfrozen
+  70  Id: 83a8.5010 Suspend: 0 Teb: 00000062`ff568000 Unfrozen
+  71  Id: 83a8.5c90 Suspend: 0 Teb: 00000062`ff56a000 Unfrozen
+02 00000062`8150fbf0 00007ff9`dcd3393e     flutter_webrtc_plugin!flutter_webrtc_plugin::ApplicationLoopbackCapturer::CaptureThread+0x1c3 [C:\Projetos\denden\app\windows\flutter\ephemeral\.plugin_symlinks\flutter_webrtc\windows\application_loopback_capturer.cc @ 464]
+03 00000062`8150fe00 00007ff9`dcd326cb     flutter_webrtc_plugin!std::invoke<void (__cdecl flutter_webrtc_plugin::ApplicationLoopbackCapturer::*)(void),flutter_webrtc_plugin::ApplicationLoopbackCapturer *>+0x1e [C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\type_traits @ 1817]
+04 00000062`8150fe30 00007ff9`dcab2ec5     flutter_webrtc_plugin!std::thread::_Invoke<std::tuple<void (__cdecl flutter_webrtc_plugin::ApplicationLoopbackCapturer::*)(void),flutter_webrtc_plugin::ApplicationLoopbackCapturer *>,0,1>+0x7b [C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\thread @ 61]
+  72  Id: 83a8.1b5c Suspend: 0 Teb: 00000062`ff56c000 Unfrozen
+02 00000062`823ffa50 00007ff9`dcd3393e     flutter_webrtc_plugin!flutter_webrtc_plugin::ApplicationLoopbackCapturer::FeederThread+0x222 [C:\Projetos\denden\app\windows\flutter\ephemeral\.plugin_symlinks\flutter_webrtc\windows\application_loopback_capturer.cc @ 603]
+03 00000062`823ffd50 00007ff9`dcd326cb     flutter_webrtc_plugin!std::invoke<void (__cdecl flutter_webrtc_plugin::ApplicationLoopbackCapturer::*)(void),flutter_webrtc_plugin::ApplicationLoopbackCapturer *>+0x1e [C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\type_traits @ 1817]
+04 00000062`823ffd80 00007ff9`dcab2ec5     flutter_webrtc_plugin!std::thread::_Invoke<std::tuple<void (__cdecl flutter_webrtc_plugin::ApplicationLoopbackCapturer::*)(void),flutter_webrtc_plugin::ApplicationLoopbackCapturer *>,0,1>+0x7b [C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\thread @ 61]
+  73  Id: 83a8.8cbc Suspend: 0 Teb: 00000062`ff56e000 Unfrozen "Thread 0x00000220FC818E30"
+  74  Id: 83a8.702c Suspend: 0 Teb: 00000062`ff570000 Unfrozen "rtc-low-prio"
+  75  Id: 83a8.87fc Suspend: 0 Teb: 00000062`ff576000 Unfrozen "AudioEncoderQueue"
+  76  Id: 83a8.85f8 Suspend: 0 Teb: 00000062`ff57e000 Unfrozen "webrtc_core_audio_render_thread"
+  77  Id: 83a8.7910 Suspend: 0 Teb: 00000062`ff580000 Unfrozen "VideoDecoderQueue"
+  78  Id: 83a8.88f4 Suspend: 0 Teb: 00000062`ff582000 Unfrozen "IncomingVideoStreamQueue"
