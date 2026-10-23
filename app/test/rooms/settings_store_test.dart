@@ -34,7 +34,7 @@ void main() {
     final s = AppSettings(
       workerUrl: Uri.parse('https://x'),
       key: 'segredo',
-      adminKey: 'adm',
+      adminKey: 'chave-admin-xyz',
     );
     expect(s.toString(), isNot(contains('segredo')));
     expect(s.toString(), isNot(contains('chave-admin-xyz')));
