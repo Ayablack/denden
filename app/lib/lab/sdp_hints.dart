@@ -3,10 +3,19 @@
 /// codificação. Medido na Fase A: o alvo travava em 2,5 Mbps com 4,7 Mbps
 /// disponíveis.
 ///
-/// Só no VP8: é o codec usado hoje, e o único testado com o parâmetro.
+/// `x-google-start-bitrate` faz o estimador de banda começar na metade do
+/// teto, em vez de ~300 kbps: na Fase A a imagem ficava borrada por ~25 s.
+/// `x-google-min-bitrate` (um décimo do teto) evita que a imagem desabe para
+/// 480×270 em qualquer oscilação da rede.
+///
+/// Só no VP8: é o codec usado hoje, e o único testado com os parâmetros.
 String withBitrateHints(String sdp, {required int maxBitrateBps}) {
   const nl = '\r\n';
-  final hint = 'x-google-max-bitrate=${maxBitrateBps ~/ 1000}';
+  final maxKbps = maxBitrateBps ~/ 1000;
+  final hint =
+      'x-google-max-bitrate=$maxKbps;'
+      'x-google-start-bitrate=${maxKbps ~/ 2};'
+      'x-google-min-bitrate=${maxKbps ~/ 10}';
   final lines = sdp.split(nl);
   final vp8 = {
     for (final l in lines)
