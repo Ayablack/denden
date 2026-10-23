@@ -80,6 +80,11 @@ export default {
       if (!key) return fail(401, "chave_invalida", "Chave do grupo inválida.");
 
       if (parts[0] === "consumo" && req.method === "GET") return run("usage", [key, now]);
+      if (parts[0] === "ice" && req.method === "GET") {
+        return run("checkKey", [key], {
+          iceServers: await iceServers(env.TURN_KEY_ID, env.TURN_KEY_API_TOKEN),
+        });
+      }
 
       if (parts[0] === "salas") {
         const code = parts[1];

@@ -109,4 +109,12 @@ describe("rotas do Worker", () => {
     expect((await call("POST", "/salas", { key: ana, body: { profile: "ultra" } })).status).toBe(400);
     expect((await call("GET", "/nada", { key: ana })).status).toBe(404);
   });
+
+  it("GET /ice devolve servidores ICE antes de abrir a conexão", async () => {
+    const ana = await newKey("Ana");
+    const r = await call("GET", "/ice", { key: ana });
+    expect(r.status).toBe(200);
+    expect(r.json.iceServers).toEqual([{ urls: "stun:stun.cloudflare.com:3478" }]);
+    expect((await call("GET", "/ice", { key: "errada" })).status).toBe(401);
+  });
 });

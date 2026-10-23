@@ -193,6 +193,11 @@ export class Group {
     return { key, hash };
   }
 
+  /** Só confere a chave (ex.: antes de entregar servidores ICE). */
+  async checkKey(key: string): Promise<void> {
+    await this.keyHash(await this.load(), key);
+  }
+
   async revokeKey(hash: string): Promise<void> {
     const s = await this.load();
     if (s.keys[hash]) s.keys[hash].revoked = true;
