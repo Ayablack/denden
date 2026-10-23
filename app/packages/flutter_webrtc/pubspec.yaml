@@ -1,0 +1,24 @@
+name: flutter_webrtc
+description: Cópia do flutter_webrtc 1.6.2+hotfix.4 só com o Windows, com as correções do DenDen (ver DENDEN.md).
+version: 1.6.2+hotfix.4-denden.1
+homepage: https://github.com/cloudwebrtc/flutter-webrtc
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=1.22.0"
+
+dependencies:
+  collection: ^1.17.0
+  dart_webrtc: ^1.8.0
+  flutter:
+    sdk: flutter
+  logger: ^2.0.2+1
+  path_provider: ^2.0.2
+  web: ^1.0.0
+  webrtc_interface: ^1.5.1
+
+flutter:
+  plugin:
+    platforms:
+      windows:
+        pluginClass: FlutterWebRTCPlugin
