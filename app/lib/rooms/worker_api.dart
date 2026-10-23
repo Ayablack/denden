@@ -245,6 +245,9 @@ class WorkerApi {
   Future<Map<String, dynamic>> usage(String key) =>
       _send('GET', '/consumo', key: key);
 
+  Future<Map<String, dynamic>> adminGet(String adminKey, String path) =>
+      _send('GET', '/admin/$path', adminKey: adminKey);
+
   Future<Map<String, dynamic>> admin(
     String adminKey,
     String path, [

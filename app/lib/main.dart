@@ -6,9 +6,11 @@ import 'lab/soak.dart';
 import 'media/cloudflare_media.dart';
 import 'rooms/settings_store.dart';
 import 'rooms/worker_api.dart';
+import 'ui/admin_page.dart';
 import 'ui/broadcast_page.dart';
 import 'ui/capture_control.dart';
 import 'ui/setup_page.dart';
+import 'ui/usage_page.dart';
 import 'ui/watch_page.dart';
 
 void main() {
@@ -94,6 +96,28 @@ class HomePage extends StatelessWidget {
     appBar: AppBar(
       title: const Text('DenDen'),
       actions: [
+        TextButton(
+          onPressed: () => _open(
+            context,
+            UsagePage(
+              load: () => WorkerApi(settings.workerUrl!).usage(settings.key!),
+            ),
+          ),
+          child: const Text('Consumo'),
+        ),
+        if (settings.adminKey != null)
+          TextButton(
+            onPressed: () => _open(
+              context,
+              AdminPage(
+                admin: WorkerAdmin(
+                  WorkerApi(settings.workerUrl!),
+                  settings.adminKey!,
+                ),
+              ),
+            ),
+            child: const Text('Administração'),
+          ),
         TextButton(
           onPressed: () => _open(context, LabPage(capture: CaptureService())),
           child: const Text('Laboratório'),
