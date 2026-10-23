@@ -32,8 +32,33 @@ Um vigia pegou o `denden.exe` assim que ele abriu e registrou o código de saíd
 
 **Conclusão parcial:** a queda é **nativa e real** (violação de acesso no processo do app). Mas só apareceu dentro do `flutter test`: 2 de 4 execuções contra 0 de 64 ciclos fora dele.
 
+## Pilha de chamadas (WinDbg 1.2610 / cdb, despejo completo do ProcDump)
+
+- **Reprodução antes do depurador:** 3 de 3 execuções do `loopback_windows_test.dart` caíram (`0xC0000005`).
+- **ProcDump** (Sysinternals, assinado pela Microsoft, 1,3 MB, sem instalar): despejo reduzido (`-mp`) ilegível para o cdb ("partially initialized target"); despejo **completo** (`-ma`, 784 MB) legível.
+- **Exceção:** `C0000005 ACCESS_VIOLATION`, leitura em `[rsi+10h]` com `rsi = 0x0000006200000000` (ponteiro inválido: objeto liberado ou corrompido).
+- **Quando:** 31 s de vida do processo, **5 s depois de começar o 2º teste** (2ª sessão no mesmo processo).
+- **Thread que caiu:** `#46 "worker_thread"`, thread de trabalho do WebRTC. As 10 chamadas estão em `libwebrtc.dll`, desde a criação da thread.
+- **Símbolos:**
+  - `libwebrtc.dll`: **sem símbolos** (o pacote não traz `.pdb`). Os nomes `libwebrtc::LibWebRTCLogging::removeLogSink+0x724c85` são só a exportação mais próxima, **não** a função real. Endereços sem nome.
+  - `flutter_webrtc_plugin.dll` e `denden.exe` (debug): **com símbolos** e linha de código.
+- **As outras threads naquele instante:**
+  - Principal (`#0`): parada em `GetMessageW`, sem nenhuma chamada do DenDen em andamento.
+  - `ApplicationLoopbackCapturer::CaptureThread` e `FeederThread`: vivas e **esperando** (`WaitForSingleObject`); nenhuma estava empurrando áudio.
+  - `OnStop`: **não aparece** em nenhuma pilha.
+
+## Testes que descartaram hipóteses
+
+| Hipótese | Teste | Resultado |
+|---|---|---|
+| OnStop atrasado derruba o loopback novo | pausa de 2 s depois de cada parada (no `flutter test`) | continuou caindo → descartada |
+| Perfil Média (reduz resolução) é o gatilho | 20 ciclos no Média fora da ferramenta, debug e release | 20/20 ok → descartada |
+| `FeederThread` empurrando áudio na hora da queda | pilha | estava esperando → improvável |
+| Queda só no debug | 84 ciclos fora da ferramenta em debug e release | 0 quedas nos dois |
+
 ## Causa provável (hipóteses, ainda sem a pilha de chamadas)
 
+0. **Atualização depois da pilha:** a queda acontece numa thread interna do WebRTC (`worker_thread`), com um objeto já inválido, logo depois de **uma sessão ser encerrada e outra começar no mesmo processo**. A forma de encerrar e criar (ordem de liberação, operações simultâneas) é a suspeita principal. Só aparece sob o ritmo do `flutter test`: 0 de 84 ciclos fora dele.
 1. **Liberar o renderizador de vídeo enquanto chegam quadros.** O WebRTC entrega quadros ao renderizador numa thread própria. Se a textura é removida do motor do Flutter no meio disso, sobra um ponteiro inválido. No `flutter test` o motor é controlado pela ferramenta, que muda o ritmo dos quadros e o que é desmontado entre um teste e outro.
 2. **Corrida no `OnStop` do plugin.** O `OnStop` de qualquer captura destrói o capturador de áudio (`loopback_capturer_.reset()`) numa thread diferente da que cria o próximo.
 3. **`FeederThread` chamando `CaptureFrame` depois de a trilha de áudio ser liberada.** O `Stop()` espera as threads terminarem, então é menos provável.

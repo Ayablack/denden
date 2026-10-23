@@ -29,6 +29,7 @@ class SoakConfig {
     required this.hold,
     required this.logPath,
     this.windowTitle,
+    this.profile = QualityProfile.high,
   });
 
   final SoakMode mode;
@@ -36,6 +37,7 @@ class SoakConfig {
   final Duration hold;
   final String logPath;
   final String? windowTitle;
+  final QualityProfile profile;
 
   static SoakConfig? fromEnvironment() =>
       parse(Platform.environment['DENDEN_SOAK']);
@@ -64,6 +66,10 @@ class SoakConfig {
       hold: Duration(seconds: int.tryParse(kv['seg'] ?? '') ?? 5),
       logPath: log,
       windowTitle: window,
+      profile: QualityProfile.values
+              .where((p) => p.name == kv['perfil'])
+              .firstOrNull ??
+          QualityProfile.high,
     );
   }
 }
@@ -78,7 +84,7 @@ Future<Never> runSoak(SoakConfig c, {required int width, required int height}) a
     flush: true,
   );
 
-  mark('INÍCIO modo=${c.mode.key} ciclos=${c.cycles} seg=${c.hold.inSeconds} '
+  mark('INÍCIO modo=${c.mode.key} perfil=${c.profile.name} ciclos=${c.cycles} seg=${c.hold.inSeconds} '
       'pid=$pid');
   final capture = CaptureService();
   final hybrid = HybridCapture();
@@ -91,20 +97,20 @@ Future<Never> runSoak(SoakConfig c, {required int width, required int height}) a
       CaptureSource window() =>
           sources.firstWhere((s) => s.isWindow && s.name == c.windowTitle);
       final MediaStream stream = switch (c.mode) {
-        SoakMode.tela => await capture.start(screen, QualityProfile.high),
+        SoakMode.tela => await capture.start(screen, c.profile),
         SoakMode.telaMudo =>
-          await capture.start(screen, QualityProfile.high, audio: false),
-        SoakMode.janela => await capture.start(window(), QualityProfile.high),
+          await capture.start(screen, c.profile, audio: false),
+        SoakMode.janela => await capture.start(window(), c.profile),
         SoakMode.hibrido => await hybrid.start(
           screen: screen,
           audioWindow: window(),
-          profile: QualityProfile.high,
+          profile: c.profile,
         ),
       };
       mark('ciclo $i: iniciar laço');
       final session = await LoopbackSession.start(
         stream,
-        QualityProfile.high,
+        c.profile,
         sourceWidth: c.mode == SoakMode.janela ? null : width,
         sourceHeight: c.mode == SoakMode.janela ? null : height,
       );

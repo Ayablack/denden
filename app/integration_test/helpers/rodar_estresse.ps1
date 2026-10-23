@@ -6,17 +6,18 @@ param(
   [int]$Ciclos = 10,
   [int]$Seg = 5,
   [string]$Janela = '',
+  [string]$Perfil = 'high',
   [int]$PrazoSeg = 300,
   [Parameter(Mandatory = $true)][string]$Saida
 )
 
 $exe = "C:\Projetos\denden\app\build\windows\x64\runner\$Build\denden.exe"
-$nome = "$Build-$Modo-" + (Get-Date -Format 'HHmmss')
+$nome = "$Build-$Modo-$Perfil-" + (Get-Date -Format 'HHmmss')
 $log = Join-Path $Saida "$nome.log"
 $out = Join-Path $Saida "$nome.stdout.txt"
 $err = Join-Path $Saida "$nome.stderr.txt"
 
-$cfg = "modo=$Modo;ciclos=$Ciclos;seg=$Seg;log=$log"
+$cfg = "modo=$Modo;perfil=$Perfil;ciclos=$Ciclos;seg=$Seg;log=$log"
 if ($Janela -ne '') { $cfg += ";janela=$Janela" }
 $env:DENDEN_SOAK = $cfg
 $p = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $out -RedirectStandardError $err

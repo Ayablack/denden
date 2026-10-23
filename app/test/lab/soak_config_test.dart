@@ -1,3 +1,4 @@
+import 'package:denden/capture/quality_profile.dart';
 import 'package:denden/lab/soak.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,6 +33,14 @@ void main() {
       () => SoakConfig.parse('modo=hibrido;log=x'),
       throwsFormatException,
       reason: 'híbrido e janela precisam do título da janela',
+    );
+  });
+
+  test('perfil escolhido, padrão Alta', () {
+    expect(SoakConfig.parse('modo=tela;log=x')!.profile, QualityProfile.high);
+    expect(
+      SoakConfig.parse('modo=tela;perfil=medium;log=x')!.profile,
+      QualityProfile.medium,
     );
   });
 }
