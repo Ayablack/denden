@@ -1,0 +1,235 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../capture/capture_service.dart';
+import '../capture/quality_profile.dart';
+import '../media/cloudflare_media.dart';
+import '../rooms/worker_api.dart';
+import 'capture_control.dart';
+
+/// Transmitir: vídeo da tela inteira e áudio só da janela do jogo.
+class BroadcastPage extends StatefulWidget {
+  const BroadcastPage({super.key, required this.media, required this.capture});
+
+  final MediaPort media;
+  final CaptureControl capture;
+
+  @override
+  State<BroadcastPage> createState() => _BroadcastPageState();
+}
+
+class _BroadcastPageState extends State<BroadcastPage> {
+  List<CaptureSource> _screens = const [];
+  List<CaptureSource> _windows = const [];
+  CaptureSource? _screen;
+  CaptureSource? _audioWindow;
+  QualityProfile _profile = QualityProfile.high;
+  BroadcastHandle? _broadcast;
+  final _subs = <StreamSubscription<Object>>[];
+  LinkState? _state;
+  ReportReply? _reply;
+  String? _error;
+  String? _captureWarning;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final sources = await widget.capture.listSources();
+    if (!mounted) return;
+    setState(() {
+      _screens = sources.where((s) => !s.isWindow).toList();
+      // A própria janela do DenDen não serve de fonte de áudio.
+      _windows = sources
+          .where((s) => s.isWindow && !s.name.contains('DenDen'))
+          .toList();
+      _screen = _screens.firstOrNull;
+      _audioWindow = _windows.firstOrNull;
+    });
+  }
+
+  Future<void> _start() async {
+    final screen = _screen;
+    if (screen == null) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _captureWarning = null;
+    });
+    try {
+      final size = View.of(context).display.size;
+      final stream = await widget.capture.start(screen, _audioWindow, _profile);
+      final b = await widget.media.publish(
+        stream,
+        _profile,
+        sourceWidth: size.width.round(),
+        sourceHeight: size.height.round(),
+      );
+      _subs
+        ..add(b.states.listen((s) => setState(() => _state = s)))
+        ..add(b.replies.listen((r) => setState(() => _reply = r)))
+        ..add(
+          widget.capture.errors.listen(
+            (e) => setState(() => _captureWarning = e.message),
+          ),
+        );
+      setState(() {
+        _broadcast = b;
+        _state = b.state;
+      });
+    } catch (e) {
+      await widget.capture.stop();
+      if (mounted) setState(() => _error = messageFor(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _stop() async {
+    // Não esperar o cancelamento: em streams broadcast ele é imediato.
+    for (final s in _subs) {
+      unawaited(s.cancel());
+    }
+    _subs.clear();
+    await _broadcast?.stop();
+    await widget.capture.stop();
+    if (mounted) {
+      setState(() {
+        _broadcast = null;
+        _state = null;
+        _reply = null;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final s in _subs) {
+      s.cancel();
+    }
+    _broadcast?.stop();
+    widget.capture.stop();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Transmitir')),
+    body: Center(
+      child: SizedBox(
+        width: 460,
+        child: _broadcast == null ? _setup() : _live(_broadcast!),
+      ),
+    ),
+  );
+
+  Widget _setup() => ListView(
+    shrinkWrap: true,
+    padding: const EdgeInsets.all(16),
+    children: [
+      if (_screens.length > 1)
+        DropdownButtonFormField<CaptureSource>(
+          initialValue: _screen,
+          decoration: const InputDecoration(labelText: 'Tela'),
+          items: [
+            for (final s in _screens)
+              DropdownMenuItem(value: s, child: Text(s.name)),
+          ],
+          onChanged: (s) => setState(() => _screen = s),
+        ),
+      DropdownButtonFormField<CaptureSource?>(
+        initialValue: _audioWindow,
+        isExpanded: true,
+        decoration: const InputDecoration(labelText: 'Áudio de'),
+        items: [
+          for (final w in _windows)
+            DropdownMenuItem(
+              value: w,
+              child: Text(w.name, overflow: TextOverflow.ellipsis),
+            ),
+          const DropdownMenuItem(value: null, child: Text('Sem áudio')),
+        ],
+        onChanged: (w) => setState(() => _audioWindow = w),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        _audioWindow == null
+            ? 'Sem áudio.'
+            : 'Só o som desta janela vai junto. A voz do Discord não entra.',
+        style: const TextStyle(fontSize: 12),
+      ),
+      const SizedBox(height: 12),
+      DropdownButtonFormField<QualityProfile>(
+        initialValue: _profile,
+        decoration: const InputDecoration(labelText: 'Qualidade'),
+        items: [
+          for (final p in QualityProfile.values)
+            DropdownMenuItem(value: p, child: Text(p.label)),
+        ],
+        onChanged: (p) => setState(() => _profile = p ?? _profile),
+      ),
+      const SizedBox(height: 20),
+      if (_busy)
+        const Center(child: CircularProgressIndicator())
+      else
+        FilledButton(onPressed: _start, child: const Text('Transmitir')),
+      if (_error != null) ...[
+        const SizedBox(height: 12),
+        Text(_error!, style: const TextStyle(color: Colors.red)),
+      ],
+    ],
+  );
+
+  Widget _live(BroadcastHandle b) {
+    final code = formatRoomCode(b.roomCode);
+    final reply = _reply;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('Passe este código no Discord:'),
+        SelectableText(
+          code,
+          style: const TextStyle(fontSize: 48, letterSpacing: 4),
+        ),
+        TextButton.icon(
+          onPressed: () => Clipboard.setData(ClipboardData(text: code)),
+          icon: const Icon(Icons.copy),
+          label: const Text('Copiar'),
+        ),
+        const SizedBox(height: 8),
+        Text(switch (_state) {
+          LinkState.live => 'Transmitindo',
+          LinkState.reconnecting => 'Reconectando…',
+          LinkState.ended => 'Transmissão encerrada',
+          _ => 'Conectando…',
+        }),
+        if (_captureWarning != null)
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              _captureWarning!,
+              style: const TextStyle(color: Colors.orange),
+            ),
+          ),
+        if (reply != null && reply.level != 'normal')
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(switch (reply.level) {
+              'warn' => 'Atenção: mais de 90% do limite do mês.',
+              'blocked' =>
+                'Limite do mês atingido: qualidade reduzida para Economia.',
+              _ => 'Acima do teto do mês: a transmissão será encerrada em instantes.',
+            }, style: const TextStyle(color: Colors.orange)),
+          ),
+        const SizedBox(height: 16),
+        OutlinedButton(onPressed: _stop, child: const Text('Parar')),
+      ],
+    );
+  }
+}

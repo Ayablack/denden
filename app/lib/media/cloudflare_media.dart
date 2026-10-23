@@ -12,6 +12,33 @@ import 'tuning.dart';
 
 enum LinkState { connecting, live, reconnecting, ended }
 
+/// O que as telas usam. `CloudflareMedia` é a versão real; os testes usam
+/// uma falsa.
+abstract class BroadcastHandle {
+  String get roomCode;
+  LinkState get state;
+  Stream<LinkState> get states;
+  Stream<ReportReply> get replies;
+  Future<void> stop();
+}
+
+abstract class ViewingHandle {
+  LinkState get state;
+  Stream<LinkState> get states;
+  Future<void> leave();
+}
+
+abstract class MediaPort {
+  Future<BroadcastHandle> publish(
+    MediaStream stream,
+    QualityProfile profile, {
+    int? sourceWidth,
+    int? sourceHeight,
+  });
+
+  Future<ViewingHandle> watch(String code, RTCVideoRenderer renderer);
+}
+
 /// Nome de cada trilha publicada: o tipo, com sufixo se repetir. O espectador
 /// pede as trilhas por esse nome à sessão de quem transmite.
 List<LocalTrack> localTracksFromMids(List<(String?, String)> midsAndKinds) {
@@ -69,13 +96,14 @@ Future<void> _teardown(RTCPeerConnection pc) async {
 }
 
 /// Publica e assiste pelo Cloudflare Realtime SFU, falando com o Worker.
-class CloudflareMedia {
+class CloudflareMedia implements MediaPort {
   CloudflareMedia(this.api, this.key, {this.log});
 
   final WorkerApi api;
   final String key;
   final void Function(String)? log;
 
+  @override
   Future<Broadcast> publish(
     MediaStream stream,
     QualityProfile profile, {
@@ -130,6 +158,7 @@ class CloudflareMedia {
     }
   });
 
+  @override
   Future<Viewing> watch(String code, RTCVideoRenderer renderer) =>
       _lock.run(() async {
         final normalized =
@@ -162,7 +191,7 @@ class CloudflareMedia {
 
 /// Transmissão em andamento. Relata o consumo a cada 10 s e obedece ao
 /// perfil que o Worker mandar (ex.: Economia quando o orçamento chega a 100%).
-class Broadcast {
+class Broadcast implements BroadcastHandle {
   Broadcast._(
     this._media,
     this._pc,
@@ -174,6 +203,7 @@ class Broadcast {
 
   final CloudflareMedia _media;
   final RTCPeerConnection _pc;
+  @override
   final String roomCode;
   QualityProfile _profile;
   final int? _sourceWidth;
@@ -184,9 +214,12 @@ class Broadcast {
   final _replies = StreamController<ReportReply>.broadcast();
   final _stats = StreamController<MediaStatsSnapshot>.broadcast();
 
+  @override
   LinkState get state => _state;
   QualityProfile get profile => _profile;
+  @override
   Stream<LinkState> get states => _states.stream;
+  @override
   Stream<ReportReply> get replies => _replies.stream;
   Stream<MediaStatsSnapshot> get stats => _stats.stream;
 
@@ -239,6 +272,7 @@ class Broadcast {
     }
   }
 
+  @override
   Future<void> stop() => _lock.run(() async {
     _timer?.cancel();
     try {
@@ -255,7 +289,7 @@ class Broadcast {
 }
 
 /// Assistindo uma sala. O vídeo vai para o [renderer]; o áudio toca sozinho.
-class Viewing {
+class Viewing implements ViewingHandle {
   Viewing._(this._media, this._pc, this.roomCode, this.renderer);
 
   final CloudflareMedia _media;
@@ -269,7 +303,9 @@ class Viewing {
   final _stats = StreamController<MediaStatsSnapshot>.broadcast();
   MediaStream? _remote;
 
+  @override
   LinkState get state => _state;
+  @override
   Stream<LinkState> get states => _states.stream;
   Stream<MediaStatsSnapshot> get stats => _stats.stream;
 
@@ -310,6 +346,7 @@ class Viewing {
     }
   }
 
+  @override
   Future<void> leave() => _lock.run(() async {
     _timer?.cancel();
     renderer.srcObject = null;
