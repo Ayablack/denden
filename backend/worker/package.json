@@ -6,7 +6,8 @@
     "test": "vitest run",
     "check": "tsc --noEmit",
     "dev": "wrangler dev --local",
-    "gerar-chave-admin": "node scripts/gerar-chave-admin.mjs"
+    "gerar-chave-admin": "node scripts/gerar-chave-admin.mjs",
+    "criar-chave": "node scripts/criar-chave.mjs"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.7",
