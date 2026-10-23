@@ -188,4 +188,55 @@ describe("grupo: salas, espectadores, consumo e limites", () => {
     await expectGroupError(create(), 502, "provedor");
     expect((await g.usage(ana, T0)).rooms).toEqual([]);
   });
+
+  it("admin lista as chaves (nome, hash, revogada) sem expor a chave", async () => {
+    const { hash } = await g.addKey("Caio");
+    await g.revokeKey(hash);
+    const keys = await g.listKeys();
+    expect(keys.map((k) => k.name).sort()).toEqual(["Ana", "Bia", "Caio"]);
+    expect(keys.find((k) => k.name === "Caio")).toEqual({ name: "Caio", hash, revoked: true });
+    expect(JSON.stringify(keys)).not.toContain(ana);
+  });
+
+  it("consumo para o admin: mesmo painel, sem precisar de chave pessoal", async () => {
+    const { code } = await create();
+    const v = (await g.joinRoom(bia, code, "a", T0)).viewerId;
+    await g.report(bia, code, v, 2 * GB, T0 + 1000);
+    const u = await g.adminUsage(T0 + 1000);
+    expect(u.reportedEgressBytes).toBe(2 * GB);
+    expect(u.rooms[0].viewers[0].receivedBytes).toBe(2 * GB);
+  });
+
+  it("indicadores de aviso: quais limites já foram atingidos", async () => {
+    await g.setConfig({ budgetGb: 10 });
+    const { code } = await create();
+    const v = (await g.joinRoom(bia, code, "a", T0)).viewerId;
+    await g.report(bia, code, v, 8 * GB, T0 + 1000);
+    const u = await g.usage(ana, T0 + 1000);
+    expect(u.warnings).toEqual([
+      { percent: 50, reached: true },
+      { percent: 75, reached: true },
+      { percent: 90, reached: false },
+      { percent: 100, reached: false },
+    ]);
+    expect(u.percentOfBudget).toBeCloseTo(80, 5);
+  });
+
+  it("custo: estimado separado do confirmado e do faturado", async () => {
+    await g.setConfirmed("2026-10", 12.5, 0);
+    const u = await g.usage(ana, T0);
+    expect(u.estimatedCostUsd).toBe(0);
+    expect(u.confirmedGb).toBe(12.5);
+    expect(u.billedBrl).toBe(0);
+  });
+
+  it("limites inválidos são recusados", async () => {
+    await expectGroupError(g.setConfig({ budgetGb: -1 }), 400, "config_invalida");
+    await expectGroupError(g.setConfig({ warnPercents: [50, 150] }), 400, "config_invalida");
+    await expectGroupError(g.setConfig({ ceilingPercent: 90 }), 400, "config_invalida");
+    await expectGroupError(g.setConfig({ usdPerGb: Number.NaN }), 400, "config_invalida");
+    const ok = await g.setConfig({ warnPercents: [75, 50], budgetGb: 500 });
+    expect(ok.warnPercents).toEqual([50, 75]);
+    expect(ok.budgetGb).toBe(500);
+  });
 });

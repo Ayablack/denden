@@ -58,12 +58,22 @@ export default {
           return fail(403, "nao_e_admin", "Só o administrador pode fazer isto.");
         }
         const b = req.method === "POST" ? await body(req) : {};
+        if (req.method === "GET" && parts[1] === "chaves" && parts.length === 2) {
+          const r = (await stub.call("listKeys", [])) as CallResult;
+          return r.ok ? json(200, { keys: r.value }) : fail(r.status, r.code, r.message);
+        }
+        if (req.method === "GET" && parts[1] === "consumo") return run("adminUsage", [now]);
         if (parts[1] === "chaves" && parts.length === 2) {
           const name = need(typeof b.name === "string" && b.name.length > 0, b.name, "name");
           return run("addKey", [name]);
         }
         if (parts[1] === "chaves" && parts[3] === "revogar") return run("revokeKey", [parts[2]]);
-        if (parts[1] === "config") return run("setConfig", [b]);
+        if (parts[1] === "config") {
+          // Só os campos conhecidos; o resto é ignorado.
+          const known = ["budgetGb", "warnPercents", "ceilingPercent", "usdPerGb", "freeGb", "brlPerUsd"];
+          const partial = Object.fromEntries(Object.entries(b).filter(([k]) => known.includes(k)));
+          return run("setConfig", [partial]);
+        }
         if (parts[1] === "confirmado") {
           return run("setConfirmed", [
             need(typeof b.month === "string", b.month, "month"),

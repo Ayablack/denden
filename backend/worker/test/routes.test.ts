@@ -117,4 +117,32 @@ describe("rotas do Worker", () => {
     expect(r.json.iceServers).toEqual([{ urls: "stun:stun.cloudflare.com:3478" }]);
     expect((await call("GET", "/ice", { key: "errada" })).status).toBe(401);
   });
+
+  it("admin: lista chaves e vê o consumo; chave comum não vê", async () => {
+    await newKey("Dani");
+    const keys = await call("GET", "/admin/chaves", { admin: ADMIN });
+    expect(keys.status).toBe(200);
+    expect(keys.json.keys.some((k: { name: string }) => k.name === "Dani")).toBe(true);
+    const u = await call("GET", "/admin/consumo", { admin: ADMIN });
+    expect(u.status).toBe(200);
+    expect(u.json.notice).toContain("não é um limite garantido");
+    const ana = await newKey("Ana");
+    expect((await call("GET", "/admin/consumo", { admin: ana })).status).toBe(403);
+  });
+
+  it("admin: limite inválido → 400 config_invalida", async () => {
+    const r = await call("POST", "/admin/config", { admin: ADMIN, body: { budgetGb: 0 } });
+    expect(r.status).toBe(400);
+    expect(r.json.error).toBe("config_invalida");
+  });
+
+  it("admin: campos desconhecidos na configuração são ignorados", async () => {
+    const r = await call("POST", "/admin/config", {
+      admin: ADMIN,
+      body: { budgetGb: 800, hack: "x" },
+    });
+    expect(r.status).toBe(200);
+    expect(r.json.budgetGb).toBe(800);
+    expect(r.json.hack).toBeUndefined();
+  });
 });

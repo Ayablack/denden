@@ -423,6 +423,24 @@ export class Group {
   async usage(key: string, now: number) {
     const s = await this.load();
     await this.keyHash(s, key);
+    return this.panel(s, now);
+  }
+
+  /** O mesmo painel, para a tela de administração. */
+  async adminUsage(now: number) {
+    return this.panel(await this.load(), now);
+  }
+
+  async listKeys(): Promise<Array<{ name: string; hash: string; revoked: boolean }>> {
+    const s = await this.load();
+    return Object.entries(s.keys).map(([hash, k]) => ({
+      name: k.name,
+      hash,
+      revoked: k.revoked,
+    }));
+  }
+
+  private panel(s: State, now: number) {
     const month = monthKey(now);
     const m = this.month(s, now);
     const effective = this.effective(m);
@@ -437,6 +455,10 @@ export class Group {
       estimatedCostUsd: usd,
       estimatedCostBrl: usd * s.config.brlPerUsd,
       percentOfBudget: (effective / 1e9 / s.config.budgetGb) * 100,
+      warnings: s.config.warnPercents.map((percent) => ({
+        percent,
+        reached: (effective / 1e9 / s.config.budgetGb) * 100 >= percent,
+      })),
       level: limitLevel(effective, s.config),
       projectionBytes: projectMonthBytes(effective, now),
       config: s.config,
@@ -457,7 +479,21 @@ export class Group {
 
   async setConfig(partial: Partial<BudgetConfig>): Promise<BudgetConfig> {
     const s = await this.load();
-    s.config = { ...s.config, ...partial };
+    const c = { ...s.config, ...partial };
+    const positive = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n > 0;
+    const bad =
+      !positive(c.budgetGb) ||
+      !positive(c.usdPerGb) ||
+      !positive(c.brlPerUsd) ||
+      !(typeof c.freeGb === "number" && Number.isFinite(c.freeGb) && c.freeGb >= 0) ||
+      !(typeof c.ceilingPercent === "number" && c.ceilingPercent >= 100 && c.ceilingPercent <= 200) ||
+      !Array.isArray(c.warnPercents) ||
+      c.warnPercents.some((w) => typeof w !== "number" || !(w > 0 && w <= 100));
+    if (bad) {
+      throw new GroupError(400, "config_invalida", "Limites inválidos.");
+    }
+    c.warnPercents = [...new Set(c.warnPercents)].sort((a, b) => a - b);
+    s.config = c;
     await this.save(s);
     return s.config;
   }
