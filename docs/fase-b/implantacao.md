@@ -63,10 +63,7 @@ No fim aparece o endereço, algo como `https://denden-worker.<seu-nome>.workers.
 
 ## 6. Configurar o DenDen no seu PC e criar as chaves (5 min)
 
-1. Abra `C:\Projetos\dendenppuild\windowsdunner\Release\denden.exe`.
-2. Na tela **Configurar**, preencha:
-   - **Endereço do servidor:** o endereço do passo 5;
-   - **Sua chave:** deixe para o item 4 abaixo (a tela pede uma; use temporariamente a chave de administrador só para entrar?). Não: crie a sua chave primeiro pelo terminal:
+1. Crie a **sua** chave pessoal pelo terminal (a chave de administrador não serve para transmitir):
 
    ```powershell
    $env:DENDEN_ADMIN = Read-Host "Chave de administrador"
@@ -76,9 +73,13 @@ No fim aparece o endereço, algo como `https://denden-worker.<seu-nome>.workers.
    npm run criar-chave -- https://denden-worker.SEU-NOME.workers.dev "Seu nome"
    ```
 
+2. Abra `C:\Projetos\denden\app\build\windows\x64\runner\Release\denden.exe`.
+3. Na tela **Configurar**, preencha:
+   - **Endereço do servidor:** o endereço do passo 5;
+   - **Sua chave:** a chave do item 1;
    - **Chave de administrador:** a do passo 3.
-3. Clique **Salvar**. O DenDen testa a chave no Worker antes de salvar.
-4. No menu, abra **Administração**:
+4. Clique **Salvar**. O DenDen testa a chave no Worker antes de salvar.
+5. No menu, abra **Administração**:
    - **Chaves dos amigos:** digite o nome e clique **Criar chave**. A chave aparece **uma vez**: copie e mande por mensagem privada só para a pessoa.
    - **Limites:** confira orçamento **900 GB**, avisos **50, 75, 90, 100**, teto **105%**. Salve se mudar algo.
    - **Emergência:** o botão vermelho desliga todas as transmissões na hora.
