@@ -39,7 +39,7 @@ export class RealtimeClient implements RealtimePort {
   constructor(
     private readonly appId: string,
     private readonly token: string,
-    private readonly fetcher: typeof fetch = fetch,
+    private readonly fetcher: typeof fetch = (i, init) => fetch(i, init),
   ) {}
 
   private async call(method: string, path: string, body?: Json): Promise<Json> {
@@ -118,7 +118,7 @@ export type IceServer = { urls: string | string[]; username?: string; credential
 export async function iceServers(
   turnKeyId: string | undefined,
   turnApiToken: string | undefined,
-  fetcher: typeof fetch = fetch,
+  fetcher: typeof fetch = (i, init) => fetch(i, init),
   ttlSec = 7200,
 ): Promise<IceServer[]> {
   const stun: IceServer[] = [{ urls: "stun:stun.cloudflare.com:3478" }];

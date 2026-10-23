@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest run",
     "check": "tsc --noEmit",
-    "dev": "wrangler dev --local"
+    "dev": "wrangler dev --local",
+    "gerar-chave-admin": "node scripts/gerar-chave-admin.mjs"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.7",
