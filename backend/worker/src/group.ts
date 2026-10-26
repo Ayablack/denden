@@ -211,7 +211,8 @@ export class Group {
 
   async revokeKey(hash: string): Promise<void> {
     const s = await this.load();
-    if (s.keys[hash]) s.keys[hash].revoked = true;
+    if (!s.keys[hash]) throw new GroupError(404, "chave_inexistente", "Chave não encontrada.");
+    s.keys[hash].revoked = true;
     await this.save(s);
   }
 

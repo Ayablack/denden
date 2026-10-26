@@ -18,18 +18,33 @@ const fail = (status: number, error: string, message: string) =>
 class BadRequest extends Error {}
 
 function need<T>(ok: boolean, value: T, what: string): T {
-  if (!ok) throw new BadRequest(what);
+  if (!ok) throw new BadRequest(`Campo inválido: ${what}`);
   return value;
 }
 
+/** Corpo JSON como objeto. Corpo vazio vale `{}`; o resto que não for objeto é recusado. */
 async function body(req: Request): Promise<Record<string, unknown>> {
+  const text = await req.text();
+  if (!text.trim()) return {};
+  let b: unknown;
   try {
-    const b = await req.json();
-    return b && typeof b === "object" ? (b as Record<string, unknown>) : {};
+    b = JSON.parse(text);
   } catch {
-    return {};
+    throw new BadRequest("Formato inválido.");
   }
+  if (!b || typeof b !== "object" || Array.isArray(b)) throw new BadRequest("Formato inválido.");
+  return b as Record<string, unknown>;
 }
+
+/** Recusa campos fora da lista. */
+function only(b: Record<string, unknown>, known: string[]): void {
+  const extra = Object.keys(b).find((k) => !known.includes(k));
+  if (extra !== undefined) throw new BadRequest(`Campo desconhecido: ${extra}.`);
+}
+
+const isAmount = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n >= 0;
+const optionalAmount = (b: Record<string, unknown>, k: string) =>
+  b[k] === undefined ? undefined : need(isAmount(b[k]), b[k] as number, k);
 
 const isTracks = (t: unknown) =>
   Array.isArray(t) &&
@@ -63,25 +78,32 @@ export default {
           return r.ok ? json(200, { keys: r.value }) : fail(r.status, r.code, r.message);
         }
         if (req.method === "GET" && parts[1] === "consumo") return run("adminUsage", [now]);
+        // Daqui para baixo as rotas mudam algo: só POST.
+        if (req.method !== "POST") return fail(404, "rota_inexistente", "Rota não encontrada.");
         if (parts[1] === "chaves" && parts.length === 2) {
-          const name = need(typeof b.name === "string" && b.name.length > 0, b.name, "name");
+          only(b, ["name"]);
+          const name = need(typeof b.name === "string" && b.name.trim().length > 0, b.name, "name");
           return run("addKey", [name]);
         }
-        if (parts[1] === "chaves" && parts[3] === "revogar") return run("revokeKey", [parts[2]]);
-        if (parts[1] === "config") {
-          // Só os campos conhecidos; o resto é ignorado.
-          const known = ["budgetGb", "warnPercents", "ceilingPercent", "usdPerGb", "freeGb", "brlPerUsd", "maxSessionHours"];
-          const partial = Object.fromEntries(Object.entries(b).filter(([k]) => known.includes(k)));
-          return run("setConfig", [partial]);
+        if (parts[1] === "chaves" && parts[3] === "revogar" && parts.length === 4) {
+          only(b, []);
+          return run("revokeKey", [parts[2]]);
         }
-        if (parts[1] === "confirmado") {
+        if (parts[1] === "config" && parts.length === 2) {
+          // Os valores são conferidos em setConfig.
+          only(b, ["budgetGb", "warnPercents", "ceilingPercent", "usdPerGb", "freeGb", "brlPerUsd", "maxSessionHours"]);
+          return run("setConfig", [b]);
+        }
+        if (parts[1] === "confirmado" && parts.length === 2) {
+          only(b, ["month", "confirmedGb", "billedBrl"]);
           return run("setConfirmed", [
-            need(typeof b.month === "string", b.month, "month"),
-            typeof b.confirmedGb === "number" ? b.confirmedGb : undefined,
-            typeof b.billedBrl === "number" ? b.billedBrl : undefined,
+            need(typeof b.month === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(b.month), b.month, "month"),
+            optionalAmount(b, "confirmedGb"),
+            optionalAmount(b, "billedBrl"),
           ]);
         }
-        if (parts[1] === "emergencia") {
+        if (parts[1] === "emergencia" && parts.length === 2) {
+          only(b, ["on"]);
           return run("setEmergency", [need(typeof b.on === "boolean", b.on, "on"), now]);
         }
         return fail(404, "rota_inexistente", "Rota não encontrada.");
@@ -139,7 +161,7 @@ export default {
       }
       return fail(404, "rota_inexistente", "Rota não encontrada.");
     } catch (e) {
-      if (e instanceof BadRequest) return fail(400, "pedido_invalido", `Campo inválido: ${e.message}`);
+      if (e instanceof BadRequest) return fail(400, "pedido_invalido", e.message);
       return fail(500, "erro_interno", "Erro interno do DenDen.");
     }
   },
