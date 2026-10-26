@@ -100,9 +100,10 @@ Referência de experiência: o Go Live do Discord. Imagem nítida, áudio sincro
 Na transmissão com os amigos, **ninguém ouve voz duas vezes**. A voz continua só no Discord.
 
 1. **Quem transmite não toca a própria transmissão.** A prévia no PC do transmissor é só vídeo, sem som. (No laboratório da Fase A o mesmo PC transmitia e assistia; por isso o dono se ouvia duas vezes.)
-2. **Captura padrão: janela.** O app abre sugerindo a janela do jogo ou do navegador; o áudio sai só daquele programa.
-3. **Tela inteira sai sem áudio por padrão.** Para ligar o áudio na tela inteira, o transmissor marca uma opção com o aviso "a voz do Discord vai junto e seus amigos vão ouvir duas vezes". *(Decisão minha: entre bloquear e avisar, escolhi desligar por padrão e permitir com aviso.)*
-4. Se um dia o plugin permitir excluir um processo específico (o Discord) do loopback, a tela inteira pode ganhar áudio sem a voz.
+2. **Som padrão: o PC inteiro menos o Discord** (decisão do dono, 2026-10-26, a partir do branch do joao). O plugin exclui a árvore de processos do Discord do loopback (`excludeProcessId`, na cópia do plugin em `app/packages/flutter_webrtc`). Medido: energia 0 com o processo excluído, 2,1e-3 sem excluir.
+3. **Opções:** só o som de uma janela (ex.: o jogo), ou sem áudio. O som geral **com** o Discord não existe como opção.
+4. **Se um Discord abrir fora da exclusão** durante a transmissão, o som é silenciado e a tela avisa.
+5. **Riscos aceitos:** o Windows exclui só **uma** árvore de processos por captura, então um Discord no navegador ou outro app de voz entraria; notificações e outros sons do PC vão junto.
 
 ### 4.4 Qualidade
 

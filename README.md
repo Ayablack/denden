@@ -10,8 +10,9 @@ O nome vem dos Den Den Mushi de One Piece, os caracóis usados para comunicaçã
 
 - **Transmitir:**
   - vídeo da **tela inteira**, por captura rápida, até 1080p60 quando o PC aguenta;
-  - **áudio só da janela escolhida**, normalmente o jogo. O DenDen **nunca** captura o áudio geral do computador, então a voz do Discord não entra e ninguém ouve voz duplicada;
-  - se a janela do jogo fecha durante a transmissão, o áudio para e aparece um aviso. O vídeo continua.
+  - **som do PC inteiro menos o Discord** (padrão), ou só o som de uma janela, ou sem áudio. A voz do Discord não entra, e ninguém ouve voz duplicada. Se outro Discord abrir no meio, o som é silenciado com aviso;
+  - no modo janela, se a janela do jogo fecha, o áudio para e aparece um aviso. O vídeo continua;
+  - opção de impedir que o Windows abaixe em 80% o volume dos outros programas enquanto o DenDen transmite.
 - **Salas privadas:** código de 6 caracteres (ex.: `K7P-92Q`), chave pessoal por amigo, até 5 espectadores, bloqueio após 5 códigos errados.
 - **Assistir:** digitar o código e ver a tela do amigo em tamanho cheio, com o som do jogo.
 - **Consumo e custos:**
@@ -74,9 +75,10 @@ Orçamento: **R$ 0**. Só cotas gratuitas; nada pago sem aprovação.
 
 ### Limitações conhecidas
 
-- **Ainda não testado:** transmissão real pelo Cloudflare, jogo de verdade (impacto no fps), Discord real com alguém falando, sincronia medida com câmera.
+- **Testado pelo SFU real do Cloudflare**, mas ainda sem medição completa entre dois PCs: jogo de verdade (impacto no fps), Discord real com alguém falando, sincronia medida com câmera.
+- **Som do PC menos o Discord:** o Windows exclui só um programa; um Discord no navegador ou outro app de voz entraria.
 - **Sem codificação por placa de vídeo** no `flutter_webrtc` para Windows: o vídeo pesa na CPU.
-- **Perfil Média** nem sempre reduz para 720p.
+- **Cópia própria do `flutter_webrtc`** (`app/packages/flutter_webrtc`) com três correções; ao atualizar o plugin, reaplicar as mudanças descritas em [DENDEN.md](app/packages/flutter_webrtc/DENDEN.md).
 - **Queda nativa sob o `flutter test`** em ~15% das execuções com WebRTC. Não acontece com o app rodando normalmente ([investigação](docs/experimentos/2026-10-23-investigacao-quedas.md)). Os testes de integração rodam uma sessão por processo; a estabilidade real é medida pelo modo de estresse.
 - Sem TURN configurado, redes muito restritas podem não conectar.
 
@@ -111,5 +113,5 @@ npm test
 
 ## Testes
 
-- App: 96 testes (`flutter test`).
+- App: 118 testes (`flutter test`).
 - Worker: 48 testes (`npm test`), com um SFU falso nas chamadas de saída.
