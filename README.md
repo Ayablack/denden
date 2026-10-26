@@ -97,6 +97,7 @@ flutter run -d windows
 ```
 
 **Worker (testes locais, sem conta):**
+*(No Windows PowerShell, use `npm.cmd` se `npm` não for reconhecido)*
 
 ```bash
 cd backend/worker
