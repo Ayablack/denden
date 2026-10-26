@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../rooms/settings_store.dart';
+import '../sistema/reducao_volume.dart';
 import 'capture_control.dart';
 
 /// Primeira vez: endereço do Worker e a chave pessoal do amigo. A chave é
@@ -12,9 +13,13 @@ class SetupPage extends StatefulWidget {
     required this.check,
     required this.save,
     required this.onDone,
+    this.ducking = const WindowsVolumeDucking(),
   });
 
   final AppSettings initial;
+
+  /// Opção do Windows que abaixa o som dos outros programas.
+  final VolumeDucking ducking;
 
   /// Confere endereço e chave no Worker (lança o erro do Worker se não der).
   final Future<void> Function(Uri workerUrl, String key) check;
@@ -35,6 +40,40 @@ class _SetupPageState extends State<SetupPage> {
   );
   String? _error;
   bool _busy = false;
+  bool _showKey = false;
+  bool _showAdmin = false;
+
+  /// `null` enquanto lê a opção do Windows.
+  bool? _duckingOff;
+  String? _duckingError;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.ducking.isOff().then(
+      (off) => mounted ? setState(() => _duckingOff = off) : null,
+      onError: (Object _) =>
+          mounted ? setState(() => _duckingOff = false) : null,
+    );
+  }
+
+  Future<void> _setDucking(bool off) async {
+    try {
+      await widget.ducking.setOff(off);
+      if (mounted) {
+        setState(() {
+          _duckingOff = off;
+          _duckingError = null;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => _duckingError = 'Não deu para mudar a opção do Windows.',
+        );
+      }
+    }
+  }
 
   Future<void> _save() async {
     final url = Uri.tryParse(_url.text.trim());
@@ -68,6 +107,13 @@ class _SetupPageState extends State<SetupPage> {
     }
   }
 
+  /// Olho para conferir a chave colada: escondida por padrão.
+  Widget _visibilityToggle(bool visible, VoidCallback toggle) => IconButton(
+    tooltip: visible ? 'Esconder' : 'Mostrar',
+    icon: Icon(visible ? Icons.visibility_off : Icons.visibility),
+    onPressed: toggle,
+  );
+
   @override
   void dispose() {
     _url.dispose();
@@ -92,21 +138,33 @@ class _SetupPageState extends State<SetupPage> {
             const SizedBox(height: 12),
             TextField(
               controller: _url,
+              // O hintText some quando o campo perde o foco; o helperText
+              // fica sempre visível.
               decoration: const InputDecoration(
                 labelText: 'Endereço do servidor',
-                hintText: 'https://denden-worker.xxx.workers.dev',
+                helperText: 'Ex.: https://denden-worker.xxx.workers.dev',
               ),
             ),
             TextField(
               controller: _key,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Sua chave'),
+              obscureText: !_showKey,
+              decoration: InputDecoration(
+                labelText: 'Sua chave',
+                suffixIcon: _visibilityToggle(
+                  _showKey,
+                  () => setState(() => _showKey = !_showKey),
+                ),
+              ),
             ),
             TextField(
               controller: _admin,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: !_showAdmin,
+              decoration: InputDecoration(
                 labelText: 'Chave de administrador (só o dono)',
+                suffixIcon: _visibilityToggle(
+                  _showAdmin,
+                  () => setState(() => _showAdmin = !_showAdmin),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -118,6 +176,20 @@ class _SetupPageState extends State<SetupPage> {
               const SizedBox(height: 12),
               Text(_error!, style: const TextStyle(color: Colors.red)),
             ],
+            const SizedBox(height: 24),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Não abaixar o volume dos outros programas'),
+              subtitle: const Text(
+                'Sem isto, o Windows trata o DenDen como uma chamada e abaixa '
+                'o som do jogo e do Discord em 80%. Muda a opção do Windows '
+                'em Som → Comunicações.',
+              ),
+              value: _duckingOff ?? false,
+              onChanged: _duckingOff == null ? null : _setDucking,
+            ),
+            if (_duckingError != null)
+              Text(_duckingError!, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

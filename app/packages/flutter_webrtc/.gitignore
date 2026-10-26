@@ -1,0 +1,3 @@
+# Baixados pelo CMake na primeira compilação (~30 MB): não vão para o Git.
+third_party/downloads/
+third_party/libwebrtc/

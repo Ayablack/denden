@@ -223,6 +223,19 @@ class Broadcast implements BroadcastHandle {
   Stream<ReportReply> get replies => _replies.stream;
   Stream<MediaStatsSnapshot> get stats => _stats.stream;
 
+  /// Estatísticas cruas da conexão (modo de diagnóstico).
+  Future<List<StatsReport>> rawStats() => _pc.getStats();
+
+  /// Parâmetros de codificação do vídeo, como o libwebrtc os guarda
+  /// (modo de diagnóstico).
+  Future<String> describeEncodings() async => [
+    for (final s in await _pc.getSenders())
+      if (s.track?.kind == 'video')
+        for (final e in s.parameters.encodings ?? const <RTCRtpEncoding>[])
+          'escala=${e.scaleResolutionDownBy} teto=${e.maxBitrate} '
+              'fps=${e.maxFramerate} ativo=${e.active}',
+  ].join(' | ');
+
   void _set(LinkState s) {
     if (s == _state || _state == LinkState.ended) return;
     _state = s;
@@ -239,13 +252,15 @@ class Broadcast implements BroadcastHandle {
     for (final s in await _pc.getSenders()) {
       final track = s.track;
       if (track?.kind == 'video') {
-        await tuneVideoSender(
+        final ok = await tuneVideoSender(
           s,
           track!,
           p,
           sourceWidth: _sourceWidth,
           sourceHeight: _sourceHeight,
         );
+        // Transmite assim mesmo, só que sem o perfil: melhor que cair.
+        if (!ok) _media.log?.call('perfil ${p.name} recusado pelo libwebrtc');
       }
     }
   }
@@ -309,6 +324,17 @@ class Viewing implements ViewingHandle {
   Stream<LinkState> get states => _states.stream;
   Stream<MediaStatsSnapshot> get stats => _stats.stream;
 
+  /// Estatísticas cruas da conexão (modo de diagnóstico).
+  Future<List<StatsReport>> rawStats() => _pc.getStats();
+
+  /// Não tocar o som recebido (modo de diagnóstico, que assiste no mesmo PC).
+  Future<void> muteAudio() async {
+    for (final r in await _pc.getReceivers()) {
+      final track = r.track;
+      if (track?.kind == 'audio') track!.enabled = false;
+    }
+  }
+
   void _set(LinkState s) {
     if (s == _state || _state == LinkState.ended) return;
     _state = s;
@@ -322,7 +348,14 @@ class Viewing implements ViewingHandle {
     // no renderizador, o áudio toca de qualquer jeito.
     if (e.track.kind == 'video' || _remote == null) {
       _remote = stream;
-      renderer.srcObject = stream;
+      // Pela trilha: o plugin não acha o stream remoto do SFU e a imagem
+      // ficava em branco (ver packages/flutter_webrtc/DENDEN.md).
+      unawaited(
+        renderer.setSrcObject(
+          stream: stream,
+          trackId: e.track.kind == 'video' ? e.track.id : null,
+        ),
+      );
     }
   }
 

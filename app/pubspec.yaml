@@ -34,7 +34,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_webrtc: ^1.6.2+hotfix.4
+  # Cópia local com correções do DenDen (ver packages/flutter_webrtc/DENDEN.md).
+  flutter_webrtc:
+    path: packages/flutter_webrtc
   http: ^1.6.0
   path_provider: ^2.1.6
 

@@ -13,6 +13,8 @@ analyzer:
   exclude:
     - build/**
     - windows/**
+    # Plugin de terceiros copiado (ver packages/flutter_webrtc/DENDEN.md).
+    - packages/**
 
 linter:
   # The lint rules applied to this project can be customized in the

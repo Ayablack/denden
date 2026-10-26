@@ -19,7 +19,10 @@ RTCRtpEncoding encodingFor(
 /// Aplica o perfil ao envio de vídeo. Chamar **depois** da negociação: antes
 /// dela o `scaleResolutionDownBy` fica guardado mas não chega ao codificador
 /// (medido na Fase A).
-Future<void> tuneVideoSender(
+///
+/// Devolve `false` se o libwebrtc recusou. Até a correção do plugin (ver
+/// `packages/flutter_webrtc/DENDEN.md`) ele dizia `true` e ignorava tudo.
+Future<bool> tuneVideoSender(
   RTCRtpSender rtpSender,
   MediaStreamTrack track,
   QualityProfile p, {
@@ -40,5 +43,5 @@ Future<void> tuneVideoSender(
   params.encodings = [encodingFor(p, sourceWidth: w, sourceHeight: h)];
   // Jogo rápido: preferir manter a taxa de quadros a manter a resolução.
   params.degradationPreference = RTCDegradationPreference.MAINTAIN_FRAMERATE;
-  await rtpSender.setParameters(params);
+  return rtpSender.setParameters(params);
 }

@@ -68,7 +68,7 @@ class FakeMedia implements MediaPort {
 
 class FakeCapture implements CaptureControl {
   final errorsCtl = StreamController<CaptureError>.broadcast(sync: true);
-  CaptureSource? lastAudioWindow;
+  AudioChoice? lastAudio;
   bool stopped = false;
 
   @override
@@ -81,10 +81,10 @@ class FakeCapture implements CaptureControl {
   @override
   Future<MediaStream> start(
     CaptureSource screen,
-    CaptureSource? audioWindow,
+    AudioChoice audio,
     QualityProfile p,
   ) async {
-    lastAudioWindow = audioWindow;
+    lastAudio = audio;
     return FakeStream();
   }
 

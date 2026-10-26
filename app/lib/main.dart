@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import 'capture/capture_service.dart';
+import 'lab/diagnostico.dart';
 import 'lab/lab_page.dart';
 import 'lab/soak.dart';
 import 'media/cloudflare_media.dart';
@@ -14,6 +16,11 @@ import 'ui/usage_page.dart';
 import 'ui/watch_page.dart';
 
 void main() {
+  final diag = DiagConfig.fromEnvironment();
+  if (diag != null) {
+    runApp(DiagApp(config: diag));
+    return;
+  }
   final soak = SoakConfig.fromEnvironment();
   if (soak != null) {
     runApp(SoakApp(config: soak));
@@ -155,6 +162,50 @@ class HomePage extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Modo de diagnóstico (variável DENDEN_DIAG): mede a transmissão pelo
+/// servidor de verdade e fecha o app.
+class DiagApp extends StatefulWidget {
+  const DiagApp({super.key, required this.config});
+
+  final DiagConfig config;
+
+  @override
+  State<DiagApp> createState() => _DiagAppState();
+}
+
+class _DiagAppState extends State<DiagApp> {
+  RTCVideoRenderer? _renderer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final size = View.of(context).display.size;
+      runDiagnostic(
+        widget.config,
+        width: size.width.round(),
+        height: size.height.round(),
+        onWatching: (r) => setState(() => _renderer = r),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final renderer = _renderer;
+    return MaterialApp(
+      home: Scaffold(
+        body: renderer == null
+            ? const Center(child: Text('DenDen — diagnóstico'))
+            : RTCVideoView(
+                renderer,
+                objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
+              ),
+      ),
+    );
+  }
 }
 
 /// Modo de estresse (variável DENDEN_SOAK): roda os ciclos e fecha o app.
