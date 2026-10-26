@@ -149,4 +149,90 @@ void main() {
     }).report('k', 'K7P92Q', 'publisher', 0);
     expect(r.sessionEndsAtMs, 21600000);
   });
+
+  test('resposta envia viewerId e answerSdp', () async {
+    await api(200, {}).answer('k', 'K7P92Q', 'viewer-1', 'ANSWER');
+    expect(sent.single.url.path, '/salas/K7P92Q/resposta');
+    expect(jsonDecode(sent.single.body), {
+      'viewerId': 'viewer-1',
+      'answerSdp': 'ANSWER',
+    });
+  });
+
+  test('encerrar sala usa POST sem corpo', () async {
+    await api(200, {}).endRoom('k', 'K7P92Q');
+    expect(sent.single.url.path, '/salas/K7P92Q/encerrar');
+    expect(sent.single.method, 'POST');
+    expect(sent.single.body, '{}');
+  });
+
+  test('consumo usa GET e retorna JSON', () async {
+    final r = await api(200, {'total': 100}).usage('k');
+    expect(sent.single.url.path, '/consumo');
+    expect(sent.single.method, 'GET');
+    expect(r, {'total': 100});
+  });
+
+  test('adminGet usa GET e retorna JSON', () async {
+    final r = await api(200, {'status': 'ok'}).adminGet('admin-k', 'info');
+    expect(sent.single.url.path, '/admin/info');
+    expect(sent.single.method, 'GET');
+    expect(sent.single.headers['X-DenDen-Admin'], 'admin-k');
+    expect(r, {'status': 'ok'});
+  });
+
+  test('admin usa POST, manda corpo e retorna JSON', () async {
+    final r = await api(200, {'result': 'done'}).admin(
+        'admin-k', 'action', {'cmd': 'stop'});
+    expect(sent.single.url.path, '/admin/action');
+    expect(sent.single.method, 'POST');
+    expect(sent.single.headers['X-DenDen-Admin'], 'admin-k');
+    expect(jsonDecode(sent.single.body), {'cmd': 'stop'});
+    expect(r, {'result': 'done'});
+  });
+
+  test('erro 500 generico vira WorkerError', () async {
+    final e = await caught(api(500, {'error': 'falha_interna', 'message': 'Erro grave.'}).roomState('k', 'K7P92Q'));
+    expect(e, isA<WorkerError>());
+    expect((e as WorkerError).status, 500);
+    expect(e.code, 'falha_interna');
+    expect(e.message, 'Erro grave.');
+  });
+
+  test('JSON invalido vira WorkerUnavailable com mensagem em portugues', () async {
+    final e = await caught(api(200, {}, raw: 'isso não é json').roomState('k', 'K7P92Q'));
+    expect(e, isA<WorkerUnavailable>());
+    expect((e as WorkerError).message, 'Resposta inesperada do servidor (200).');
+  });
+
+  test('relatorio sem endsAtMs e sessionEndsAtMs funciona', () async {
+    final r = await api(200, {
+      'level': 'normal',
+      'profile': 'high',
+      'warnings': [],
+    }).report('k', 'K7P92Q', 'publisher', 0);
+    expect(r.endsAtMs, isNull);
+    expect(r.sessionEndsAtMs, isNull);
+  });
+
+  test('mensagem do WorkerError não tem chaves e está em português', () {
+    final e = const WorkerError(400, 'bad_req', 'Deu ruim.');
+    final str = e.toString();
+    expect(str, isNot(contains('{')));
+    expect(str, isNot(contains('}')));
+    expect(str, 'WorkerError(400, bad_req): Deu ruim.');
+  });
+
+  test('erro 400 com json devolve fallback no WorkerError', () async {
+    final e = await caught(api(400, {'error': 'desconhecido', 'message': 'Mensagem fallback.'}).roomState('k', 'K7P92Q'));
+    expect(e, isA<WorkerError>());
+    expect((e as WorkerError).status, 400);
+    expect(e.code, 'desconhecido');
+    expect(e.message, 'Mensagem fallback.');
+  });
+
+  test('erro 500 sem json devolve fallback no WorkerError (WorkerUnavailable)', () async {
+    final e = await caught(api(500, {}, raw: 'texto').roomState('k', 'K7P92Q'));
+    expect(e, isA<WorkerUnavailable>());
+  });
 }
