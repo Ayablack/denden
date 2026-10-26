@@ -58,6 +58,7 @@ describe("consumo e limites", () => {
       usdPerGb: 0.05,
       freeGb: 1000,
       brlPerUsd: 5.5,
+      maxSessionHours: 6,
     });
   });
 });

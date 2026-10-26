@@ -55,6 +55,10 @@ export const PROFILE_BPS: Record<Profile, number> = {
 export const MAX_VIEWERS = 5;
 export const INACTIVE_MS = 30_000;
 export const CEILING_GRACE_MS = 60_000;
+/** Conferir no SFU se as trilhas de quem transmite estão ativas. */
+export const SFU_CHECK_MS = 60_000;
+export const SFU_MAX_MISSES = 2;
+const HOUR_MS = 3_600_000;
 export const NOTICE =
   "O bloqueio do DenDen não é um limite garantido de faturamento do Cloudflare.";
 
@@ -77,6 +81,8 @@ type Room = {
   egressBytes: number;
   viewers: Viewer[];
   ceilingSince?: number;
+  lastSfuCheckAt?: number;
+  sfuMisses?: number;
   endedAt?: number;
   endReason?: string;
 };
@@ -119,6 +125,8 @@ export type ReportResult = {
   profile: Profile;
   warnings: number[];
   endsAtMs?: number;
+  /** Fim pela duração máxima; o app avisa 5 min antes. */
+  sessionEndsAtMs: number;
 };
 
 export class Group {
@@ -131,7 +139,10 @@ export class Group {
   ) {}
 
   private async load(): Promise<State> {
-    return (await this.store.get<State>("state")) ?? emptyState();
+    const s = (await this.store.get<State>("state")) ?? emptyState();
+    // Estado gravado por uma versão anterior: campos novos ganham o padrão.
+    s.config = { ...DEFAULT_BUDGET, ...s.config };
+    return s;
   }
 
   private save(s: State): Promise<void> {
@@ -342,8 +353,11 @@ export class Group {
     if (room.ceilingSince !== undefined && now >= room.ceilingSince + CEILING_GRACE_MS) {
       await this.end(s, room, "teto", now);
     }
+    const sessionEndsAtMs = room.startedAt + s.config.maxSessionHours * HOUR_MS;
+    if (now >= sessionEndsAtMs) await this.end(s, room, "duracao_maxima", now);
     await this.save(s);
     return {
+      sessionEndsAtMs,
       level,
       profile: level === "blocked" || level === "ceiling" ? "economy" : room.profile,
       warnings: crossedWarnings(before, after, s.config),
@@ -411,11 +425,37 @@ export class Group {
         await this.end(s, room, "teto", now);
         continue;
       }
+      if (now >= room.startedAt + s.config.maxSessionHours * HOUR_MS) {
+        await this.end(s, room, "duracao_maxima", now);
+        continue;
+      }
+      if (await this.sfuSilent(room, now)) {
+        await this.end(s, room, "sem_sinal", now);
+        continue;
+      }
       room.viewers = room.viewers.filter((v) => now - v.lastReportAt <= INACTIVE_MS);
       live++;
     }
     await this.save(s);
     return { liveRooms: live };
+  }
+
+  /**
+   * Confere no SFU, a cada [SFU_CHECK_MS], se há trilha ativa de quem
+   * transmite. `true` depois de [SFU_MAX_MISSES] faltas seguidas. Erro da API
+   * não conta: o SFU pode estar só lento.
+   */
+  private async sfuSilent(room: Room, now: number): Promise<boolean> {
+    if (now - (room.lastSfuCheckAt ?? room.startedAt) < SFU_CHECK_MS) return false;
+    room.lastSfuCheckAt = now;
+    try {
+      const { tracks } = await this.rt.getSession(room.publisherSession);
+      const active = tracks.some((t) => t.status === "active");
+      room.sfuMisses = active ? 0 : (room.sfuMisses ?? 0) + 1;
+    } catch (e) {
+      if (!(e instanceof RealtimeError)) throw e;
+    }
+    return (room.sfuMisses ?? 0) >= SFU_MAX_MISSES;
   }
 
   // --- Consumo e administração ---------------------------------------------
@@ -487,6 +527,7 @@ export class Group {
       !positive(c.brlPerUsd) ||
       !(typeof c.freeGb === "number" && Number.isFinite(c.freeGb) && c.freeGb >= 0) ||
       !(typeof c.ceilingPercent === "number" && c.ceilingPercent >= 100 && c.ceilingPercent <= 200) ||
+      !(typeof c.maxSessionHours === "number" && c.maxSessionHours >= 0.5 && c.maxSessionHours <= 24) ||
       !Array.isArray(c.warnPercents) ||
       c.warnPercents.some((w) => typeof w !== "number" || !(w > 0 && w <= 100));
     if (bad) {

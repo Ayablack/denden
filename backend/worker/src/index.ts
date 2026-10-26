@@ -70,7 +70,7 @@ export default {
         if (parts[1] === "chaves" && parts[3] === "revogar") return run("revokeKey", [parts[2]]);
         if (parts[1] === "config") {
           // Só os campos conhecidos; o resto é ignorado.
-          const known = ["budgetGb", "warnPercents", "ceilingPercent", "usdPerGb", "freeGb", "brlPerUsd"];
+          const known = ["budgetGb", "warnPercents", "ceilingPercent", "usdPerGb", "freeGb", "brlPerUsd", "maxSessionHours"];
           const partial = Object.fromEntries(Object.entries(b).filter(([k]) => known.includes(k)));
           return run("setConfig", [partial]);
         }

@@ -31,7 +31,18 @@ export interface RealtimePort {
   ): Promise<{ offerSdp?: string; requiresImmediateRenegotiation: boolean }>;
   renegotiate(sessionId: string, answerSdp: string): Promise<void>;
   closeTracks(sessionId: string, mids: string[]): Promise<void>;
+  /** Estado real das trilhas no SFU (`active` ou `inactive`). */
+  getSession(sessionId: string): Promise<SessionState>;
 }
+
+export type SessionTrack = {
+  location?: string;
+  mid?: string;
+  trackName?: string;
+  status?: string;
+};
+
+export type SessionState = { tracks: SessionTrack[] };
 
 type Json = Record<string, unknown>;
 
@@ -102,6 +113,11 @@ export class RealtimeClient implements RealtimePort {
     await this.call("PUT", `/sessions/${sessionId}/renegotiate`, {
       sessionDescription: { type: "answer", sdp: answerSdp },
     });
+  }
+
+  async getSession(sessionId: string): Promise<SessionState> {
+    const json = await this.call("GET", `/sessions/${sessionId}`);
+    return { tracks: (json.tracks as SessionTrack[] | undefined) ?? [] };
   }
 
   async closeTracks(sessionId: string, mids: string[]): Promise<void> {

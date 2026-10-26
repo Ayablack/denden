@@ -11,6 +11,8 @@ export type BudgetConfig = {
   freeGb: number;
   /** Estimativa configurável; não é a cotação real. */
   brlPerUsd: number;
+  /** Uma transmissão esquecida aberta não queima a franquia. */
+  maxSessionHours: number;
 };
 
 export const DEFAULT_BUDGET: BudgetConfig = {
@@ -20,6 +22,7 @@ export const DEFAULT_BUDGET: BudgetConfig = {
   usdPerGb: 0.05,
   freeGb: 1000,
   brlPerUsd: 5.5,
+  maxSessionHours: 6,
 };
 
 const GB = 1e9;

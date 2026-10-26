@@ -102,6 +102,17 @@ describe("cliente do Realtime", () => {
     expect(e2).toBeInstanceOf(RealtimeError);
     expect(e2.code).toBe("bad_sdp");
   });
+
+  it("consulta a sessão e devolve o estado das trilhas", async () => {
+    const tracks = [
+      { location: "local", mid: "0", trackName: "video", status: "active" },
+      { location: "local", mid: "1", trackName: "audio", status: "inactive" },
+    ];
+    const f = fakeFetch([{ json: { tracks } }]);
+    const s = await new RealtimeClient("APP", "T", f.fetcher).getSession("S1");
+    expect(f.calls[0]).toMatchObject({ url: `${BASE}/sessions/S1`, method: "GET" });
+    expect(s.tracks).toEqual(tracks);
+  });
 });
 
 describe("servidores ICE", () => {

@@ -37,6 +37,19 @@ class FakeRealtime implements RealtimePort {
   async closeTracks(sessionId: string, mids: string[]) {
     this.closed.push({ sessionId, mids });
   }
+  /** Estado que o SFU falso informa para as trilhas de quem transmite. */
+  sfu: "active" | "inactive" | "error" = "active";
+  sessionChecks = 0;
+  async getSession(_sessionId: string) {
+    this.sessionChecks++;
+    if (this.sfu === "error") throw new RealtimeError(503, "indisponivel", "falhou");
+    return {
+      tracks: [
+        { location: "local", mid: "0", trackName: "video", status: this.sfu },
+        { location: "local", mid: "1", trackName: "audio", status: this.sfu },
+      ],
+    };
+  }
 }
 
 async function expectGroupError(p: Promise<unknown>, status: number, code: string) {
@@ -238,5 +251,114 @@ describe("grupo: salas, espectadores, consumo e limites", () => {
     const ok = await g.setConfig({ warnPercents: [75, 50], budgetGb: 500 });
     expect(ok.warnPercents).toEqual([50, 75]);
     expect(ok.budgetGb).toBe(500);
+  });
+});
+
+describe("grupo: sinal no SFU e duração máxima", () => {
+  let rt: FakeRealtime;
+  let g: Group;
+  let ana: string;
+  const T0 = Date.UTC(2026, 9, 26, 12, 0, 0);
+  const MIN = 60_000;
+  const H = 3_600_000;
+
+  beforeEach(async () => {
+    rt = new FakeRealtime();
+    g = new Group(new MemoryStore(), rt, {});
+    ana = (await g.addKey("Ana")).key;
+  });
+
+  const create = () =>
+    g.createRoom(ana, { profile: "high", offerSdp: "O", tracks: TRACKS }, T0);
+
+  /** O app de quem transmite segue relatando (senão cai por inatividade). */
+  async function aliveUntil(code: string, until: number, step = 20_000) {
+    for (let t = T0 + step; t <= until; t += step) {
+      await g.report(ana, code, "publisher", 0, t);
+      await g.tick(t);
+    }
+  }
+
+  it("trilha ativa no SFU: a sala segue, e a checagem é a cada 60 s", async () => {
+    const { code } = await create();
+    await aliveUntil(code, T0 + 5 * MIN);
+    expect((await g.roomState(code)).state).toBe("live");
+    expect(rt.sessionChecks).toBeGreaterThanOrEqual(4);
+    expect(rt.sessionChecks).toBeLessThanOrEqual(6);
+  });
+
+  it("duas checagens seguidas sem trilha ativa encerram a sala", async () => {
+    const { code } = await create();
+    rt.sfu = "inactive";
+    await aliveUntil(code, T0 + 61_000);
+    expect((await g.roomState(code)).state).toBe("live");
+    await aliveUntil(code, T0 + 2 * MIN + 1_000);
+    expect((await g.roomState(code)).state).toBe("ended");
+    const u = await g.usage(ana, T0 + 3 * MIN);
+    expect(u.history[0].reason).toBe("sem_sinal");
+    expect(rt.closed).toContainEqual({ sessionId: "S1", mids: ["0", "1"] });
+  });
+
+  it("uma falta seguida de trilha ativa zera a contagem", async () => {
+    const { code } = await create();
+    rt.sfu = "inactive";
+    await aliveUntil(code, T0 + 61_000);
+    rt.sfu = "active";
+    await aliveUntil(code, T0 + 2 * MIN + 1_000);
+    rt.sfu = "inactive";
+    await aliveUntil(code, T0 + 3 * MIN + 1_000);
+    expect((await g.roomState(code)).state).toBe("live");
+  });
+
+  it("erro passageiro da API do SFU não conta como falta", async () => {
+    const { code } = await create();
+    rt.sfu = "error";
+    await aliveUntil(code, T0 + 5 * MIN);
+    expect((await g.roomState(code)).state).toBe("live");
+  });
+
+  it("duração máxima padrão de 6 h: aviso no relatório e fim no limite", async () => {
+    const { code } = await create();
+    const r = await g.report(ana, code, "publisher", 0, T0 + 1000);
+    expect(r.sessionEndsAtMs).toBe(T0 + 6 * H);
+    await g.report(ana, code, "publisher", 0, T0 + 6 * H - 1000);
+    await g.tick(T0 + 6 * H - 1000);
+    expect((await g.roomState(code)).state).toBe("live");
+    await g.report(ana, code, "publisher", 0, T0 + 6 * H);
+    await g.tick(T0 + 6 * H);
+    expect((await g.roomState(code)).state).toBe("ended");
+    expect((await g.usage(ana, T0 + 7 * H)).history[0].reason).toBe("duracao_maxima");
+  });
+
+  it("duração máxima configurável e validada", async () => {
+    await expectGroupError(g.setConfig({ maxSessionHours: 0 }), 400, "config_invalida");
+    await expectGroupError(g.setConfig({ maxSessionHours: 25 }), 400, "config_invalida");
+    expect((await g.setConfig({ maxSessionHours: 2 })).maxSessionHours).toBe(2);
+    const { code } = await create();
+    const r = await g.report(ana, code, "publisher", 0, T0 + 1000);
+    expect(r.sessionEndsAtMs).toBe(T0 + 2 * H);
+  });
+});
+
+describe("grupo: estado salvo por uma versão anterior", () => {
+  it("config antiga sem maxSessionHours recebe o padrão (Worker já implantado)", async () => {
+    const store = new MemoryStore();
+    const old = new Group(store, new FakeRealtime(), {});
+    const ana = (await old.addKey("Ana")).key;
+    // Simula o que o Worker antigo gravou: config sem o campo novo.
+    const raw = (await store.get<{ config: Record<string, unknown> }>("state"))!;
+    delete raw.config.maxSessionHours;
+    await store.put("state", raw);
+
+    const g = new Group(store, new FakeRealtime(), {});
+    const T0 = Date.UTC(2026, 9, 26, 12);
+    const { code } = await g.createRoom(
+      ana,
+      { profile: "high", offerSdp: "O", tracks: TRACKS },
+      T0,
+    );
+    const r = await g.report(ana, code, "publisher", 0, T0 + 1000);
+    expect(r.sessionEndsAtMs).toBe(T0 + 6 * 3_600_000);
+    expect((await g.setConfig({ budgetGb: 800 })).maxSessionHours).toBe(6);
   });
 });
