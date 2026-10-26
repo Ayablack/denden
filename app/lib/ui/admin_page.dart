@@ -98,6 +98,7 @@ class _AdminPageState extends State<AdminPage> {
   final _ceiling = TextEditingController();
   final _usdPerGb = TextEditingController();
   final _brlPerUsd = TextEditingController();
+  final _maxHours = TextEditingController();
   final _month = TextEditingController(
     text: () {
       final n = DateTime.now().toUtc();
@@ -140,6 +141,9 @@ class _AdminPageState extends State<AdminPage> {
         _ceiling.text = '${c['ceilingPercent']}';
         _usdPerGb.text = '${c['usdPerGb']}';
         _brlPerUsd.text = '${c['brlPerUsd']}';
+        if (c['maxSessionHours'] != null) {
+          _maxHours.text = '${c['maxSessionHours']}';
+        }
       }
     });
   });
@@ -240,6 +244,7 @@ class _AdminPageState extends State<AdminPage> {
       'ceilingPercent': ?_num(_ceiling.text),
       'usdPerGb': ?_num(_usdPerGb.text),
       'brlPerUsd': ?_num(_brlPerUsd.text),
+      'maxSessionHours': ?_num(_maxHours.text),
     };
     return widget.admin.setConfig(config);
   }, done: 'Limites salvos.');
@@ -262,6 +267,7 @@ class _AdminPageState extends State<AdminPage> {
       _ceiling,
       _usdPerGb,
       _brlPerUsd,
+      _maxHours,
       _month,
       _confirmedGb,
       _billedBrl,
@@ -354,6 +360,10 @@ class _AdminPageState extends State<AdminPage> {
           TextField(
             controller: _ceiling,
             decoration: const InputDecoration(labelText: 'Teto (%)'),
+          ),
+          TextField(
+            controller: _maxHours,
+            decoration: const InputDecoration(labelText: 'Duração máxima (h)'),
           ),
           TextField(
             controller: _usdPerGb,

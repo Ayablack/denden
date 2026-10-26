@@ -23,6 +23,7 @@ O nome vem dos Den Den Mushi de One Piece, os caracóis usados para comunicaçã
   - a 100% recusa novas transmissões e passa as atuais para a qualidade Economia;
   - a 105% encerra a sessão depois de 60 s de aviso;
   - **botão de emergência** que desliga tudo;
+  - sala sem sinal no servidor por 2 minutos é encerrada, e cada transmissão termina sozinha depois de **6 h** (configurável), com aviso 5 min antes;
   - o bloqueio do DenDen **não** é um limite garantido de faturamento do Cloudflare.
 - **Administração** (chave separada): criar e revogar chaves dos amigos, ajustar limites e registrar os valores confirmados e faturados.
 - **Laboratório:** transmite para o próprio PC, sem servidor, para medir fps, codec, bitrate e áudio, e exportar CSV para o Excel.
@@ -113,5 +114,5 @@ npm test
 
 ## Testes
 
-- App: 118 testes (`flutter test`).
-- Worker: 48 testes (`npm test`), com um SFU falso nas chamadas de saída.
+- App: 121 testes (`flutter test`).
+- Worker: 56 testes (`npm test`), com um SFU falso nas chamadas de saída.

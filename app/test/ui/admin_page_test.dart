@@ -140,4 +140,15 @@ void main() {
     );
     expect(find.text('Só o administrador pode fazer isto.'), findsOneWidget);
   });
+
+  testWidgets('duração máxima vai para o Worker em horas', (tester) async {
+    final a = await open(tester);
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Duração máxima (h)'),
+      '3',
+    );
+    await tester.tap(find.text('Salvar limites'));
+    await tester.pumpAndSettle();
+    expect(a.calls.single, contains('maxSessionHours: 3.0'));
+  });
 }

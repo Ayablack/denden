@@ -264,9 +264,27 @@ class _BroadcastPageState extends State<BroadcastPage> {
               _ => 'Acima do teto do mês: a transmissão será encerrada em instantes.',
             }, style: const TextStyle(color: Colors.orange)),
           ),
+        if (_minutesLeft(reply) case final left?)
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              'A transmissão termina em $left min pela duração máxima. '
+              'Para continuar, transmita de novo.',
+              style: const TextStyle(color: Colors.orange),
+            ),
+          ),
         const SizedBox(height: 16),
         OutlinedButton(onPressed: _stop, child: const Text('Parar')),
       ],
     );
+  }
+
+  /// Minutos até o fim pela duração máxima, só nos últimos 5 minutos.
+  int? _minutesLeft(ReportReply? reply) {
+    final end = reply?.sessionEndsAtMs;
+    if (end == null) return null;
+    final ms = end - DateTime.now().millisecondsSinceEpoch;
+    if (ms <= 0 || ms > 5 * 60 * 1000) return null;
+    return (ms / 60000).ceil();
   }
 }

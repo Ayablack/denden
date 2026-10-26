@@ -52,6 +52,8 @@ TURN é opcional e fica para depois. Sem TURN, quem estiver numa rede muito fech
 
 ## 5. Publicar o Worker (2 min)
 
+> **Já publicou antes?** Toda mudança no Worker só vale depois de publicar de novo com o mesmo comando abaixo. O estado salvo (chaves, consumo do mês) continua.
+
 ```bash
 npx wrangler deploy
 ```

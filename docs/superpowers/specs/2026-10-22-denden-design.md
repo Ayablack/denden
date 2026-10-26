@@ -169,6 +169,12 @@ Acessível durante e depois da transmissão. Atualiza a cada 10 s, fora da threa
 
 O bloqueio do Worker controla só o que passa pelo DenDen. Ele **não é** um limite automático e garantido de faturamento do Cloudflare. O app e o painel mostram esse aviso junto do orçamento.
 
+### 5.3.2 Sinal no SFU e duração máxima (2026-10-26)
+
+- **Sala sem sinal:** a cada 60 s o Worker confere no SFU (`GET /sessions/{id}`) se há trilha **ativa** de quem transmite. Duas faltas seguidas encerram a sala (`sem_sinal`). Erro da API do SFU não conta como falta. Consultar a API não é cobrado.
+- **Duração máxima:** cada transmissão termina depois de **6 h** (padrão; de 0,5 a 24 h na administração), com o motivo `duracao_maxima`. O app avisa quem transmite nos últimos 5 min; para continuar, basta transmitir de novo (código novo).
+- **Credenciais de mídia curtas** (ideia do Bunker): não se aplicam ao DenDen. O espectador nunca recebe credencial do SFU; quem pede as trilhas é o Worker, com o segredo. O único ponto em aberto é o TTL das credenciais TURN (2 h), a rever quando o TURN for configurado.
+
 ### 5.4 Quanto cabe de graça (perfil Alta)
 
 | Cenário | Tráfego/h | Horas/mês na franquia |

@@ -139,4 +139,14 @@ void main() {
     expect(r.endsAtMs, 123);
     expect(jsonDecode(sent.single.body), {'who': 'publisher', 'bytes': 1000});
   });
+
+  test('relatório traz o fim pela duração máxima', () async {
+    final r = await api(200, {
+      'level': 'normal',
+      'profile': 'high',
+      'warnings': [],
+      'sessionEndsAtMs': 21600000,
+    }).report('k', 'K7P92Q', 'publisher', 0);
+    expect(r.sessionEndsAtMs, 21600000);
+  });
 }

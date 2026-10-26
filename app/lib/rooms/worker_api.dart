@@ -76,11 +76,20 @@ class JoinedRoom {
 }
 
 class ReportReply {
-  const ReportReply(this.level, this.profile, this.warnings, this.endsAtMs);
+  const ReportReply(
+    this.level,
+    this.profile,
+    this.warnings,
+    this.endsAtMs, {
+    this.sessionEndsAtMs,
+  });
   final String level;
   final String profile;
   final List<int> warnings;
   final int? endsAtMs;
+
+  /// Fim pela duração máxima da transmissão (o app avisa 5 min antes).
+  final int? sessionEndsAtMs;
 }
 
 const _alphabet = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
@@ -230,9 +239,16 @@ class WorkerApi {
       key: key,
       body: {'who': who, 'bytes': bytes},
     );
-    return ReportReply(j['level'] as String, j['profile'] as String, [
-      for (final w in (j['warnings'] as List? ?? const [])) (w as num).toInt(),
-    ], (j['endsAtMs'] as num?)?.toInt());
+    return ReportReply(
+      j['level'] as String,
+      j['profile'] as String,
+      [
+        for (final w in (j['warnings'] as List? ?? const []))
+          (w as num).toInt(),
+      ],
+      (j['endsAtMs'] as num?)?.toInt(),
+      sessionEndsAtMs: (j['sessionEndsAtMs'] as num?)?.toInt(),
+    );
   }
 
   Future<void> endRoom(String key, String code) =>

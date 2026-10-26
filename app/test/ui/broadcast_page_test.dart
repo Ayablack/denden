@@ -145,4 +145,35 @@ void main() {
     expect(m.broadcast.stopped, isTrue);
     expect(c.stopped, isTrue);
   });
+
+  testWidgets('aviso nos últimos 5 minutos da duração máxima', (tester) async {
+    final m = FakeMedia();
+    await open(tester, m, FakeCapture());
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+    final now = DateTime.now().millisecondsSinceEpoch;
+    m.broadcast.repliesCtl.add(
+      ReportReply(
+        'normal',
+        'high',
+        const [],
+        null,
+        sessionEndsAtMs: now + 60 * 60 * 1000,
+      ),
+    );
+    await tester.pump();
+    expect(find.textContaining('duração máxima'), findsNothing);
+    m.broadcast.repliesCtl.add(
+      ReportReply(
+        'normal',
+        'high',
+        const [],
+        null,
+        sessionEndsAtMs: now + 4 * 60 * 1000,
+      ),
+    );
+    await tester.pump();
+    expect(find.textContaining('duração máxima'), findsOneWidget);
+    expect(find.textContaining('transmita de novo'), findsOneWidget);
+  });
 }
