@@ -101,7 +101,7 @@ class CaptureService {
   /// Só para testes; sem ele, lista as fontes reais do Windows.
   final SourceListFn? _sourceLister;
   final DisplayMediaFn _getDisplayMedia;
-  MediaStream? _stream;
+  final _streams = <MediaStream>[];
 
   Future<List<CaptureSource>> listSources() async {
     final lister = _sourceLister;
@@ -128,7 +128,7 @@ class CaptureService {
   }) async {
     await stop();
     if (s.isWindow && audio) await ensureWindowExists(listSources, s);
-    return _stream = await _getDisplayMedia(
+    final stream = await _getDisplayMedia(
       displayMediaConstraints(
         s,
         p,
@@ -137,15 +137,40 @@ class CaptureService {
         captureFps: captureFps,
       ),
     );
+    _streams.add(stream);
+    return stream;
+  }
+
+  /// Abre uma nova trilha de vídeo da tela sem parar o que já está indo
+  /// (para trocar de tela ou de taxa de quadros sem derrubar o áudio).
+  Future<MediaStreamTrack> startVideoTrack(
+    CaptureSource screen,
+    QualityProfile p, {
+    int? captureFps,
+  }) async {
+    if (screen.isWindow) {
+      throw ArgumentError.value(screen.name, 'screen', 'precisa ser uma tela');
+    }
+    final stream = await _getDisplayMedia(
+      displayMediaConstraints(
+        screen,
+        p,
+        audio: false,
+        captureFps: captureFps,
+      ),
+    );
+    _streams.add(stream);
+    return stream.getVideoTracks().first;
   }
 
   Future<void> stop() async {
-    final stream = _stream;
-    _stream = null;
-    if (stream == null) return;
-    for (final t in stream.getTracks()) {
-      await t.stop();
+    final streams = List.of(_streams);
+    _streams.clear();
+    for (final stream in streams) {
+      for (final t in stream.getTracks()) {
+        await t.stop();
+      }
+      await stream.dispose();
     }
-    await stream.dispose();
   }
 }

@@ -114,7 +114,8 @@ void main() {
       client: MockClient((_) => throw http.ClientException('sem rede')),
     );
     expect(await caught(a.iceServers('k')), isA<WorkerUnavailable>());
-  });
+  },
+  );
 
   test('a chave não aparece no texto do erro', () async {
     final e = await caught(
@@ -138,6 +139,30 @@ void main() {
     expect(r.warnings, [90, 100]);
     expect(r.endsAtMs, 123);
     expect(jsonDecode(sent.single.body), {'who': 'publisher', 'bytes': 1000});
+  });
+
+  test('relatório manda profile só quando for transmissor e lê consumo', () async {
+    final r = await api(200, {
+      'level': 'normal',
+      'profile': 'medium',
+      'warnings': [],
+      'roomEgressBytes': 250000000,
+      'monthEgressBytes': 1500000000,
+    }).report('k', 'K7P92Q', 'publisher', 1000, profile: 'medium');
+    expect(r.roomEgressBytes, 250000000);
+    expect(r.monthEgressBytes, 1500000000);
+    expect(jsonDecode(sent.single.body), {
+      'who': 'publisher',
+      'bytes': 1000,
+      'profile': 'medium',
+    });
+
+    await api(200, {
+      'level': 'normal',
+      'profile': 'medium',
+      'warnings': [],
+    }).report('k', 'K7P92Q', 'viewer-1', 500, profile: 'high');
+    expect(jsonDecode(sent.last.body), {'who': 'viewer-1', 'bytes': 500});
   });
 
   test('relatório traz o fim pela duração máxima', () async {
@@ -213,6 +238,8 @@ void main() {
     }).report('k', 'K7P92Q', 'publisher', 0);
     expect(r.endsAtMs, isNull);
     expect(r.sessionEndsAtMs, isNull);
+    expect(r.roomEgressBytes, isNull);
+    expect(r.monthEgressBytes, isNull);
   });
 
   test('mensagem do WorkerError não tem chaves e está em português', () {

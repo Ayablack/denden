@@ -82,6 +82,8 @@ class ReportReply {
     this.warnings,
     this.endsAtMs, {
     this.sessionEndsAtMs,
+    this.roomEgressBytes,
+    this.monthEgressBytes,
   });
   final String level;
   final String profile;
@@ -90,6 +92,8 @@ class ReportReply {
 
   /// Fim pela duração máxima da transmissão (o app avisa 5 min antes).
   final int? sessionEndsAtMs;
+  final int? roomEgressBytes;
+  final int? monthEgressBytes;
 }
 
 const _alphabet = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
@@ -231,13 +235,18 @@ class WorkerApi {
     String key,
     String code,
     String who,
-    int bytes,
-  ) async {
+    int bytes, {
+    String? profile,
+  }) async {
     final j = await _send(
       'POST',
       '/salas/${_code(code)}/relatorio',
       key: key,
-      body: {'who': who, 'bytes': bytes},
+      body: {
+        'who': who,
+        'bytes': bytes,
+        if (profile != null && who == 'publisher') 'profile': profile,
+      },
     );
     return ReportReply(
       j['level'] as String,
@@ -248,6 +257,8 @@ class WorkerApi {
       ],
       (j['endsAtMs'] as num?)?.toInt(),
       sessionEndsAtMs: (j['sessionEndsAtMs'] as num?)?.toInt(),
+      roomEgressBytes: (j['roomEgressBytes'] as num?)?.toInt(),
+      monthEgressBytes: (j['monthEgressBytes'] as num?)?.toInt(),
     );
   }
 

@@ -7,6 +7,7 @@ import '../capture/capture_service.dart';
 import '../capture/quality_profile.dart';
 import '../media/cloudflare_media.dart';
 import '../rooms/worker_api.dart';
+import '../usage/format.dart';
 import 'capture_control.dart';
 
 /// Transmitir: vídeo da tela inteira e áudio só da janela do jogo.
@@ -72,7 +73,15 @@ class _BroadcastPageState extends State<BroadcastPage> {
       );
       _subs
         ..add(b.states.listen((s) => setState(() => _state = s)))
-        ..add(b.replies.listen((r) => setState(() => _reply = r)))
+        ..add(
+          b.replies.listen((r) {
+            final wanted = profileFromWire(r.profile);
+            setState(() {
+              _reply = r;
+              if (wanted != null) _profile = wanted;
+            });
+          }),
+        )
         ..add(
           widget.capture.errors.listen(
             (e) => setState(() => _captureWarning = e.message),
@@ -84,6 +93,36 @@ class _BroadcastPageState extends State<BroadcastPage> {
       });
     } catch (e) {
       await widget.capture.stop();
+      if (mounted) setState(() => _error = messageFor(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _apply() async {
+    final b = _broadcast;
+    final screen = _screen;
+    if (b == null || screen == null) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final size = View.of(context).display.size;
+      final forcedEconomy =
+          _reply?.level == 'blocked' || _reply?.level == 'ceiling';
+      final targetProfile = forcedEconomy ? QualityProfile.economy : _profile;
+      final track = await widget.capture.startVideo(screen, targetProfile);
+      await b.replaceVideo(
+        track,
+        targetProfile,
+        sourceWidth: size.width.round(),
+        sourceHeight: size.height.round(),
+      );
+      if (mounted) {
+        setState(() => _profile = targetProfile);
+      }
+    } catch (e) {
       if (mounted) setState(() => _error = messageFor(e));
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -166,6 +205,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
     children: [
       if (_screens.length > 1)
         DropdownButtonFormField<CaptureSource>(
+          key: ValueKey(_screen),
           initialValue: _screen,
           decoration: const InputDecoration(labelText: 'Tela'),
           items: [
@@ -175,6 +215,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
           onChanged: (s) => setState(() => _screen = s),
         ),
       DropdownButtonFormField<AudioChoice>(
+        key: ValueKey(_audio),
         initialValue: _audio,
         isExpanded: true,
         decoration: const InputDecoration(labelText: 'Áudio de'),
@@ -203,6 +244,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
       }, style: const TextStyle(fontSize: 12)),
       const SizedBox(height: 12),
       DropdownButtonFormField<QualityProfile>(
+        key: ValueKey(_profile),
         initialValue: _profile,
         decoration: const InputDecoration(labelText: 'Qualidade'),
         items: [
@@ -226,26 +268,45 @@ class _BroadcastPageState extends State<BroadcastPage> {
   Widget _live(BroadcastHandle b) {
     final code = formatRoomCode(b.roomCode);
     final reply = _reply;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    final roomBytes = reply?.roomEgressBytes;
+    final monthBytes = reply?.monthEgressBytes;
+    return ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(16),
       children: [
-        const Text('Passe este código no Discord:'),
-        SelectableText(
-          code,
-          style: const TextStyle(fontSize: 48, letterSpacing: 4),
+        const Center(child: Text('Passe este código no Discord:')),
+        Center(
+          child: SelectableText(
+            code,
+            style: const TextStyle(fontSize: 48, letterSpacing: 4),
+          ),
         ),
-        TextButton.icon(
-          onPressed: () => Clipboard.setData(ClipboardData(text: code)),
-          icon: const Icon(Icons.copy),
-          label: const Text('Copiar'),
+        Center(
+          child: TextButton.icon(
+            onPressed: () => Clipboard.setData(ClipboardData(text: code)),
+            icon: const Icon(Icons.copy),
+            label: const Text('Copiar'),
+          ),
         ),
         const SizedBox(height: 8),
-        Text(switch (_state) {
-          LinkState.live => 'Transmitindo',
-          LinkState.reconnecting => 'Reconectando…',
-          LinkState.ended => 'Transmissão encerrada',
-          _ => 'Conectando…',
-        }),
+        Center(
+          child: Text(switch (_state) {
+            LinkState.live => 'Transmitindo',
+            LinkState.reconnecting => 'Reconectando…',
+            LinkState.ended => 'Transmissão encerrada',
+            _ => 'Conectando…',
+          }),
+        ),
+        if (roomBytes != null) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: Text('Consumo desta transmissão: ${formatBytes(roomBytes)}'),
+          ),
+        ],
+        if (monthBytes != null) ...[
+          const SizedBox(height: 4),
+          Center(child: Text('Consumo do mês: ${formatBytes(monthBytes)}')),
+        ],
         if (_captureWarning != null)
           Padding(
             padding: const EdgeInsets.all(8),
@@ -274,7 +335,44 @@ class _BroadcastPageState extends State<BroadcastPage> {
             ),
           ),
         const SizedBox(height: 16),
-        OutlinedButton(onPressed: _stop, child: const Text('Parar')),
+        if (_screens.isNotEmpty)
+          DropdownButtonFormField<CaptureSource>(
+            key: ValueKey(_screen),
+            initialValue: _screen,
+            decoration: const InputDecoration(labelText: 'Tela'),
+            items: [
+              for (final s in _screens)
+                DropdownMenuItem(value: s, child: Text(s.name)),
+            ],
+            onChanged: (s) => setState(() => _screen = s),
+          ),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<QualityProfile>(
+          key: ValueKey(_profile),
+          initialValue: _profile,
+          decoration: const InputDecoration(labelText: 'Qualidade'),
+          items: [
+            for (final p in QualityProfile.values)
+              DropdownMenuItem(value: p, child: Text(p.label)),
+          ],
+          onChanged: (p) => setState(() => _profile = p ?? _profile),
+        ),
+        const SizedBox(height: 12),
+        if (_busy)
+          const Center(child: CircularProgressIndicator())
+        else
+          FilledButton.tonal(
+            onPressed: _apply,
+            child: const Text('Aplicar'),
+          ),
+        if (_error != null) ...[
+          const SizedBox(height: 8),
+          Text(_error!, style: const TextStyle(color: Colors.red)),
+        ],
+        const SizedBox(height: 16),
+        Center(
+          child: OutlinedButton(onPressed: _stop, child: const Text('Parar')),
+        ),
       ],
     );
   }

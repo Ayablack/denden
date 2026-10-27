@@ -1,4 +1,5 @@
 import 'package:denden/capture/capture_service.dart';
+import 'package:denden/capture/quality_profile.dart';
 import 'package:denden/rooms/worker_api.dart';
 import 'package:denden/ui/broadcast_page.dart';
 import 'package:denden/ui/capture_control.dart';
@@ -12,6 +13,8 @@ Future<void> open(
   FakeMedia media,
   FakeCapture capture,
 ) async {
+  tester.view.physicalSize = const Size(1200, 1600);
+  addTearDown(tester.view.resetPhysicalSize);
   await tester.pumpWidget(
     MaterialApp(
       home: BroadcastPage(media: media, capture: capture),
@@ -92,6 +95,8 @@ void main() {
     Future<(FakeMedia, FakeCapture)> live(WidgetTester tester) async {
       final c = FakeCapture();
       final m = FakeMedia();
+      tester.view.physicalSize = const Size(1200, 1600);
+      addTearDown(tester.view.resetPhysicalSize);
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -175,5 +180,85 @@ void main() {
     await tester.pump();
     expect(find.textContaining('duração máxima'), findsOneWidget);
     expect(find.textContaining('transmita de novo'), findsOneWidget);
+  });
+
+  testWidgets('troca de tela e de qualidade ao vivo com Aplicar', (
+    tester,
+  ) async {
+    final c = FakeCapture();
+    final m = FakeMedia();
+    await open(tester, m, c);
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Tela 1'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tela 2').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(QualityProfile.high.label));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(QualityProfile.medium.label).last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+
+    expect(c.lastVideoScreen?.name, 'Tela 2');
+    expect(c.lastVideoProfile, QualityProfile.medium);
+    expect(m.broadcast.replacedProfile, QualityProfile.medium);
+    expect(m.broadcast.replacedTrack?.id, 'video-1-medium');
+    expect(c.stopped, isFalse);
+    expect(m.broadcast.stopped, isFalse);
+  });
+
+  testWidgets('economy forçado pelo orçamento continua valendo ao Aplicar', (
+    tester,
+  ) async {
+    final c = FakeCapture();
+    final m = FakeMedia();
+    await open(tester, m, c);
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+
+    m.broadcast.repliesCtl.add(
+      const ReportReply('blocked', 'economy', [100], null),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(QualityProfile.economy.label), findsOneWidget);
+
+    await tester.tap(find.text(QualityProfile.economy.label));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(QualityProfile.high.label).last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+
+    expect(c.lastVideoProfile, QualityProfile.economy);
+    expect(m.broadcast.replacedProfile, QualityProfile.economy);
+    expect(find.text(QualityProfile.economy.label), findsOneWidget);
+  });
+
+  testWidgets('mostra consumo desta transmissão e do mês', (tester) async {
+    final m = FakeMedia();
+    await open(tester, m, FakeCapture());
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+
+    m.broadcast.repliesCtl.add(
+      const ReportReply(
+        'normal',
+        'high',
+        [],
+        null,
+        roomEgressBytes: 250 * 1000 * 1000,
+        monthEgressBytes: 1500 * 1000 * 1000,
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Consumo desta transmissão: 250 MB'), findsOneWidget);
+    expect(find.text('Consumo do mês: 1,50 GB'), findsOneWidget);
   });
 }
