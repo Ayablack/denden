@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../rooms/worker_api.dart';
 import 'capture_control.dart';
+import 'componentes.dart';
+import 'tema.dart';
 import 'usage_page.dart';
 
 class KeyInfo {
@@ -277,39 +279,162 @@ class _AdminPageState extends State<AdminPage> {
     super.dispose();
   }
 
-  Widget _title(String t) => Padding(
-    padding: const EdgeInsets.only(top: 20, bottom: 6),
-    child: Text(t, style: const TextStyle(fontSize: 18)),
+  Widget _campo(TextEditingController c, String rotulo) => Padding(
+    padding: const EdgeInsets.only(bottom: 14),
+    child: TextField(
+      controller: c,
+      decoration: InputDecoration(labelText: rotulo),
+    ),
   );
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Administração'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => UsagePage(load: widget.admin.usage),
+  Widget _chaves(ColorScheme c) => Painel(
+    titulo: 'Chaves dos amigos',
+    icone: Icons.vpn_key_outlined,
+    acao: Selo(
+      '${_keys.where((k) => !k.revoked).length} ativas',
+      cor: c.onSurfaceVariant,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _name,
+                decoration: const InputDecoration(labelText: 'Nome do amigo'),
+                onSubmitted: (_) => _createKey(),
+              ),
+            ),
+            const SizedBox(width: 12),
+            FilledButton(
+              onPressed: _createKey,
+              child: const Text('Criar chave'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Dica('Cada amigo tem a própria chave. Revogar tira o acesso.'),
+        const SizedBox(height: 16),
+        if (_keys.isEmpty) const Dica('Nenhuma chave criada ainda.'),
+        for (final k in _keys)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: c.outlineVariant)),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.circle,
+                  size: 8,
+                  color: k.revoked ? c.onSurfaceVariant : c.primary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    k.revoked ? '${k.name} (revogada)' : k.name,
+                    style: TextStyle(
+                      color: k.revoked ? c.onSurfaceVariant : c.onSurface,
+                    ),
+                  ),
+                ),
+                if (!k.revoked)
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: c.error,
+                      side: BorderSide(color: c.error.withValues(alpha: 0.6)),
+                    ),
+                    onPressed: () => _revoke(k),
+                    icon: const Icon(Icons.block, size: 16),
+                    label: const Text('Revogar'),
+                  ),
+              ],
             ),
           ),
-          child: const Text('Ver consumo'),
+      ],
+    ),
+  );
+
+  Widget _limites() => Painel(
+    titulo: 'Limites',
+    icone: Icons.speed,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Dica(
+          'Quem bloqueia é o servidor: estes valores valem para todos.',
+        ),
+        const SizedBox(height: 14),
+        _campo(_budget, 'Orçamento do mês (GB)'),
+        _campo(_warns, 'Avisos (%)'),
+        _campo(_ceiling, 'Teto (%)'),
+        _campo(_maxHours, 'Duração máxima (h)'),
+        _campo(_usdPerGb, r'Tarifa (US$/GB)'),
+        _campo(_brlPerUsd, r'Câmbio (R$/US$)'),
+        FilledButton(
+          onPressed: _saveConfig,
+          child: const Text('Salvar limites'),
         ),
       ],
     ),
-    body: SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+  );
+
+  Widget _provedor() => Painel(
+    titulo: 'Valores do provedor',
+    icone: Icons.receipt_long_outlined,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Dica('Copie do painel ou da fatura do Cloudflare.'),
+        const SizedBox(height: 14),
+        _campo(_month, 'Mês (AAAA-MM)'),
+        _campo(_confirmedGb, 'Confirmado pelo Cloudflare (GB)'),
+        _campo(_billedBrl, r'Faturado (R$)'),
+        OutlinedButton(
+          onPressed: _saveConfirmed,
+          child: const Text('Salvar valores do provedor'),
+        ),
+      ],
+    ),
+  );
+
+  Widget _emergencia(ColorScheme c) => Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+      side: BorderSide(color: c.error.withValues(alpha: 0.6)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_error != null)
-            Text(_error!, style: const TextStyle(color: Colors.red)),
-          if (_notice != null)
-            Text(_notice!, style: const TextStyle(color: Colors.green)),
-          _title('Emergência'),
+          Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: c.error),
+              const SizedBox(width: 10),
+              Text(
+                'Emergência',
+                style: TextStyle(
+                  color: c.error,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Dica(
+            _emergency
+                ? 'Todas as transmissões estão desligadas.'
+                : 'Encerra todas as salas na hora e recusa novas transmissões '
+                      'até você religar.',
+          ),
+          const SizedBox(height: 16),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: _emergency ? null : Colors.red,
+              backgroundColor: _emergency ? null : c.error,
+              foregroundColor: _emergency ? null : Colors.white,
             ),
             onPressed: _toggleEmergency,
             child: Text(
@@ -318,88 +443,73 @@ class _AdminPageState extends State<AdminPage> {
                   : 'Desligar todas as transmissões',
             ),
           ),
-          _title('Chaves dos amigos'),
-          for (final k in _keys)
-            Row(
-              children: [
-                Expanded(
-                  child: Text(k.revoked ? '${k.name} (revogada)' : k.name),
-                ),
-                if (!k.revoked)
-                  TextButton(
-                    onPressed: () => _revoke(k),
-                    child: const Text('Revogar'),
-                  ),
-              ],
-            ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _name,
-                  decoration: const InputDecoration(labelText: 'Nome do amigo'),
-                ),
-              ),
-              TextButton(
-                onPressed: _createKey,
-                child: const Text('Criar chave'),
-              ),
-            ],
-          ),
-          _title('Limites (o Worker é quem bloqueia)'),
-          TextField(
-            controller: _budget,
-            decoration: const InputDecoration(
-              labelText: 'Orçamento do mês (GB)',
-            ),
-          ),
-          TextField(
-            controller: _warns,
-            decoration: const InputDecoration(labelText: 'Avisos (%)'),
-          ),
-          TextField(
-            controller: _ceiling,
-            decoration: const InputDecoration(labelText: 'Teto (%)'),
-          ),
-          TextField(
-            controller: _maxHours,
-            decoration: const InputDecoration(labelText: 'Duração máxima (h)'),
-          ),
-          TextField(
-            controller: _usdPerGb,
-            decoration: const InputDecoration(labelText: r'Tarifa (US$/GB)'),
-          ),
-          TextField(
-            controller: _brlPerUsd,
-            decoration: const InputDecoration(labelText: r'Câmbio (R$/US$)'),
-          ),
-          const SizedBox(height: 8),
-          FilledButton(
-            onPressed: _saveConfig,
-            child: const Text('Salvar limites'),
-          ),
-          _title('Valores do provedor (do painel/fatura do Cloudflare)'),
-          TextField(
-            controller: _month,
-            decoration: const InputDecoration(labelText: 'Mês (AAAA-MM)'),
-          ),
-          TextField(
-            controller: _confirmedGb,
-            decoration: const InputDecoration(
-              labelText: 'Confirmado pelo Cloudflare (GB)',
-            ),
-          ),
-          TextField(
-            controller: _billedBrl,
-            decoration: const InputDecoration(labelText: r'Faturado (R$)'),
-          ),
-          const SizedBox(height: 8),
-          FilledButton(
-            onPressed: _saveConfirmed,
-            child: const Text('Salvar valores do provedor'),
-          ),
         ],
       ),
     ),
   );
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Administração'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => UsagePage(load: widget.admin.usage),
+              ),
+            ),
+            child: const Text('Ver consumo'),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: CorpoTela(
+        larguraMaxima: 1100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_error != null) ...[
+              Faixa(_error!, erro: true),
+              const SizedBox(height: 12),
+            ],
+            if (_notice != null) ...[
+              Selo(_notice!, cor: DenDenCores.ok),
+              const SizedBox(height: 12),
+            ],
+            LayoutBuilder(
+              builder: (context, box) {
+                final lado = Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _limites(),
+                    const SizedBox(height: 16),
+                    _provedor(),
+                    const SizedBox(height: 16),
+                    _emergencia(c),
+                  ],
+                );
+                if (box.maxWidth < 860) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [_chaves(c), const SizedBox(height: 16), lado],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 3, child: _chaves(c)),
+                    const SizedBox(width: 16),
+                    Expanded(flex: 2, child: lado),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
