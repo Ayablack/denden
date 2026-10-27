@@ -9,6 +9,7 @@ import 'media/cloudflare_media.dart';
 import 'rooms/settings_store.dart';
 import 'rooms/worker_api.dart';
 import 'ui/admin_page.dart';
+import 'ui/aviso_atualizacao.dart';
 import 'ui/broadcast_page.dart';
 import 'ui/capture_control.dart';
 import 'ui/setup_page.dart';
@@ -138,31 +139,38 @@ class HomePage extends StatelessWidget {
         ),
       ],
     ),
-    body: Center(
-      child: Wrap(
-        spacing: 24,
-        children: [
-          FilledButton.icon(
-            onPressed: () => _open(
-              context,
-              BroadcastPage(media: _media(), capture: RealCaptureControl()),
-            ),
-            icon: const Icon(Icons.cast),
-            label: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Transmitir', style: TextStyle(fontSize: 20)),
-            ),
+    body: Column(
+      children: [
+        Expanded(child: _buttons(context)),
+        const AvisoAtualizacao(),
+      ],
+    ),
+  );
+
+  Widget _buttons(BuildContext context) => Center(
+    child: Wrap(
+      spacing: 24,
+      children: [
+        FilledButton.icon(
+          onPressed: () => _open(
+            context,
+            BroadcastPage(media: _media(), capture: RealCaptureControl()),
           ),
-          FilledButton.tonalIcon(
-            onPressed: () => _open(context, WatchPage(media: _media())),
-            icon: const Icon(Icons.tv),
-            label: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Assistir', style: TextStyle(fontSize: 20)),
-            ),
+          icon: const Icon(Icons.cast),
+          label: const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text('Transmitir', style: TextStyle(fontSize: 20)),
           ),
-        ],
-      ),
+        ),
+        FilledButton.tonalIcon(
+          onPressed: () => _open(context, WatchPage(media: _media())),
+          icon: const Icon(Icons.tv),
+          label: const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text('Assistir', style: TextStyle(fontSize: 20)),
+          ),
+        ),
+      ],
     ),
   );
 }
