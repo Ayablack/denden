@@ -5,6 +5,8 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../media/cloudflare_media.dart';
 import 'capture_control.dart';
+import 'componentes.dart';
+import 'tema.dart';
 
 /// Assistir: digitar o código e ver a tela do amigo, com o som do jogo.
 class WatchPage extends StatefulWidget {
@@ -87,34 +89,70 @@ class _WatchPageState extends State<WatchPage> {
     );
   }
 
-  Widget _form() => Center(
-    child: SizedBox(
-      width: 360,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _code,
-            decoration: const InputDecoration(
-              labelText: 'Código da sala',
-              hintText: 'K7P-92Q',
-            ),
-            onSubmitted: (_) => _busy ? null : _watch(),
-          ),
-          const SizedBox(height: 16),
-          if (_busy)
-            const CircularProgressIndicator()
-          else
-            FilledButton(onPressed: _watch, child: const Text('Assistir')),
-          if (_error != null) ...[
+  Widget _form() {
+    final c = Theme.of(context).colorScheme;
+    return CorpoTela(
+      larguraMaxima: 520,
+      centralizar: true,
+      child: Painel(
+        titulo: 'Assistir a uma transmissão',
+        icone: Icons.live_tv,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Dica('Digite o código que quem transmite passou no Discord.'),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
-            TextButton(onPressed: _watch, child: const Text('Tentar de novo')),
+            TextField(
+              controller: _code,
+              autofocus: true,
+              style: TextStyle(
+                fontFamily: 'Consolas',
+                fontSize: 20,
+                letterSpacing: 4,
+                color: c.primary,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Código da sala',
+                hintText: 'K7P-92Q',
+              ),
+              onSubmitted: (_) => _busy ? null : _watch(),
+            ),
+            const SizedBox(height: 16),
+            if (_busy)
+              const Center(child: CircularProgressIndicator())
+            else
+              SizedBox(
+                height: 48,
+                child: FilledButton(
+                  onPressed: _watch,
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.play_arrow, size: 20),
+                      SizedBox(width: 8),
+                      Text('Assistir'),
+                    ],
+                  ),
+                ),
+              ),
+            if (_error != null) ...[
+              const SizedBox(height: 16),
+              Faixa(_error!, erro: true),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: OutlinedButton.icon(
+                  onPressed: _watch,
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text('Tentar de novo'),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   Widget _player() {
     final renderer = _renderer;
@@ -123,27 +161,49 @@ class _WatchPageState extends State<WatchPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Icon(
+              Icons.tv_off,
+              size: 40,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 12),
             const Text('Transmissão encerrada', style: TextStyle(fontSize: 22)),
-            TextButton(onPressed: _leave, child: const Text('Voltar')),
+            const SizedBox(height: 12),
+            OutlinedButton(onPressed: _leave, child: const Text('Voltar')),
           ],
         ),
       ),
       LinkState.live || LinkState.reconnecting when renderer != null => Stack(
         children: [
           Positioned.fill(
-            child: RTCVideoView(
-              renderer,
-              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
+            child: ColoredBox(
+              color: Colors.black,
+              child: RTCVideoView(
+                renderer,
+                objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
+              ),
             ),
           ),
           if (_state == LinkState.reconnecting)
             const Align(
               alignment: Alignment.topCenter,
-              child: Text('Reconectando…'),
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Selo('Reconectando…', cor: DenDenCores.aviso),
+              ),
             ),
         ],
       ),
-      _ => const Center(child: Text('Conectando…')),
+      _ => const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 12),
+            Text('Conectando…'),
+          ],
+        ),
+      ),
     };
   }
 }

@@ -13,8 +13,12 @@ Future<void> open(
   FakeMedia media,
   FakeCapture capture,
 ) async {
+  // Janela de PC (densidade 1): com a densidade padrão do teste, 3, seriam
+  // só 400 px de largura.
   tester.view.physicalSize = const Size(1200, 1600);
+  tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
       home: BroadcastPage(media: media, capture: capture),
@@ -33,7 +37,12 @@ void main() {
   testWidgets('respiro embaixo antes e durante a transmissão', (tester) async {
     await open(tester, FakeMedia(), FakeCapture());
     double bottom() =>
-        (tester.widget<ListView>(find.byType(ListView)).padding! as EdgeInsets)
+        (tester
+                    .widget<SingleChildScrollView>(
+                      find.byType(SingleChildScrollView).first,
+                    )
+                    .padding!
+                as EdgeInsets)
             .bottom;
     expect(bottom(), 40);
     await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
@@ -269,7 +278,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Consumo desta transmissão: 250 MB'), findsOneWidget);
-    expect(find.text('Consumo do mês: 1,50 GB'), findsOneWidget);
+    expect(find.text('Consumo desta transmissão:'), findsOneWidget);
+    expect(find.text('250 MB'), findsOneWidget);
+    expect(find.text('Consumo do mês:'), findsOneWidget);
+    expect(find.text('1,50 GB'), findsOneWidget);
   });
 }

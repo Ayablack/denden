@@ -9,6 +9,8 @@ import '../media/cloudflare_media.dart';
 import '../rooms/worker_api.dart';
 import '../usage/format.dart';
 import 'capture_control.dart';
+import 'componentes.dart';
+import 'tema.dart';
 
 /// Transmitir: vídeo da tela inteira e áudio só da janela do jogo.
 class BroadcastPage extends StatefulWidget {
@@ -190,62 +192,38 @@ class _BroadcastPageState extends State<BroadcastPage> {
     onPopInvokedWithResult: _onLeaveAttempt,
     child: Scaffold(
       appBar: AppBar(title: const Text('Transmitir')),
-      body: Center(
-        child: SizedBox(
-          width: 460,
-          child: _broadcast == null ? _setup() : _live(_broadcast!),
-        ),
-      ),
+      body: _broadcast == null
+          ? CorpoTela(larguraMaxima: 520, child: _setup())
+          : CorpoTela(child: _live(_broadcast!)),
     ),
   );
 
-  /// Respiro maior embaixo para o último botão não colar na borda.
-  static const _padding = EdgeInsets.fromLTRB(16, 16, 16, 40);
+  Widget _erro() => Padding(
+    padding: const EdgeInsets.only(top: 12),
+    child: Text(
+      _error!,
+      style: TextStyle(color: Theme.of(context).colorScheme.error),
+    ),
+  );
 
-  Widget _setup() => ListView(
-    shrinkWrap: true,
-    padding: _padding,
-    children: [
-      if (_screens.length > 1)
-        DropdownButtonFormField<CaptureSource>(
-          key: ValueKey(_screen),
-          initialValue: _screen,
-          decoration: const InputDecoration(labelText: 'Tela'),
-          items: [
-            for (final s in _screens)
-              DropdownMenuItem(value: s, child: Text(s.name)),
-          ],
-          onChanged: (s) => setState(() => _screen = s),
-        ),
-      DropdownButtonFormField<AudioChoice>(
-        key: ValueKey(_audio),
-        initialValue: _audio,
-        isExpanded: true,
-        decoration: const InputDecoration(labelText: 'Áudio de'),
+  Widget _botaoComIcone(IconData icone, String texto) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [Icon(icone, size: 20), const SizedBox(width: 8), Text(texto)],
+  );
+
+  DropdownButtonFormField<CaptureSource> _campoTela() =>
+      DropdownButtonFormField<CaptureSource>(
+        key: ValueKey(_screen),
+        initialValue: _screen,
+        decoration: const InputDecoration(labelText: 'Tela'),
         items: [
-          const DropdownMenuItem(
-            value: PcAudio(),
-            child: Text('PC inteiro, menos o Discord'),
-          ),
-          for (final w in _windows)
-            DropdownMenuItem(
-              value: WindowAudio(w),
-              child: Text(w.name, overflow: TextOverflow.ellipsis),
-            ),
-          const DropdownMenuItem(value: NoAudio(), child: Text('Sem áudio')),
+          for (final s in _screens)
+            DropdownMenuItem(value: s, child: Text(s.name)),
         ],
-        onChanged: (a) => setState(() => _audio = a ?? _audio),
-      ),
-      const SizedBox(height: 4),
-      Text(switch (_audio) {
-        PcAudio() =>
-          'Vai todo o som do PC, menos o Discord. Outros apps de voz '
-              '(WhatsApp, Discord no navegador) entram.',
-        WindowAudio() =>
-          'Só o som desta janela vai junto. A voz do Discord não entra.',
-        NoAudio() => 'Sem áudio.',
-      }, style: const TextStyle(fontSize: 12)),
-      const SizedBox(height: 12),
+        onChanged: (s) => setState(() => _screen = s),
+      );
+
+  DropdownButtonFormField<QualityProfile> _campoQualidade() =>
       DropdownButtonFormField<QualityProfile>(
         key: ValueKey(_profile),
         initialValue: _profile,
@@ -255,130 +233,239 @@ class _BroadcastPageState extends State<BroadcastPage> {
             DropdownMenuItem(value: p, child: Text(p.label)),
         ],
         onChanged: (p) => setState(() => _profile = p ?? _profile),
-      ),
-      const SizedBox(height: 20),
-      if (_busy)
-        const Center(child: CircularProgressIndicator())
-      else
-        FilledButton(onPressed: _start, child: const Text('Transmitir')),
-      if (_error != null) ...[
-        const SizedBox(height: 12),
-        Text(_error!, style: const TextStyle(color: Colors.red)),
-      ],
-    ],
-  );
+      );
 
-  Widget _live(BroadcastHandle b) {
-    final code = formatRoomCode(b.roomCode);
-    final reply = _reply;
-    final roomBytes = reply?.roomEgressBytes;
-    final monthBytes = reply?.monthEgressBytes;
-    return ListView(
-      shrinkWrap: true,
-      padding: _padding,
+  Widget _setup() => Painel(
+    titulo: 'Transmitir',
+    icone: Icons.cast,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Center(child: Text('Passe este código no Discord:')),
-        Center(
-          child: SelectableText(
-            code,
-            style: const TextStyle(fontSize: 48, letterSpacing: 4),
-          ),
-        ),
-        Center(
-          child: TextButton.icon(
-            onPressed: () => Clipboard.setData(ClipboardData(text: code)),
-            icon: const Icon(Icons.copy),
-            label: const Text('Copiar'),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: Text(switch (_state) {
-            LinkState.live => 'Transmitindo',
-            LinkState.reconnecting => 'Reconectando…',
-            LinkState.ended => 'Transmissão encerrada',
-            _ => 'Conectando…',
-          }),
-        ),
-        if (roomBytes != null) ...[
-          const SizedBox(height: 8),
-          Center(
-            child: Text('Consumo desta transmissão: ${formatBytes(roomBytes)}'),
-          ),
-        ],
-        if (monthBytes != null) ...[
-          const SizedBox(height: 4),
-          Center(child: Text('Consumo do mês: ${formatBytes(monthBytes)}')),
-        ],
-        if (_captureWarning != null)
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              _captureWarning!,
-              style: const TextStyle(color: Colors.orange),
-            ),
-          ),
-        if (reply != null && reply.level != 'normal')
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(switch (reply.level) {
-              'warn' => 'Atenção: mais de 90% do limite do mês.',
-              'blocked' =>
-                'Limite do mês atingido: qualidade reduzida para Economia.',
-              _ => 'Acima do teto do mês: a transmissão será encerrada em instantes.',
-            }, style: const TextStyle(color: Colors.orange)),
-          ),
-        if (_minutesLeft(reply) case final left?)
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              'A transmissão termina em $left min pela duração máxima. '
-              'Para continuar, transmita de novo.',
-              style: const TextStyle(color: Colors.orange),
-            ),
-          ),
-        const SizedBox(height: 16),
-        if (_screens.isNotEmpty)
-          DropdownButtonFormField<CaptureSource>(
-            key: ValueKey(_screen),
-            initialValue: _screen,
-            decoration: const InputDecoration(labelText: 'Tela'),
-            items: [
-              for (final s in _screens)
-                DropdownMenuItem(value: s, child: Text(s.name)),
-            ],
-            onChanged: (s) => setState(() => _screen = s),
-          ),
-        const SizedBox(height: 12),
-        DropdownButtonFormField<QualityProfile>(
-          key: ValueKey(_profile),
-          initialValue: _profile,
-          decoration: const InputDecoration(labelText: 'Qualidade'),
+        if (_screens.length > 1) ...[_campoTela(), const SizedBox(height: 16)],
+        DropdownButtonFormField<AudioChoice>(
+          key: ValueKey(_audio),
+          initialValue: _audio,
+          isExpanded: true,
+          decoration: const InputDecoration(labelText: 'Áudio de'),
           items: [
-            for (final p in QualityProfile.values)
-              DropdownMenuItem(value: p, child: Text(p.label)),
+            const DropdownMenuItem(
+              value: PcAudio(),
+              child: Text('PC inteiro, menos o Discord'),
+            ),
+            for (final w in _windows)
+              DropdownMenuItem(
+                value: WindowAudio(w),
+                child: Text(w.name, overflow: TextOverflow.ellipsis),
+              ),
+            const DropdownMenuItem(value: NoAudio(), child: Text('Sem áudio')),
           ],
-          onChanged: (p) => setState(() => _profile = p ?? _profile),
+          onChanged: (a) => setState(() => _audio = a ?? _audio),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 6),
+        Dica(switch (_audio) {
+          PcAudio() =>
+            'Vai todo o som do PC, menos o Discord. Outros apps de voz '
+                '(WhatsApp, Discord no navegador) entram.',
+          WindowAudio() =>
+            'Só o som desta janela vai junto. A voz do Discord não entra.',
+          NoAudio() => 'Sem áudio.',
+        }),
+        const SizedBox(height: 16),
+        _campoQualidade(),
+        const SizedBox(height: 24),
         if (_busy)
           const Center(child: CircularProgressIndicator())
         else
-          FilledButton.tonal(
-            onPressed: _apply,
-            child: const Text('Aplicar'),
+          SizedBox(
+            height: 48,
+            child: FilledButton(
+              onPressed: _start,
+              child: _botaoComIcone(Icons.videocam_outlined, 'Transmitir'),
+            ),
           ),
-        if (_error != null) ...[
-          const SizedBox(height: 8),
-          Text(_error!, style: const TextStyle(color: Colors.red)),
-        ],
+        if (_error != null) _erro(),
+      ],
+    ),
+  );
+
+  Widget _live(BroadcastHandle b) {
+    final c = Theme.of(context).colorScheme;
+    final reply = _reply;
+    final avisos = [
+      ?_captureWarning,
+      if (reply != null && reply.level != 'normal')
+        switch (reply.level) {
+          'warn' => 'Atenção: mais de 90% do limite do mês.',
+          'blocked' =>
+            'Limite do mês atingido: qualidade reduzida para Economia.',
+          _ =>
+            'Acima do teto do mês: a transmissão será encerrada em instantes.',
+        },
+      if (_minutesLeft(reply) case final left?)
+        'A transmissão termina em $left min pela duração máxima. '
+            'Para continuar, transmita de novo.',
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _barraEstado(c),
+        for (final a in avisos) ...[const SizedBox(height: 12), Faixa(a)],
         const SizedBox(height: 16),
-        Center(
-          child: OutlinedButton(onPressed: _stop, child: const Text('Parar')),
+        LayoutBuilder(
+          builder: (context, box) {
+            final codigo = _painelCodigo(b, c);
+            final lado = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (reply?.roomEgressBytes != null ||
+                    reply?.monthEgressBytes != null) ...[
+                  _painelConsumo(reply!, c),
+                  const SizedBox(height: 16),
+                ],
+                _painelAjustes(),
+              ],
+            );
+            if (box.maxWidth < 760) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [codigo, const SizedBox(height: 16), lado],
+              );
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(flex: 5, child: codigo),
+                const SizedBox(width: 16),
+                Expanded(flex: 4, child: lado),
+              ],
+            );
+          },
         ),
       ],
     );
   }
+
+  Widget _barraEstado(ColorScheme c) => Card(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Flexible(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: switch (_state) {
+                LinkState.live => Selo('Transmitindo', cor: c.primary),
+                LinkState.reconnecting => const Selo(
+                  'Reconectando…',
+                  cor: DenDenCores.aviso,
+                ),
+                LinkState.ended => Selo('Transmissão encerrada', cor: c.error),
+                _ => Selo('Conectando…', cor: c.onSurfaceVariant),
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: c.error,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: _stop,
+            child: _botaoComIcone(Icons.stop_circle_outlined, 'Parar'),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _painelCodigo(BroadcastHandle b, ColorScheme c) {
+    final code = formatRoomCode(b.roomCode);
+    return Painel(
+      titulo: 'Código da sala',
+      icone: Icons.key_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+            decoration: BoxDecoration(
+              color: c.surface,
+              border: Border.all(color: c.outlineVariant),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              children: [
+                const Dica('Passe este código no Discord:'),
+                const SizedBox(height: 8),
+                SelectableText(
+                  code,
+                  style: TextStyle(
+                    fontSize: 48,
+                    letterSpacing: 6,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Consolas',
+                    color: c.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 44,
+            child: FilledButton(
+              onPressed: () => Clipboard.setData(ClipboardData(text: code)),
+              child: _botaoComIcone(Icons.copy, 'Copiar'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _painelConsumo(ReportReply r, ColorScheme c) => Painel(
+    titulo: 'Consumo',
+    icone: Icons.data_usage,
+    child: Column(
+      children: [
+        if (r.roomEgressBytes case final bytes?)
+          _linhaValor('Consumo desta transmissão', formatBytes(bytes), c),
+        if (r.monthEgressBytes case final bytes?)
+          _linhaValor('Consumo do mês', formatBytes(bytes), c),
+      ],
+    ),
+  );
+
+  Widget _linhaValor(String rotulo, String valor, ColorScheme c) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      children: [
+        Expanded(child: Text('$rotulo:')),
+        Text(
+          valor,
+          style: TextStyle(color: c.primary, fontWeight: FontWeight.w600),
+        ),
+      ],
+    ),
+  );
+
+  Widget _painelAjustes() => Painel(
+    titulo: 'Ajustes da transmissão',
+    icone: Icons.tune,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_screens.isNotEmpty) ...[_campoTela(), const SizedBox(height: 16)],
+        _campoQualidade(),
+        const SizedBox(height: 20),
+        if (_busy)
+          const Center(child: CircularProgressIndicator())
+        else
+          FilledButton.tonal(onPressed: _apply, child: const Text('Aplicar')),
+        if (_error != null) _erro(),
+      ],
+    ),
+  );
 
   /// Minutos até o fim pela duração máxima, só nos últimos 5 minutos.
   int? _minutesLeft(ReportReply? reply) {

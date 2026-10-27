@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../rooms/worker_api.dart';
 import '../usage/format.dart';
 import 'capture_control.dart';
+import 'componentes.dart';
+import 'tema.dart';
 
 /// Painel de consumo do mês. Números sempre rotulados: o que é estimativa do
 /// DenDen, o que o Cloudflare confirmou e o que foi faturado de fato.
@@ -78,11 +80,6 @@ class _UsageView extends StatelessWidget {
   final Map<String, dynamic> d;
   final String? error;
 
-  Widget _label(String t) => Padding(
-    padding: const EdgeInsets.only(top: 16, bottom: 4),
-    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
-  );
-
   @override
   Widget build(BuildContext context) {
     final config = Map<String, dynamic>.from(d['config'] as Map);
@@ -105,105 +102,227 @@ class _UsageView extends StatelessWidget {
         Map<String, dynamic>.from(h as Map),
     ];
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    final c = Theme.of(context).colorScheme;
+    final cheio = percent >= 90;
+    return CorpoTela(
+      larguraMaxima: 1100,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (error != null)
-            Text(error!, style: const TextStyle(color: Colors.red)),
-          if (d['emergency'] == true)
-            const Text(
-              'Emergência ligada: transmissões desligadas.',
-              style: TextStyle(color: Colors.red),
-            ),
-          Text('Mês ${d['month']} (UTC)', style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: (percent / 100).clamp(0, 1).toDouble(),
-          ),
-          Text(
-            '${formatPercent(percent)} do orçamento '
-            '(${formatBytes(budgetGb * 1e9)})',
-          ),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final w in warnings)
-                Chip(
-                  label: Text(
-                    w['reached'] == true
-                        ? '${w['percent']}% atingido'
-                        : '${w['percent']}%',
-                  ),
-                  backgroundColor: w['reached'] == true
-                      ? Colors.orange.shade200
-                      : null,
-                ),
-            ],
-          ),
-          if (projection > budgetGb * 1e9)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                'No ritmo atual, o mês fecha em ${formatBytes(projection)}, '
-                'acima do orçamento. Para gastar menos, transmita em Média ou '
-                'Economia.',
-                style: const TextStyle(color: Colors.orange),
-              ),
-            ),
-          _label('Estimado'),
-          Text(formatBytes(effective), style: const TextStyle(fontSize: 22)),
-          Text(
-            'Relatado pelos apps: ${formatBytes(_n(d['reportedEgressBytes']))}',
-          ),
-          Text(
-            'Calculado pelo servidor: ${formatBytes(_n(d['serverEgressBytes']))}',
-          ),
-          const Text('Vale a maior das duas estimativas.'),
-          Text(
-            'Franquia gratuita: ${formatBytes(effective)} de '
-            '${formatBytes(_n(config['freeGb']) * 1e9)}',
-          ),
-          _label('Confirmado pelo Cloudflare'),
-          Text(confirmed == null ? '—' : formatBytes(confirmed * 1e9)),
-          _label('Custo estimado'),
-          Text(
-            '${formatUsd(_n(d['estimatedCostUsd']))} '
-            '(≈ ${formatBrl(_n(d['estimatedCostBrl']))}, câmbio estimado '
-            '${formatBrl(_n(config['brlPerUsd']))}; tarifa '
-            '${formatUsd(_n(config['usdPerGb']))}/GB acima da franquia)',
-          ),
-          _label('Faturado'),
-          Text(billed == null ? '—' : formatBrl(billed)),
-          _label('Transmissões ao vivo'),
-          if (rooms.isEmpty) const Text('Nenhuma agora.'),
-          for (final r in rooms) ...[
-            Text(
-              'Sala ${formatRoomCode(r['code'] as String)}: '
-              '${formatBytes(_n(r['egressBytes']))} enviados aos espectadores '
-              '(transmissor mandou ${formatBytes(_n(r['publisherSentBytes']))})',
-            ),
-            for (final (i, v) in (r['viewers'] as List).indexed)
-              Text(
-                '   Espectador ${i + 1}: '
-                '${formatBytes(_n((v as Map)['receivedBytes']))}',
-              ),
+          if (error != null) ...[
+            Faixa(error!, erro: true),
+            const SizedBox(height: 12),
           ],
-          _label('Histórico'),
-          if (history.isEmpty) const Text('Nenhuma transmissão encerrada.'),
-          for (final h in history)
-            Text(
-              '${formatRoomCode(h['code'] as String)}: '
-              '${((_n(h['endedAt']) - _n(h['startedAt'])) / 60000).round()} min, '
-              '${h['reason']}, ${formatBytes(_n(h['egressBytes']))}',
+          if (d['emergency'] == true) ...[
+            const Faixa(
+              'Emergência ligada: transmissões desligadas.',
+              erro: true,
             ),
-          const SizedBox(height: 16),
-          Text(
-            d['notice'] as String? ?? '',
-            style: const TextStyle(fontStyle: FontStyle.italic),
+            const SizedBox(height: 12),
+          ],
+          Painel(
+            titulo: 'Mês ${d['month']} (UTC)',
+            icone: Icons.calendar_month_outlined,
+            acao: Selo(
+              '${formatPercent(percent)} do orçamento '
+              '(${formatBytes(budgetGb * 1e9)})',
+              cor: cheio ? DenDenCores.aviso : c.primary,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    minHeight: 8,
+                    color: cheio ? DenDenCores.aviso : c.primary,
+                    value: (percent / 100).clamp(0, 1).toDouble(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final w in warnings)
+                      Selo(
+                        w['reached'] == true
+                            ? '${w['percent']}% atingido'
+                            : '${w['percent']}%',
+                        cor: w['reached'] == true
+                            ? DenDenCores.aviso
+                            : c.onSurfaceVariant,
+                      ),
+                  ],
+                ),
+                if (projection > budgetGb * 1e9) ...[
+                  const SizedBox(height: 12),
+                  Faixa(
+                    'No ritmo atual, o mês fecha em ${formatBytes(projection)}, '
+                    'acima do orçamento. Para gastar menos, transmita em Média ou '
+                    'Economia.',
+                  ),
+                ],
+              ],
+            ),
           ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, box) {
+              final colunas = box.maxWidth >= 900 ? 4 : 2;
+              final largura = (box.maxWidth - 16 * (colunas - 1)) / colunas;
+              final metricas = [
+                _Metrica(
+                  'Estimado',
+                  Icons.query_stats,
+                  formatBytes(effective),
+                  [
+                    'Relatado pelos apps: '
+                        '${formatBytes(_n(d['reportedEgressBytes']))}',
+                    'Calculado pelo servidor: '
+                        '${formatBytes(_n(d['serverEgressBytes']))}',
+                    'Vale a maior das duas estimativas.',
+                    'Franquia gratuita: ${formatBytes(effective)} de '
+                        '${formatBytes(_n(config['freeGb']) * 1e9)}',
+                  ],
+                ),
+                _Metrica(
+                  'Confirmado pelo Cloudflare',
+                  Icons.verified_outlined,
+                  confirmed == null ? '—' : formatBytes(confirmed * 1e9),
+                  const [],
+                ),
+                _Metrica(
+                  'Custo estimado',
+                  Icons.payments_outlined,
+                  formatUsd(_n(d['estimatedCostUsd'])),
+                  [
+                    '${formatUsd(_n(d['estimatedCostUsd']))} '
+                        '(≈ ${formatBrl(_n(d['estimatedCostBrl']))}, câmbio '
+                        'estimado ${formatBrl(_n(config['brlPerUsd']))}; tarifa '
+                        '${formatUsd(_n(config['usdPerGb']))}/GB acima da '
+                        'franquia)',
+                  ],
+                ),
+                _Metrica(
+                  'Faturado',
+                  Icons.receipt_long_outlined,
+                  billed == null ? '—' : formatBrl(billed),
+                  const [],
+                ),
+              ];
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  for (final m in metricas) SizedBox(width: largura, child: m),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, box) {
+              final aoVivo = Painel(
+                titulo: 'Transmissões ao vivo',
+                icone: Icons.sensors,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (rooms.isEmpty) const Dica('Nenhuma agora.'),
+                    for (final r in rooms) ...[
+                      Text(
+                        'Sala ${formatRoomCode(r['code'] as String)}: '
+                        '${formatBytes(_n(r['egressBytes']))} enviados aos '
+                        'espectadores (transmissor mandou '
+                        '${formatBytes(_n(r['publisherSentBytes']))})',
+                      ),
+                      for (final (i, v) in (r['viewers'] as List).indexed)
+                        Dica(
+                          '   Espectador ${i + 1}: '
+                          '${formatBytes(_n((v as Map)['receivedBytes']))}',
+                        ),
+                      const SizedBox(height: 8),
+                    ],
+                  ],
+                ),
+              );
+              final historico = Painel(
+                titulo: 'Histórico',
+                icone: Icons.history,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (history.isEmpty)
+                      const Dica('Nenhuma transmissão encerrada.'),
+                    for (final h in history)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          '${formatRoomCode(h['code'] as String)}: '
+                          '${((_n(h['endedAt']) - _n(h['startedAt'])) / 60000).round()} min, '
+                          '${h['reason']}, ${formatBytes(_n(h['egressBytes']))}',
+                        ),
+                      ),
+                  ],
+                ),
+              );
+              if (box.maxWidth < 760) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [aoVivo, const SizedBox(height: 16), historico],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 2, child: aoVivo),
+                  const SizedBox(width: 16),
+                  Expanded(flex: 3, child: historico),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Faixa(d['notice'] as String? ?? ''),
         ],
+      ),
+    );
+  }
+}
+
+/// Um dos quatro números do mês, sempre com o rótulo.
+class _Metrica extends StatelessWidget {
+  const _Metrica(this.titulo, this.icone, this.valor, this.detalhes);
+
+  final String titulo;
+  final IconData icone;
+  final String valor;
+  final List<String> detalhes;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: Text(titulo)),
+                Icon(icone, size: 18, color: c.primary),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              valor,
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+            ),
+            for (final t in detalhes) ...[const SizedBox(height: 4), Dica(t)],
+          ],
+        ),
       ),
     );
   }

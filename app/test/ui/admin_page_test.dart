@@ -50,8 +50,12 @@ class FakeAdmin implements AdminPort {
 
 Future<FakeAdmin> open(WidgetTester tester, [FakeAdmin? a]) async {
   final admin = a ?? FakeAdmin();
+  // Janela de PC (densidade 1): com a densidade padrão do teste, 3, seriam
+  // só 400 px de largura.
   tester.view.physicalSize = const Size(1200, 2400);
+  tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(MaterialApp(home: AdminPage(admin: admin)));
   await tester.pumpAndSettle();
   return admin;
