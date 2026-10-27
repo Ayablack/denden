@@ -25,8 +25,7 @@ Na primeira vez que abrir, você verá a tela **DenDen — Configurar**:
 1. **Endereço do servidor:** cole o endereço começando com `https://` que o dono do grupo te mandou.
 2. **Sua chave:** cole a sua chave pessoal.
 3. Deixe o campo **Chave de administrador** em branco.
-4. *(Dica)* Marque a opção **Não abaixar o volume dos outros programas** para o Windows não reduzir o som do jogo e do Discord.
-5. Clique em **Salvar**.
+4. Clique em **Salvar**.
 
 ## 5. Assistir a uma transmissão
 

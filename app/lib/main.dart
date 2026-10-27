@@ -14,7 +14,6 @@ import 'rooms/settings_store.dart';
 import 'rooms/worker_api.dart';
 import 'ui/admin_page.dart';
 import 'ui/aviso_atualizacao.dart';
-import 'ui/aviso_reducao_volume.dart';
 import 'ui/broadcast_page.dart';
 import 'ui/cartao_acao.dart';
 import 'ui/capture_control.dart';
@@ -79,8 +78,10 @@ class _DenDenAppState extends State<DenDenApp> {
     final s = _settings;
     return MaterialApp(
       title: 'DenDen',
+      // Segue o modo claro ou escuro do Windows.
       theme: temaDenDen(Brightness.light),
       darkTheme: temaDenDen(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: store == null || s == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : !s.isComplete || _editing
@@ -172,7 +173,6 @@ class HomePage extends StatelessWidget {
     ),
     body: Column(
       children: [
-        const AvisoReducaoVolume(),
         Expanded(child: _buttons(context)),
         const AvisoAtualizacao(),
       ],

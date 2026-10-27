@@ -30,6 +30,17 @@ void main() {
     expect(find.textContaining('menos o Discord. Outros'), findsOneWidget);
   });
 
+  testWidgets('respiro embaixo antes e durante a transmissão', (tester) async {
+    await open(tester, FakeMedia(), FakeCapture());
+    double bottom() =>
+        (tester.widget<ListView>(find.byType(ListView)).padding! as EdgeInsets)
+            .bottom;
+    expect(bottom(), 40);
+    await tester.tap(find.widgetWithText(FilledButton, 'Transmitir'));
+    await tester.pumpAndSettle();
+    expect(bottom(), 40);
+  });
+
   testWidgets('dá para escolher só uma janela, mas não o DenDen', (
     tester,
   ) async {
