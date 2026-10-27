@@ -31,8 +31,14 @@ jobs:
         run: flutter test test/usage test/rooms
         working-directory: app
 
+      # A versão vem da tag (v1.0.2 -> 1.0.2): aparece na tela inicial e
+      # serve para o botão Atualizar comparar com o GitHub.
       - name: Build Windows release
-        run: flutter build windows --release
+        run: |
+          $v = '${{ github.ref_name }}' -replace '^v', ''
+          if ($v -notmatch '^\d+(\.\d+)*$') { $v = 'dev' }
+          $nome = if ($v -eq 'dev') { '1.0.0' } else { $v }
+          flutter build windows --release --build-name=$nome --dart-define=DENDEN_VERSAO=$v
         working-directory: app
 
       - name: Copy DLLs

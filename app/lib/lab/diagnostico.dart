@@ -34,7 +34,19 @@ class DiagConfig {
     this.captureFps,
     this.screenIndex = 1,
     this.sourceSize,
+    this.mode = 'ambos',
+    this.room,
+    this.joins = 1,
   });
+
+  /// `modo=transmitir` só transmite (o código vai para o CSV);
+  /// `modo=assistir;sala=K7P92Q` só assiste a uma sala de outro processo ou
+  /// PC. O padrão (`ambos`) transmite e assiste no mesmo processo.
+  final String mode;
+  final String? room;
+
+  /// `entradas=3`: quantas vezes assistir à sala no mesmo processo.
+  final int joins;
 
   final Duration duration;
   final String csvPath;
@@ -83,6 +95,9 @@ class DiagConfig {
         ),
         _ => null,
       },
+      mode: kv['modo'] ?? 'ambos',
+      room: kv['sala'],
+      joins: int.tryParse(kv['entradas'] ?? '') ?? 1,
     );
   }
 }
@@ -286,54 +301,52 @@ Future<Never> runDiagnostic(
       throw StateError('Configure o endereço e a chave antes.');
     }
     final media = CloudflareMedia(WorkerApi(s.workerUrl!), s.key!);
-    final screens = [
-      for (final x in await capture.listSources())
-        if (!x.isWindow) x,
-    ];
-    final screen = screens[c.screenIndex - 1];
-    final (srcW, srcH) = c.sourceSize ?? (width, height);
-    write('# tela: ${screen.name} ${srcW}x$srcH');
-    final stream = switch (c.audio) {
-      'pc' => await pcAudio.start(screen, c.profile),
-      'pc-excluindo' => await capture.start(
-        screen,
-        c.profile,
-        excludeProcessId: c.excludePid == 0 ? null : c.excludePid,
-      ),
-      _ => await capture.start(
-        screen,
-        c.profile,
-        audio: false,
-        captureFps: c.captureFps,
-      ),
-    };
-    pcAudio.errors.listen((e) => write('# AVISO ${e.code}: ${e.message}'));
-    broadcast = await media.publish(
-      stream,
-      c.profile,
-      sourceWidth: srcW,
-      sourceHeight: srcH,
-    );
-    await renderer.initialize();
-    viewing = await media.watch(broadcast.roomCode, renderer);
-    // Quem assiste está no mesmo PC: tocar o som recebido faria a captura
-    // pegar de novo o próprio som.
-    await viewing.muteAudio();
-    // Mostra o vídeo recebido na janela, como na tela de assistir.
-    onWatching?.call(renderer);
-    write(
-      '# renderizador: ${renderer.srcObject?.getVideoTracks().length} '
-      'trilha(s) de vídeo, ${renderer.srcObject?.getAudioTracks().length} '
-      'de áudio',
-    );
+    if (c.mode != 'assistir') {
+      broadcast = await _publish(
+        c,
+        media,
+        capture,
+        pcAudio,
+        width,
+        height,
+        write,
+      );
+      write('# sala: ${broadcast.roomCode}');
+    }
+    if (c.mode != 'transmitir') {
+      await renderer.initialize();
+      // Entradas antes da última: sair e entrar de novo no mesmo processo,
+      // como quem clica Voltar e digita o código outra vez.
+      for (var n = 1; n < c.joins; n++) {
+        final v = await media.watch(c.room ?? broadcast!.roomCode, renderer);
+        await Future<void>.delayed(const Duration(seconds: 5));
+        await v.leave();
+        write('# entrada $n de ${c.joins}: ok');
+      }
+      viewing = await media.watch(c.room ?? broadcast!.roomCode, renderer);
+      // Quem assiste está no mesmo PC: tocar o som recebido faria a captura
+      // pegar de novo o próprio som.
+      await viewing.muteAudio();
+      // Mostra o vídeo recebido na janela, como na tela de assistir.
+      onWatching?.call(renderer);
+      write(
+        '# renderizador: ${renderer.srcObject?.getVideoTracks().length} '
+        'trilha(s) de vídeo, ${renderer.srcObject?.getAudioTracks().length} '
+        'de áudio',
+      );
+    }
 
-    var prevTx = await broadcast.rawStats();
-    var prevRx = await viewing.rawStats();
+    Future<List<StatsReport>> txStats() async =>
+        await broadcast?.rawStats() ?? const [];
+    Future<List<StatsReport>> rxStats() async =>
+        await viewing?.rawStats() ?? const [];
+    var prevTx = await txStats();
+    var prevRx = await rxStats();
     var prevAt = DateTime.now();
     for (var i = 1; i <= c.duration.inSeconds; i++) {
       await Future<void>.delayed(const Duration(seconds: 1));
-      final tx = await broadcast.rawStats();
-      final rx = await viewing.rawStats();
+      final tx = await txStats();
+      final rx = await rxStats();
       final now = DateTime.now();
       write(
         diagRow(
@@ -349,7 +362,7 @@ Future<Never> runDiagnostic(
       prevRx = rx;
       prevAt = now;
       // Confere se o perfil chegou mesmo ao libwebrtc.
-      if (i == 2) {
+      if (i == 2 && broadcast != null) {
         write('# codificação: ${await broadcast.describeEncodings()}');
       }
     }
@@ -363,4 +376,43 @@ Future<Never> runDiagnostic(
   await capture.stop();
   await renderer.dispose();
   exit(code);
+}
+
+Future<Broadcast> _publish(
+  DiagConfig c,
+  CloudflareMedia media,
+  CaptureService capture,
+  PcWithoutDiscordCapture pcAudio,
+  int width,
+  int height,
+  void Function(String) write,
+) async {
+  final screens = [
+    for (final x in await capture.listSources())
+      if (!x.isWindow) x,
+  ];
+  final screen = screens[c.screenIndex - 1];
+  final (srcW, srcH) = c.sourceSize ?? (width, height);
+  write('# tela: ${screen.name} ${srcW}x$srcH');
+  final stream = switch (c.audio) {
+    'pc' => await pcAudio.start(screen, c.profile),
+    'pc-excluindo' => await capture.start(
+      screen,
+      c.profile,
+      excludeProcessId: c.excludePid == 0 ? null : c.excludePid,
+    ),
+    _ => await capture.start(
+      screen,
+      c.profile,
+      audio: false,
+      captureFps: c.captureFps,
+    ),
+  };
+  pcAudio.errors.listen((e) => write('# AVISO ${e.code}: ${e.message}'));
+  return media.publish(
+    stream,
+    c.profile,
+    sourceWidth: srcW,
+    sourceHeight: srcH,
+  );
 }
