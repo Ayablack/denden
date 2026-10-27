@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: 'stable'
+
+      - name: Flutter pub get
+        run: flutter pub get
+        working-directory: app
+
+      - name: Flutter test
+        run: flutter test test/usage test/rooms
+        working-directory: app
+
+      - name: Build Windows release
+        run: flutter build windows --release
+        working-directory: app
+
+      - name: Copy DLLs
+        run: |
+          Copy-Item C:\Windows\System32\msvcp140.dll app\build\windows\x64\runner\Release\
+          Copy-Item C:\Windows\System32\vcruntime140.dll app\build\windows\x64\runner\Release\
+          Copy-Item C:\Windows\System32\vcruntime140_1.dll app\build\windows\x64\runner\Release\
+
+      - name: Compress to ZIP
+        run: Compress-Archive -Path app\build\windows\x64\runner\Release\* -DestinationPath DenDen-${{ github.ref_name }}-windows.zip
+
+      - name: Create Pre-release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create ${{ github.ref_name }} DenDen-${{ github.ref_name }}-windows.zip --prerelease --title "${{ github.ref_name }}" --notes "Baixe o zip, descompacte a pasta inteira e abra o denden.exe. Se o Windows avisar 'aplicativo não reconhecido', clique em Mais informações e depois em Executar assim mesmo."
