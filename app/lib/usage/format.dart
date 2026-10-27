@@ -15,12 +15,21 @@ String _ptBr(double v, int decimals) {
 
 /// MB (10^6) abaixo de 1 GB, senão GB (10^9) com 2 casas.
 String formatBytes(num bytes) {
-  if (bytes < 1e9) return '${_ptBr(bytes / 1e6, 0)} MB';
+  final mb = (bytes / 1e6).round();
+  if (mb < 1000) return '${_ptBr(mb.toDouble(), 0)} MB';
   return '${_ptBr(bytes / 1e9, 2)} GB';
 }
 
-String formatBrl(num v) => 'R\$ ${_ptBr(v.toDouble(), 2)}';
+String formatBrl(num v) {
+  final s = _ptBr(v.toDouble(), 2);
+  if (s.startsWith('-')) return '-R\$ ${s.substring(1)}';
+  return 'R\$ $s';
+}
 
-String formatUsd(num v) => 'US\$ ${_ptBr(v.toDouble(), 2)}';
+String formatUsd(num v) {
+  final s = _ptBr(v.toDouble(), 2);
+  if (s.startsWith('-')) return '-US\$ ${s.substring(1)}';
+  return 'US\$ $s';
+}
 
 String formatPercent(num v) => '${_ptBr(v.toDouble(), 1)}%';
