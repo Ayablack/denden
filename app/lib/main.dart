@@ -92,8 +92,11 @@ class HomePage extends StatelessWidget {
   final AppSettings settings;
   final VoidCallback onEditSettings;
 
-  CloudflareMedia _media() =>
-      CloudflareMedia(WorkerApi(settings.workerUrl!), settings.key!);
+  CloudflareMedia _media() => CloudflareMedia(
+    WorkerApi(settings.workerUrl!),
+    settings.key!,
+    registrarQualidade: true,
+  );
 
   void _open(BuildContext context, Widget page) =>
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));

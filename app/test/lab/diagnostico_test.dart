@@ -52,6 +52,52 @@ void main() {
     expect(row['pacotes_perdidos'], 5);
   });
 
+  test('mede travadas, retransmissões e perda até o SFU', () {
+    StatsReport remote(int lost) => StatsReport('r', 'remote-inbound-rtp', 0, {
+      'kind': 'video',
+      'packetsLost': lost,
+    });
+    final row = diagRow(
+      second: 2,
+      secs: 1,
+      prevTx: [
+        out({'nackCount': 4}),
+        remote(10),
+      ],
+      tx: [
+        out({'nackCount': 9}),
+        remote(13),
+      ],
+      prevRx: [
+        inb({'freezeCount': 1, 'totalFreezesDuration': 0.5}),
+      ],
+      rx: [
+        inb({'freezeCount': 2, 'totalFreezesDuration': 1.7}),
+      ],
+    ).values;
+    expect(row['travadas'], 1);
+    expect(row['travada_ms'], closeTo(1200, 0.001));
+    expect(row['nacks'], 5);
+    expect(row['perda_ate_sfu'], 3);
+  });
+
+  test('só um lado: o outro fica zerado, sem erro', () {
+    final row = diagRow(
+      second: 1,
+      secs: 1,
+      prevTx: const [],
+      tx: const [],
+      prevRx: [
+        inb({'framesDecoded': 0}),
+      ],
+      rx: [
+        inb({'framesDecoded': 60}),
+      ],
+    ).values;
+    expect(row['recebido_fps'], 60);
+    expect(row['enviado_fps'], 0);
+  });
+
   test('CSV com ponto e vírgula e vírgula decimal', () {
     final line = const DiagRow({'segundo': 1, 'enviado_fps': 29.97}).toCsv();
     expect(line, startsWith('1;30,0;'));

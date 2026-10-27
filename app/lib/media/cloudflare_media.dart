@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../capture/quality_profile.dart';
+import '../lab/registro_qualidade.dart';
 import '../lab/sdp_hints.dart';
 import '../lab/session_lock.dart';
 import '../logging/sanitize.dart';
@@ -78,9 +79,13 @@ LinkState _map(RTCPeerConnectionState s, LinkState current) => switch (s) {
   _ => current,
 };
 
+/// Registro de qualidade de cada conexão aberta (só no app de verdade).
+final _registros = <RTCPeerConnection, RegistroQualidade>{};
+
 /// Mesma ordem do laboratório: nenhum retorno de chamada novo, tirar as
 /// trilhas, fechar e liberar a conexão.
 Future<void> _teardown(RTCPeerConnection pc) async {
+  _registros.remove(pc)?.parar();
   pc.onIceCandidate = null;
   pc.onTrack = null;
   pc.onConnectionState = null;
@@ -97,11 +102,33 @@ Future<void> _teardown(RTCPeerConnection pc) async {
 
 /// Publica e assiste pelo Cloudflare Realtime SFU, falando com o Worker.
 class CloudflareMedia implements MediaPort {
-  CloudflareMedia(this.api, this.key, {this.log});
+  CloudflareMedia(
+    this.api,
+    this.key, {
+    this.log,
+    this.registrarQualidade = false,
+  });
 
   final WorkerApi api;
   final String key;
   final void Function(String)? log;
+
+  /// Grava o CSV de qualidade (ver [RegistroQualidade]).
+  final bool registrarQualidade;
+
+  Future<void> _registrar(
+    RTCPeerConnection pc, {
+    required bool enviando,
+    required String sala,
+  }) async {
+    if (!registrarQualidade) return;
+    final r = await RegistroQualidade.iniciar(
+      pc,
+      enviando: enviando,
+      sala: sala,
+    );
+    if (r != null) _registros[pc] = r;
+  }
 
   @override
   Future<Broadcast> publish(
@@ -151,6 +178,7 @@ class CloudflareMedia implements MediaPort {
       );
       await b._applyProfile(profile);
       b._start();
+      await _registrar(pc, enviando: true, sala: room.code);
       return b;
     } catch (_) {
       await _teardown(pc);
@@ -181,6 +209,7 @@ class CloudflareMedia implements MediaPort {
           await api.answer(key, normalized, joined.viewerId, answer.sdp!);
           v._viewerId = joined.viewerId;
           v._start();
+          await _registrar(pc, enviando: false, sala: normalized);
           return v;
         } catch (_) {
           await _teardown(pc);
