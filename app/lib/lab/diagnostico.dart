@@ -128,6 +128,13 @@ class DiagRow {
     'travada_ms',
     'nacks',
     'perda_ate_sfu',
+    'quadros_chave_enviados',
+    'pacotes_reenviados',
+    'nacks_pedidos',
+    'pli_pedidos',
+    'quadros_chave_recebidos',
+    'quadros_recebidos',
+    'decodificar_ms',
     'buffer_ms',
     'codec',
     'audio_energia_enviada',
@@ -182,6 +189,7 @@ DiagRow diagRow({
 
   final encoded = delta(prevTx, tx, 'outbound-rtp', 'framesEncoded');
   final emitted = delta(prevRx, rx, 'inbound-rtp', 'jitterBufferEmittedCount');
+  final decoded = delta(prevRx, rx, 'inbound-rtp', 'framesDecoded');
   final out = _first(tx, 'outbound-rtp', 'video') ?? const {};
   final inb = _first(rx, 'inbound-rtp', 'video') ?? const {};
   final pair = _pair(tx);
@@ -241,6 +249,37 @@ DiagRow diagRow({
       'remote-inbound-rtp',
       'packetsLost',
     ).toInt(),
+    // Imagens completas: geradas por quem transmite, recebidas por quem
+    // assiste. Quem assiste pede uma (PLI) quando não consegue decodificar.
+    'quadros_chave_enviados': delta(
+      prevTx,
+      tx,
+      'outbound-rtp',
+      'keyFramesEncoded',
+    ).toInt(),
+    'pacotes_reenviados': delta(
+      prevTx,
+      tx,
+      'outbound-rtp',
+      'retransmittedPacketsSent',
+    ).toInt(),
+    'nacks_pedidos': delta(prevRx, rx, 'inbound-rtp', 'nackCount').toInt(),
+    'pli_pedidos': delta(prevRx, rx, 'inbound-rtp', 'pliCount').toInt(),
+    'quadros_chave_recebidos': delta(
+      prevRx,
+      rx,
+      'inbound-rtp',
+      'keyFramesDecoded',
+    ).toInt(),
+    'quadros_recebidos': delta(
+      prevRx,
+      rx,
+      'inbound-rtp',
+      'framesReceived',
+    ).toInt(),
+    'decodificar_ms': decoded == 0
+        ? null
+        : delta(prevRx, rx, 'inbound-rtp', 'totalDecodeTime') * 1000 / decoded,
     'buffer_ms': emitted == 0
         ? null
         : delta(prevRx, rx, 'inbound-rtp', 'jitterBufferDelay') *
