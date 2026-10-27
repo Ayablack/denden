@@ -4,7 +4,10 @@ import 'dart:io';
 /// dos outros programas (jogo, Discord) em 80% enquanto o DenDen transmite
 /// ou assiste. Não dá para evitar pelo código: o que resolve é a opção do
 /// Windows em Som → Comunicações → "Não fazer nada". Isto lê e muda essa
-/// opção (só do usuário atual, sem precisar de administrador).
+/// opção (só do usuário atual, sem precisar de administrador). Ela só vale
+/// depois de reiniciar o PC. Em 2026-10-27 não funcionaram: usar os
+/// dispositivos de mídia em vez dos de comunicação e
+/// IAudioSessionControl2::SetDuckingPreference.
 const _key = r'HKCU\Software\Microsoft\Multimedia\Audio';
 const _value = 'UserDuckingPreference';
 

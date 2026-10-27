@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <rect width="256" height="256" rx="48" fill="#0B0F17"/>
+  <rect x="2" y="2" width="252" height="252" rx="46" stroke="#1E293B" stroke-width="3"/>
+  <circle cx="120" cy="136" r="62" stroke="#00E5C9" stroke-width="12" stroke-linecap="round" stroke-dasharray="310 70"/>
+  <circle cx="120" cy="136" r="38" stroke="#00B4D8" stroke-width="10" stroke-linecap="round" stroke-dasharray="190 50"/>
+  <circle cx="120" cy="136" r="18" fill="#00E5C9"/>
+  <!-- Antennas / Snail sensory transceivers -->
+  <path d="M102 82L90 52" stroke="#00E5C9" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="88" cy="48" r="9" fill="#00E5C9"/>
+  <path d="M142 82L156 52" stroke="#00E5C9" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="158" cy="48" r="9" fill="#38BDF8"/>
+  <!-- Radio transmission waves -->
+  <path d="M178 100C194 116 202 134 202 154" stroke="#00E5C9" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+  <path d="M198 84C220 106 230 130 230 156" stroke="#00B4D8" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+</svg>

@@ -89,31 +89,61 @@ Future<NovaVersao?> conferirAtualizacao(
   }
 }
 
-String _aspas(String s) => "'${s.replaceAll("'", "''")}'";
+String _junta(String pasta, String nome) =>
+    '$pasta${Platform.pathSeparator}$nome';
 
-/// Script que roda depois que o DenDen fecha: troca os arquivos da pasta
-/// e abre o DenDen de novo. Se a troca falhar, abre a versão que estiver
-/// lá, para ninguém ficar sem o app.
-String scriptAtualizacao({
-  required int pid,
-  required String zip,
-  required String pasta,
-}) =>
-    '''
-\$ErrorActionPreference = 'Stop'
-try { Wait-Process -Id $pid -Timeout 30 } catch {}
-\$novo = Join-Path \$env:TEMP 'denden-atualizacao-novo'
-try {
-  if (Test-Path -LiteralPath \$novo) { Remove-Item -LiteralPath \$novo -Recurse -Force }
-  Expand-Archive -LiteralPath ${_aspas(zip)} -DestinationPath \$novo -Force
-  Copy-Item -Path (Join-Path \$novo '*') -Destination ${_aspas(pasta)} -Recurse -Force
-} finally {
-  Start-Process -FilePath (Join-Path ${_aspas(pasta)} 'denden.exe')
+/// Troca os arquivos de [pasta] pelos de [novos], subpastas incluídas. O
+/// Windows não deixa sobrescrever o DenDen aberto, mas deixa renomear: cada
+/// arquivo antigo vira `*.antigo-<n>` e é apagado na próxima abertura
+/// ([limparRestosDeAtualizacao]). Se algo falhar no meio, desfaz tudo e
+/// lança o erro: a versão antiga continua inteira.
+void trocarArquivos(Directory novos, Directory pasta) {
+  final sufixo = '.antigo-${DateTime.now().millisecondsSinceEpoch}';
+  final feitos = <(File, File?)>[];
+  try {
+    for (final f in novos.listSync(recursive: true).whereType<File>()) {
+      final alvo = File(
+        _junta(pasta.path, f.path.substring(novos.path.length + 1)),
+      );
+      alvo.parent.createSync(recursive: true);
+      File? antigo;
+      if (alvo.existsSync()) antigo = alvo.renameSync('${alvo.path}$sufixo');
+      feitos.add((alvo, antigo));
+      f.copySync(alvo.path);
+    }
+  } catch (_) {
+    for (final (alvo, antigo) in feitos.reversed) {
+      try {
+        if (alvo.existsSync()) alvo.deleteSync();
+        antigo?.renameSync(alvo.path);
+      } catch (_) {
+        // Melhor esforço: segue desfazendo o resto.
+      }
+    }
+    rethrow;
+  }
 }
-''';
 
-/// Baixa o zip (avisando o progresso de 0 a 1), prepara o script e fecha
-/// o DenDen para ele trocar os arquivos.
+/// Ao abrir: apaga o que sobrou da última atualização. Arquivo ainda em
+/// uso fica para a próxima.
+void limparRestosDeAtualizacao([Directory? pasta]) {
+  final p = pasta ?? File(Platform.resolvedExecutable).parent;
+  try {
+    for (final f in p.listSync(recursive: true).whereType<File>()) {
+      if (!f.path.contains('.antigo-')) continue;
+      try {
+        f.deleteSync();
+      } catch (_) {
+        // Em uso.
+      }
+    }
+  } catch (_) {
+    // Pasta sem permissão de leitura: nada a limpar.
+  }
+}
+
+/// Baixa o zip (avisando o progresso de 0 a 1), troca os arquivos da pasta
+/// do DenDen, abre a versão nova e fecha esta.
 Future<void> instalarAtualizacao(
   NovaVersao nova, {
   http.Client? client,
@@ -121,9 +151,11 @@ Future<void> instalarAtualizacao(
 }) async {
   final c = client ?? http.Client();
   final pastaTemp = Directory(
-    '${Directory.systemTemp.path}${Platform.pathSeparator}denden-atualizacao',
-  )..createSync(recursive: true);
-  final zip = File('${pastaTemp.path}${Platform.pathSeparator}DenDen.zip');
+    _junta(Directory.systemTemp.path, 'denden-atualizacao'),
+  );
+  if (pastaTemp.existsSync()) pastaTemp.deleteSync(recursive: true);
+  pastaTemp.createSync(recursive: true);
+  final zip = File(_junta(pastaTemp.path, 'DenDen.zip'));
   final resposta = await c.send(http.Request('GET', Uri.parse(nova.urlZip)));
   if (resposta.statusCode != 200) {
     throw HttpException('download ${resposta.statusCode}');
@@ -140,20 +172,24 @@ Future<void> instalarAtualizacao(
   if (nova.tamanho > 0 && zip.lengthSync() != nova.tamanho) {
     throw const HttpException('download incompleto');
   }
-  final script = File('${pastaTemp.path}${Platform.pathSeparator}trocar.ps1')
-    // Com BOM: o PowerShell 5.1 lê sem BOM como ANSI e estraga acentos
-    // no caminho da pasta.
-    ..writeAsStringSync(
-      '﻿${scriptAtualizacao(pid: pid, zip: zip.path, pasta: File(Platform.resolvedExecutable).parent.path)}',
-    );
-  await Process.start('powershell.exe', [
-    '-NoProfile',
-    '-ExecutionPolicy',
-    'Bypass',
-    '-WindowStyle',
-    'Hidden',
-    '-File',
-    script.path,
-  ], mode: ProcessStartMode.detached);
+  // O tar do Windows (10 em diante) abre zip. Sem PowerShell: lançado pelo
+  // app, ele nem chegava a rodar.
+  final novos = Directory(_junta(pastaTemp.path, 'novos'))..createSync();
+  final tar = _junta(
+    _junta(Platform.environment['SystemRoot'] ?? r'C:\Windows', 'System32'),
+    'tar.exe',
+  );
+  final r = await Process.run(tar, ['-xf', zip.path, '-C', novos.path]);
+  if (r.exitCode != 0 || !File(_junta(novos.path, 'denden.exe')).existsSync()) {
+    throw const FileSystemException('zip sem o DenDen');
+  }
+  final pasta = File(Platform.resolvedExecutable).parent;
+  trocarArquivos(novos, pasta);
+  await Process.start(
+    _junta(pasta.path, 'denden.exe'),
+    const [],
+    mode: ProcessStartMode.detached,
+    workingDirectory: pasta.path,
+  );
   exit(0);
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:denden/atualizacao/atualizacao.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,17 +76,49 @@ void main() {
     });
   });
 
-  test('script espera o DenDen fechar, troca os arquivos e abre de novo', () {
-    final s = scriptAtualizacao(
-      pid: 1234,
-      zip: r'C:\Temp\d\novo.zip',
-      pasta: r"C:\Jogos\DenDen do Zé's",
-    );
-    expect(s, contains('Wait-Process -Id 1234'));
-    expect(s, contains(r"Expand-Archive -LiteralPath 'C:\Temp\d\novo.zip'"));
-    // Aspas simples dentro do caminho são dobradas no PowerShell.
-    expect(s, contains(r"'C:\Jogos\DenDen do Zé''s'"));
-    expect(s, contains('denden.exe'));
-    expect(s.indexOf('Wait-Process'), lessThan(s.indexOf('Copy-Item')));
+  group('trocar os arquivos', () {
+    late Directory raiz, novos, pasta;
+    setUp(() {
+      raiz = Directory.systemTemp.createTempSync('troca');
+      novos = Directory('${raiz.path}/novos')..createSync();
+      pasta = Directory("${raiz.path}/DenDen do Zé's")..createSync();
+    });
+    tearDown(() => raiz.deleteSync(recursive: true));
+
+    void escreve(Directory d, String nome, String texto) => (File(
+      '${d.path}/$nome',
+    )..parent.createSync(recursive: true)).writeAsStringSync(texto);
+    String le(String nome) => File('${pasta.path}/$nome').readAsStringSync();
+
+    test('troca, cria subpastas e guarda o antigo para apagar depois', () {
+      escreve(pasta, 'denden.exe', 'velho');
+      escreve(pasta, 'data/app.so', 'velho');
+      escreve(novos, 'denden.exe', 'novo');
+      escreve(novos, 'data/app.so', 'novo');
+      escreve(novos, 'data/extra.dat', 'novo');
+      trocarArquivos(novos, pasta);
+      expect(le('denden.exe'), 'novo');
+      expect(le('data/app.so'), 'novo');
+      expect(le('data/extra.dat'), 'novo');
+      limparRestosDeAtualizacao(pasta);
+      final restos = pasta
+          .listSync(recursive: true)
+          .where((f) => f.path.contains('.antigo-'));
+      expect(restos, isEmpty);
+    });
+
+    test('falha no meio: desfaz e a versão antiga fica inteira', () {
+      escreve(pasta, 'a.dll', 'velho');
+      escreve(novos, 'a.dll', 'novo');
+      // Uma pasta onde deveria entrar um arquivo: a cópia falha.
+      Directory('${pasta.path}/z.dll').createSync();
+      escreve(novos, 'z.dll', 'novo');
+      expect(() => trocarArquivos(novos, pasta), throwsA(anything));
+      expect(le('a.dll'), 'velho');
+      expect(
+        pasta.listSync().where((f) => f.path.contains('.antigo-')),
+        isEmpty,
+      );
+    });
   });
 }

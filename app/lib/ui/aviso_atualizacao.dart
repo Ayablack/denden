@@ -65,33 +65,68 @@ class _AvisoAtualizacaoState extends State<AvisoAtualizacao> {
   Widget build(BuildContext context) {
     final n = _nova;
     final p = _progresso;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    final c = Theme.of(context).colorScheme;
+    final pequeno = TextStyle(fontSize: 12, color: c.onSurfaceVariant);
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surfaceContainerLow,
+        border: Border(top: BorderSide(color: c.outlineVariant)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Row(
         children: [
-          if (n != null) ...[
-            Text('Versão ${n.versao} disponível'),
-            const SizedBox(height: 8),
-            if (p == null)
-              FilledButton(
-                onPressed: () => _atualizar(n),
-                child: const Text('Atualizar'),
-              )
-            else ...[
-              SizedBox(width: 240, child: LinearProgressIndicator(value: p)),
-              const SizedBox(height: 4),
-              const Text('Baixando… o DenDen vai fechar e abrir de novo.'),
-            ],
-            if (_erro != null)
-              Text(_erro!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 8),
-          ],
           Text(
             widget.versao == 'dev'
                 ? 'Versão de desenvolvimento'
                 : 'Versão ${widget.versao}',
-            style: Theme.of(context).textTheme.bodySmall,
+            style: pequeno,
+          ),
+          const SizedBox(width: 16),
+          // Janela estreita: os textos encurtam com "…" em vez de estourar.
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (_erro != null)
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Text(
+                        _erro!,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: c.error),
+                      ),
+                    ),
+                  ),
+                if (n != null && p == null) ...[
+                  Flexible(
+                    child: Text(
+                      'Versão ${n.versao} disponível',
+                      overflow: TextOverflow.ellipsis,
+                      style: pequeno,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton(
+                    onPressed: () => _atualizar(n),
+                    child: const Text('Atualizar'),
+                  ),
+                ] else if (p != null) ...[
+                  Flexible(
+                    child: Text(
+                      'Baixando… o DenDen vai fechar e abrir de novo.',
+                      overflow: TextOverflow.ellipsis,
+                      style: pequeno,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 160,
+                    child: LinearProgressIndicator(value: p),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
