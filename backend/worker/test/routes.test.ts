@@ -1,5 +1,6 @@
 import { exports } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
+import { isGroupKey } from "../src/index";
 
 const ADMIN = "admin-teste";
 const base = "http://denden.test";
@@ -40,6 +41,17 @@ describe("rotas do Worker", () => {
     const r = await call("POST", "/admin/chaves", { admin: ana, body: { name: "x" } });
     expect(r.status).toBe(403);
     expect(r.json.error).toBe("nao_e_admin");
+  });
+
+  it("recusa chave de grupo fora do formato antes de seguir para a sala", async () => {
+    expect(isGroupKey("errada")).toBe(false);
+    expect(isGroupKey("a".repeat(43))).toBe(true);
+    const r = await call("POST", "/salas", {
+      key: "errada",
+      body: { profile: "high", offerSdp: "OFERTA", tracks: TRACKS },
+    });
+    expect(r.status).toBe(401);
+    expect(r.json.message).toBe("Chave do grupo inválida.");
   });
 
   it("criar, entrar, responder, relatar, consultar e encerrar", async () => {
@@ -108,6 +120,30 @@ describe("rotas do Worker", () => {
     const ana = await newKey("Ana");
     expect((await call("POST", "/salas", { key: ana, body: { profile: "ultra" } })).status).toBe(400);
     expect((await call("GET", "/nada", { key: ana })).status).toBe(404);
+  });
+
+  it("corpo maior que 64 KB → 413", async () => {
+    const ana = await newKey("Ana");
+    const r = await call("POST", "/salas", { key: ana, raw: " ".repeat(65 * 1024) });
+    expect(r.status).toBe(413);
+    expect(r.json.message).toBe("Pedido grande demais.");
+  });
+
+  it("recusa trilhas demais ou nomes longos", async () => {
+    const ana = await newKey("Ana");
+    const base = { profile: "high", offerSdp: "OFERTA" };
+    expect(
+      (await call("POST", "/salas", {
+        key: ana,
+        body: { ...base, tracks: Array.from({ length: 5 }, (_, i) => ({ mid: `${i}`, trackName: "video" })) },
+      })).status,
+    ).toBe(400);
+    expect(
+      (await call("POST", "/salas", {
+        key: ana,
+        body: { ...base, tracks: [{ mid: "0", trackName: "x".repeat(65) }] },
+      })).status,
+    ).toBe(400);
   });
 
   it("GET /ice devolve servidores ICE antes de abrir a conexão", async () => {
@@ -199,9 +235,17 @@ describe("rotas de administração recusam entradas inválidas", () => {
   });
 
   it("revogar chave que não existe → 404", async () => {
-    const r = await call("POST", "/admin/chaves/naoexiste/revogar", { admin: ADMIN });
+    const r = await call("POST", `/admin/chaves/${"a".repeat(64)}/revogar`, { admin: ADMIN });
     expect(r.status).toBe(404);
     expect(r.json.error).toBe("chave_inexistente");
+  });
+
+  it("revogar só aceita hash hexadecimal", async () => {
+    for (const hash of ["__proto__", "constructor", "a".repeat(63), "g".repeat(64)]) {
+      const r = await call("POST", `/admin/chaves/${hash}/revogar`, { admin: ADMIN });
+      expect(r.status, hash).toBe(400);
+      expect(r.json.message, hash).toBe("Campo inválido: hash");
+    }
   });
 
   it("rotas que mudam algo só aceitam POST", async () => {
