@@ -62,7 +62,14 @@ class _DenDenAppState extends State<DenDenApp> {
     final s = _settings;
     return MaterialApp(
       title: 'DenDen',
+      // Segue o modo claro ou escuro do Windows.
       theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.teal,
+        brightness: Brightness.dark,
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.system,
       home: store == null || s == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : !s.isComplete || _editing
