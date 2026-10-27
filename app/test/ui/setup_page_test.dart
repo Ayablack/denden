@@ -34,6 +34,26 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('voltar sem salvar só aparece quando já há configuração', (
+    tester,
+  ) async {
+    var voltou = false;
+    Widget page({VoidCallback? onCancel}) => MaterialApp(
+      home: SetupPage(
+        initial: const AppSettings(),
+        check: (_, _) async {},
+        save: (_) async {},
+        onDone: (_) {},
+        onCancel: onCancel,
+      ),
+    );
+    await tester.pumpWidget(page());
+    expect(find.byTooltip('Voltar'), findsNothing);
+    await tester.pumpWidget(page(onCancel: () => voltou = true));
+    await tester.tap(find.byTooltip('Voltar'));
+    expect(voltou, isTrue);
+  });
+
   testWidgets('chave aceita pelo Worker: salva e segue', (tester) async {
     final saved = <AppSettings>[];
     final done = <AppSettings>[];

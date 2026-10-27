@@ -12,7 +12,12 @@ class SetupPage extends StatefulWidget {
     required this.check,
     required this.save,
     required this.onDone,
+    this.onCancel,
   });
+
+  /// Voltar sem salvar. Nulo na primeira configuração, quando não há para
+  /// onde voltar.
+  final VoidCallback? onCancel;
 
   final AppSettings initial;
 
@@ -87,7 +92,16 @@ class _SetupPageState extends State<SetupPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('DenDen — Configurar')),
+    appBar: AppBar(
+      title: const Text('DenDen — Configurar'),
+      leading: widget.onCancel == null
+          ? null
+          : IconButton(
+              tooltip: 'Voltar',
+              icon: const Icon(Icons.arrow_back),
+              onPressed: widget.onCancel,
+            ),
+    ),
     body: Center(
       child: SizedBox(
         width: 460,

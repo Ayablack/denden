@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:http/http.dart' as http;
 
+import 'atualizacao/atualizacao.dart';
 import 'capture/capture_service.dart';
 import 'lab/diagnostico.dart';
 import 'lab/lab_page.dart';
@@ -11,8 +15,10 @@ import 'rooms/worker_api.dart';
 import 'ui/admin_page.dart';
 import 'ui/aviso_atualizacao.dart';
 import 'ui/broadcast_page.dart';
+import 'ui/cartao_acao.dart';
 import 'ui/capture_control.dart';
 import 'ui/setup_page.dart';
+import 'ui/tema.dart';
 import 'ui/usage_page.dart';
 import 'ui/watch_page.dart';
 
@@ -25,6 +31,16 @@ void main() {
   final soak = SoakConfig.fromEnvironment();
   if (soak != null) {
     runApp(SoakApp(config: soak));
+    return;
+  }
+  limparRestosDeAtualizacao();
+  // Teste da atualização sem clicar: o mesmo caminho do botão Atualizar.
+  // Sai com 3 se não houver versão nova e 2 se der erro.
+  if (Platform.environment['DENDEN_ATUALIZAR'] == '1') {
+    WidgetsFlutterBinding.ensureInitialized();
+    conferirAtualizacao(http.Client())
+        .then((n) => n == null ? exit(3) : instalarAtualizacao(n))
+        .catchError((Object _) => exit(2));
     return;
   }
   runApp(const DenDenApp());
@@ -63,12 +79,8 @@ class _DenDenAppState extends State<DenDenApp> {
     return MaterialApp(
       title: 'DenDen',
       // Segue o modo claro ou escuro do Windows.
-      theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-      darkTheme: ThemeData(
-        colorSchemeSeed: Colors.teal,
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
+      theme: temaDenDen(Brightness.light),
+      darkTheme: temaDenDen(Brightness.dark),
       themeMode: ThemeMode.system,
       home: store == null || s == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
@@ -81,6 +93,9 @@ class _DenDenAppState extends State<DenDenApp> {
                 _settings = saved;
                 _editing = false;
               }),
+              onCancel: s.isComplete
+                  ? () => setState(() => _editing = false)
+                  : null,
             )
           : HomePage(
               settings: s,
@@ -112,7 +127,16 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('DenDen'),
+      title: Row(
+        children: [
+          Image.asset('assets/icone/denden_64.png', width: 24, height: 24),
+          const SizedBox(width: 10),
+          Text(
+            'DenDen',
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () => _open(
@@ -144,6 +168,7 @@ class HomePage extends StatelessWidget {
           onPressed: onEditSettings,
           child: const Text('Configurações'),
         ),
+        const SizedBox(width: 8),
       ],
     ),
     body: Column(
@@ -155,29 +180,31 @@ class HomePage extends StatelessWidget {
   );
 
   Widget _buttons(BuildContext context) => Center(
-    child: Wrap(
-      spacing: 24,
-      children: [
-        FilledButton.icon(
-          onPressed: () => _open(
-            context,
-            BroadcastPage(media: _media(), capture: RealCaptureControl()),
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Wrap(
+        spacing: 24,
+        runSpacing: 24,
+        alignment: WrapAlignment.center,
+        children: [
+          CartaoAcao(
+            destaque: true,
+            icone: Icons.screen_share_outlined,
+            titulo: 'Transmitir',
+            descricao: 'Compartilhar sua tela e o som do PC',
+            onTap: () => _open(
+              context,
+              BroadcastPage(media: _media(), capture: RealCaptureControl()),
+            ),
           ),
-          icon: const Icon(Icons.cast),
-          label: const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Transmitir', style: TextStyle(fontSize: 20)),
+          CartaoAcao(
+            icone: Icons.tv,
+            titulo: 'Assistir',
+            descricao: 'Entrar numa sala com o código',
+            onTap: () => _open(context, WatchPage(media: _media())),
           ),
-        ),
-        FilledButton.tonalIcon(
-          onPressed: () => _open(context, WatchPage(media: _media())),
-          icon: const Icon(Icons.tv),
-          label: const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Assistir', style: TextStyle(fontSize: 20)),
-          ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
