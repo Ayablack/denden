@@ -8,6 +8,17 @@ import 'package:denden/ui/capture_control.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
+class FakeTrack extends Fake implements MediaStreamTrack {
+  FakeTrack([this.id = 'video-1']);
+  @override
+  final String id;
+  @override
+  String get kind => 'video';
+  bool stopped = false;
+  @override
+  Future<void> stop() async => stopped = true;
+}
+
 class FakeStream extends Fake implements MediaStream {
   @override
   List<MediaStreamTrack> getTracks() => const [];
@@ -20,12 +31,29 @@ class FakeBroadcast implements BroadcastHandle {
   final statesCtl = StreamController<LinkState>.broadcast(sync: true);
   final repliesCtl = StreamController<ReportReply>.broadcast(sync: true);
   bool stopped = false;
+  MediaStreamTrack? replacedTrack;
+  QualityProfile? replacedProfile;
+  int? replacedWidth;
+  int? replacedHeight;
   @override
   LinkState state = LinkState.live;
   @override
   Stream<LinkState> get states => statesCtl.stream;
   @override
   Stream<ReportReply> get replies => repliesCtl.stream;
+  @override
+  Future<void> replaceVideo(
+    MediaStreamTrack track,
+    QualityProfile profile, {
+    int? sourceWidth,
+    int? sourceHeight,
+  }) async {
+    replacedTrack = track;
+    replacedProfile = profile;
+    replacedWidth = sourceWidth;
+    replacedHeight = sourceHeight;
+  }
+
   @override
   Future<void> stop() async => stopped = true;
 }
@@ -68,12 +96,17 @@ class FakeMedia implements MediaPort {
 
 class FakeCapture implements CaptureControl {
   final errorsCtl = StreamController<CaptureError>.broadcast(sync: true);
+  CaptureSource? lastScreen;
   AudioChoice? lastAudio;
+  QualityProfile? lastProfile;
+  CaptureSource? lastVideoScreen;
+  QualityProfile? lastVideoProfile;
   bool stopped = false;
 
   @override
   Future<List<CaptureSource>> listSources() async => const [
     CaptureSource(id: '0', name: 'Tela 1', isWindow: false),
+    CaptureSource(id: '1', name: 'Tela 2', isWindow: false),
     CaptureSource(id: '7', name: 'DenDen', isWindow: true),
     CaptureSource(id: '42', name: 'Jogo', isWindow: true),
   ];
@@ -84,8 +117,20 @@ class FakeCapture implements CaptureControl {
     AudioChoice audio,
     QualityProfile p,
   ) async {
+    lastScreen = screen;
     lastAudio = audio;
+    lastProfile = p;
     return FakeStream();
+  }
+
+  @override
+  Future<MediaStreamTrack> startVideo(
+    CaptureSource screen,
+    QualityProfile p,
+  ) async {
+    lastVideoScreen = screen;
+    lastVideoProfile = p;
+    return FakeTrack('video-${screen.id}-${p.name}');
   }
 
   @override

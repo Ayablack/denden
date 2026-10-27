@@ -20,6 +20,12 @@ abstract class BroadcastHandle {
   LinkState get state;
   Stream<LinkState> get states;
   Stream<ReportReply> get replies;
+  Future<void> replaceVideo(
+    MediaStreamTrack track,
+    QualityProfile profile, {
+    int? sourceWidth,
+    int? sourceHeight,
+  });
   Future<void> stop();
 }
 
@@ -235,8 +241,9 @@ class Broadcast implements BroadcastHandle {
   @override
   final String roomCode;
   QualityProfile _profile;
-  final int? _sourceWidth;
-  final int? _sourceHeight;
+  int? _sourceWidth;
+  int? _sourceHeight;
+  bool _forcedEconomy = false;
   Timer? _timer;
   LinkState _state = LinkState.connecting;
   final _states = StreamController<LinkState>.broadcast();
@@ -294,6 +301,38 @@ class Broadcast implements BroadcastHandle {
     }
   }
 
+  @override
+  Future<void> replaceVideo(
+    MediaStreamTrack track,
+    QualityProfile profile, {
+    int? sourceWidth,
+    int? sourceHeight,
+  }) => _lock.run(() async {
+    if (sourceWidth != null) _sourceWidth = sourceWidth;
+    if (sourceHeight != null) _sourceHeight = sourceHeight;
+    final effective = _forcedEconomy ? QualityProfile.economy : profile;
+    _profile = effective;
+    for (final s in await _pc.getSenders()) {
+      final old = s.track;
+      if (old?.kind == 'video') {
+        await s.replaceTrack(track);
+        final ok = await tuneVideoSender(
+          s,
+          track,
+          effective,
+          sourceWidth: _sourceWidth,
+          sourceHeight: _sourceHeight,
+        );
+        if (!ok) {
+          _media.log?.call('perfil ${effective.name} recusado pelo libwebrtc');
+        }
+        if (old != null && old.id != track.id) {
+          await old.stop();
+        }
+      }
+    }
+  });
+
   Future<void> _report() async {
     try {
       final snap = parseStats(await _pc.getStats(), DateTime.now());
@@ -303,8 +342,10 @@ class Broadcast implements BroadcastHandle {
         roomCode,
         'publisher',
         snap.bytesSent,
+        profile: _profile.name,
       );
       if (!_replies.isClosed) _replies.add(reply);
+      _forcedEconomy = reply.level == 'blocked' || reply.level == 'ceiling';
       final wanted = profileFromWire(reply.profile);
       if (wanted != null && wanted != _profile) await _applyProfile(wanted);
     } on RoomNotFound {

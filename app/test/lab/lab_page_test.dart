@@ -22,6 +22,13 @@ class FakeCapture implements CaptureService {
   }) => throw UnimplementedError();
 
   @override
+  Future<MediaStreamTrack> startVideoTrack(
+    CaptureSource screen,
+    QualityProfile p, {
+    int? captureFps,
+  }) => throw UnimplementedError();
+
+  @override
   Future<void> stop() async {}
 }
 

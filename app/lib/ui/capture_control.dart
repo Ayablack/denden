@@ -47,6 +47,12 @@ abstract class CaptureControl {
     QualityProfile p,
   );
 
+  /// Nova trilha de vídeo da tela, com o fps do perfil, sem parar o áudio.
+  Future<MediaStreamTrack> startVideo(
+    CaptureSource screen,
+    QualityProfile p,
+  );
+
   Future<void> stop();
 
   /// Ex.: `janela_fechou`, `discord_fora`.
@@ -81,6 +87,12 @@ class RealCaptureControl implements CaptureControl {
     ),
     NoAudio() => _capture.start(screen, p, audio: false),
   };
+
+  @override
+  Future<MediaStreamTrack> startVideo(
+    CaptureSource screen,
+    QualityProfile p,
+  ) => _capture.startVideoTrack(screen, p);
 
   @override
   Future<void> stop() async {
