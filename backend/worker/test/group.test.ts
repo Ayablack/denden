@@ -141,14 +141,39 @@ describe("grupo: salas, espectadores, consumo e limites", () => {
     await g.report(ana, code, "publisher", 0, T0);
     // 10 s depois: cada espectador recebeu 5 MB (relatórios cumulativos).
     await g.report(bia, code, v1, 5_000_000, T0 + 10_000);
-    await g.report(bia, code, v2, 5_000_000, T0 + 10_000);
-    await g.report(ana, code, "publisher", 9_000_000, T0 + 10_000);
+    const repView2 = await g.report(bia, code, v2, 5_000_000, T0 + 10_000);
+    const repPub = await g.report(ana, code, "publisher", 9_000_000, T0 + 10_000);
+
+    expect(repView2.roomEgressBytes).toBe(10_000_000);
+    expect(repPub.roomEgressBytes).toBe(10_000_000);
+    expect(repPub.monthEgressBytes).toBe(15_000_000); // 6 Mbps * 2 * 10s = 15MB
+
     const u = await g.usage(ana, T0 + 10_000);
     expect(u.reportedEgressBytes).toBe(10_000_000);
     // Servidor: 6 Mbps × 2 espectadores × 10 s = 15 MB > 10 MB relatados.
     expect(u.serverEgressBytes).toBe(15_000_000);
     expect(u.effectiveEgressBytes).toBe(15_000_000);
     expect(u.rooms[0].viewers.map((v) => v.receivedBytes)).toEqual([5_000_000, 5_000_000]);
+  });
+
+  it("troca de perfil aceita; o perfil antigo é usado no intervalo anterior", async () => {
+    const { code } = await create(); // high
+    await g.joinRoom(bia, code, "a", T0); // 1 viewer
+    await g.report(ana, code, "publisher", 0, T0);
+
+    // Passa-se 10s. O perfil ainda é high.
+    // 6 Mbps / 8 * 10s = 7.5 MB
+    const r1 = await g.report(ana, code, "publisher", 1_000_000, T0 + 10_000, "medium");
+    expect(r1.profile).toBe("medium");
+
+    // Mais 10s. O perfil agora é medium.
+    // 3.5 Mbps / 8 * 10s = 4.375 MB
+    const r2 = await g.report(ana, code, "publisher", 2_000_000, T0 + 20_000);
+
+    const u = await g.usage(ana, T0 + 20_000);
+    // 7.5 MB + 4.375 MB = 11.875 MB
+    expect(u.serverEgressBytes).toBe(11_875_000);
+    expect(r2.monthEgressBytes).toBe(11_875_000);
   });
 
   it("recusa criar sala quando o mês chegou a 100% do orçamento", async () => {
@@ -168,6 +193,11 @@ describe("grupo: salas, espectadores, consumo e limites", () => {
     expect(blocked.level).toBe("blocked");
     expect(blocked.profile).toBe("economy");
     expect(blocked.warnings).toEqual([50, 75, 90, 100]);
+
+    // economy forçado quando bloqueado (mesmo se o publisher pedir "high")
+    const rPub = await g.report(ana, code, "publisher", 0, T0 + 1000, "high");
+    expect(rPub.level).toBe("blocked");
+    expect(rPub.profile).toBe("economy");
 
     const ceiling = await g.report(bia, code, v, 1.06 * GB, T0 + 2000);
     expect(ceiling.level).toBe("ceiling");

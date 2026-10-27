@@ -186,12 +186,20 @@ export default {
             ]);
           }
           if (action === "relatorio") {
+            const who = need(typeof b.who === "string", b.who, "who");
+            if (b.profile !== undefined) {
+              need(PROFILES.includes(b.profile as string), b.profile, "profile");
+              if (who !== "publisher") {
+                throw new BadRequest("Apenas quem transmite pode mudar a qualidade.");
+              }
+            }
             return run("report", [
               key,
               code,
-              need(typeof b.who === "string", b.who, "who"),
+              who,
               need(typeof b.bytes === "number" && b.bytes >= 0, b.bytes, "bytes"),
               now,
+              b.profile,
             ]);
           }
           if (action === "encerrar") return run("endRoom", [key, code, now]);

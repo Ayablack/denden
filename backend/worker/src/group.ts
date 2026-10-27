@@ -127,6 +127,8 @@ export type ReportResult = {
   endsAtMs?: number;
   /** Fim pela duração máxima; o app avisa 5 min antes. */
   sessionEndsAtMs: number;
+  roomEgressBytes: number;
+  monthEgressBytes: number;
 };
 
 export class Group {
@@ -318,6 +320,7 @@ export class Group {
     who: "publisher" | string,
     cumulativeBytes: number,
     now: number,
+    newProfile?: Profile,
   ): Promise<ReportResult> {
     const s = await this.load();
     const hash = await this.keyHash(s, key);
@@ -332,6 +335,11 @@ export class Group {
       const dt = Math.max(0, now - room.lastPublisherReportAt);
       m.serverEgressBytes +=
         (PROFILE_BPS[room.profile] / 8) * room.viewers.length * (dt / 1000);
+
+      if (newProfile) {
+        room.profile = newProfile;
+      }
+
       room.publisherSentBytes = cumulativeBytes;
       room.lastPublisherReportAt = now;
     } else {
@@ -362,6 +370,8 @@ export class Group {
       warnings: crossedWarnings(before, after, s.config),
       endsAtMs:
         room.ceilingSince === undefined ? undefined : room.ceilingSince + CEILING_GRACE_MS,
+      roomEgressBytes: room.egressBytes,
+      monthEgressBytes: after,
     };
   }
 

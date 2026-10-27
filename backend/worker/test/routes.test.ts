@@ -122,6 +122,32 @@ describe("rotas do Worker", () => {
     expect((await call("GET", "/nada", { key: ana })).status).toBe(404);
   });
 
+  it("recusa mudança de qualidade por espectador ou com valor inválido", async () => {
+    const ana = await newKey("Ana");
+    const bia = await newKey("Bia");
+    const sala = await call("POST", "/salas", {
+      key: ana,
+      body: { profile: "high", offerSdp: "OFERTA", tracks: TRACKS },
+    });
+    const code = sala.json.code as string;
+    const entrar = await call("POST", `/salas/${code}/entrar`, { key: bia, body: {} });
+    const viewerId = entrar.json.viewerId;
+
+    const r1 = await call("POST", `/salas/${code}/relatorio`, {
+      key: bia,
+      body: { who: viewerId, bytes: 1000, profile: "medium" },
+    });
+    expect(r1.status).toBe(400);
+    expect(r1.json.message).toBe("Apenas quem transmite pode mudar a qualidade.");
+
+    const r2 = await call("POST", `/salas/${code}/relatorio`, {
+      key: ana,
+      body: { who: "publisher", bytes: 1000, profile: "ultra" },
+    });
+    expect(r2.status).toBe(400);
+    expect(r2.json.message).toBe("Campo inválido: profile");
+  });
+
   it("corpo maior que 64 KB → 413", async () => {
     const ana = await newKey("Ana");
     const r = await call("POST", "/salas", { key: ana, raw: " ".repeat(65 * 1024) });
