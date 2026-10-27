@@ -110,6 +110,9 @@ class DiagRow {
     'pacotes_perdidos',
     'quadros_descartados',
     'travadas',
+    'travada_ms',
+    'nacks',
+    'perda_ate_sfu',
     'buffer_ms',
     'codec',
     'audio_energia_enviada',
@@ -212,6 +215,17 @@ DiagRow diagRow({
       'framesDropped',
     ).toInt(),
     'travadas': delta(prevRx, rx, 'inbound-rtp', 'freezeCount').toInt(),
+    'travada_ms':
+        delta(prevRx, rx, 'inbound-rtp', 'totalFreezesDuration') * 1000,
+    // Pedidos de reenvio que o SFU fez a quem transmite.
+    'nacks': delta(prevTx, tx, 'outbound-rtp', 'nackCount').toInt(),
+    // Pacotes de vídeo perdidos entre quem transmite e o SFU.
+    'perda_ate_sfu': delta(
+      prevTx,
+      tx,
+      'remote-inbound-rtp',
+      'packetsLost',
+    ).toInt(),
     'buffer_ms': emitted == 0
         ? null
         : delta(prevRx, rx, 'inbound-rtp', 'jitterBufferDelay') *
