@@ -112,6 +112,28 @@ describe("grupo: salas, espectadores, consumo e limites", () => {
     await expectGroupError(g.joinRoom("chave-errada", code, "ip", T0), 401, "chave_invalida");
   });
 
+  it("não trata propriedades herdadas como chaves ao revogar", async () => {
+    await expectGroupError(g.revokeKey("__proto__"), 404, "chave_inexistente");
+    await expectGroupError(g.revokeKey("constructor"), 404, "chave_inexistente");
+  });
+
+  it("guarda somente mid e trackName das trilhas", async () => {
+    const store = new MemoryStore();
+    const local = new Group(store, rt, {});
+    const key = (await local.addKey("Ana")).key;
+    await local.createRoom(
+      key,
+      {
+        profile: "high",
+        offerSdp: "OFERTA",
+        tracks: [{ mid: "0", trackName: "video", extra: "não guardar" } as LocalTrack & { extra: string }],
+      },
+      T0,
+    );
+    const state = (await store.get<{ rooms: Record<string, { tracks: unknown }> }>("state"))!;
+    expect(Object.values(state.rooms)[0].tracks).toEqual([{ mid: "0", trackName: "video" }]);
+  });
+
   it("consumo: soma o que cada espectador recebeu; vale a maior estimativa", async () => {
     const { code } = await create();
     const v1 = (await g.joinRoom(bia, code, "a", T0)).viewerId;

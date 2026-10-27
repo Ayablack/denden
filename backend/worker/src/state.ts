@@ -7,6 +7,23 @@ export type CallResult =
   | { ok: false; status: number; code: string; message: string };
 
 const TICK_MS = 10_000;
+const OPERATIONS = new Set([
+  "addKey",
+  "listKeys",
+  "revokeKey",
+  "checkKey",
+  "createRoom",
+  "joinRoom",
+  "answer",
+  "report",
+  "endRoom",
+  "roomState",
+  "usage",
+  "adminUsage",
+  "setConfig",
+  "setConfirmed",
+  "setEmergency",
+]);
 
 /** Uma instância para o grupo inteiro (`idFromName("grupo")`), backend SQLite. */
 export class GroupState extends DurableObject<Env> {
@@ -30,9 +47,17 @@ export class GroupState extends DurableObject<Env> {
    * campos próprios de uma exceção se perdem no caminho do RPC.
    */
   async call(op: string, args: unknown[]): Promise<CallResult> {
+    if (!OPERATIONS.has(op)) {
+      return {
+        ok: false,
+        status: 400,
+        code: "operacao_invalida",
+        message: "Operação não permitida.",
+      };
+    }
     const fn = (this.group as unknown as Record<string, unknown>)[op];
-    if (typeof fn !== "function" || op === "constructor") {
-      return { ok: false, status: 400, code: "operacao_invalida", message: op };
+    if (typeof fn !== "function") {
+      return { ok: false, status: 400, code: "operacao_invalida", message: "Operação não permitida." };
     }
     try {
       const value = await (fn as (...a: unknown[]) => Promise<unknown>).apply(this.group, args);

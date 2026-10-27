@@ -158,11 +158,6 @@ export class Group {
     return h;
   }
 
-  async isAdmin(key: string | null): Promise<boolean> {
-    if (!key || !this.opts.adminKeyHash) return false;
-    return (await hashKey(key)) === this.opts.adminKeyHash;
-  }
-
   private month(s: State, now: number): MonthUsage {
     const k = monthKey(now);
     return (s.months[k] ??= { reportedEgressBytes: 0, serverEgressBytes: 0 });
@@ -211,7 +206,9 @@ export class Group {
 
   async revokeKey(hash: string): Promise<void> {
     const s = await this.load();
-    if (!s.keys[hash]) throw new GroupError(404, "chave_inexistente", "Chave não encontrada.");
+    if (!Object.hasOwn(s.keys, hash)) {
+      throw new GroupError(404, "chave_inexistente", "Chave não encontrada.");
+    }
     s.keys[hash].revoked = true;
     await this.save(s);
   }
@@ -236,9 +233,10 @@ export class Group {
         "Limite do mês atingido. Novas transmissões estão bloqueadas.",
       );
     }
+    const tracks = req.tracks.map(({ mid, trackName }) => ({ mid, trackName }));
     const sessionId = await this.provider(() => this.rt.newSession());
     const { answerSdp } = await this.provider(() =>
-      this.rt.pushTracks(sessionId, req.offerSdp, req.tracks),
+      this.rt.pushTracks(sessionId, req.offerSdp, tracks),
     );
     let code = generateRoomCode();
     while (s.rooms[code]) code = generateRoomCode();
@@ -246,7 +244,7 @@ export class Group {
       code,
       publisherHash: hash,
       publisherSession: sessionId,
-      tracks: req.tracks,
+      tracks,
       profile: req.profile,
       startedAt: now,
       lastPublisherReportAt: now,
