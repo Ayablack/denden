@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../rooms/settings_store.dart';
-import '../sistema/reducao_volume.dart';
 import 'capture_control.dart';
 
 /// Primeira vez: endereço do Worker e a chave pessoal do amigo. A chave é
@@ -13,13 +12,9 @@ class SetupPage extends StatefulWidget {
     required this.check,
     required this.save,
     required this.onDone,
-    this.ducking = const WindowsVolumeDucking(),
   });
 
   final AppSettings initial;
-
-  /// Opção do Windows que abaixa o som dos outros programas.
-  final VolumeDucking ducking;
 
   /// Confere endereço e chave no Worker (lança o erro do Worker se não der).
   final Future<void> Function(Uri workerUrl, String key) check;
@@ -42,38 +37,6 @@ class _SetupPageState extends State<SetupPage> {
   bool _busy = false;
   bool _showKey = false;
   bool _showAdmin = false;
-
-  /// `null` enquanto lê a opção do Windows.
-  bool? _duckingOff;
-  String? _duckingError;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.ducking.isOff().then(
-      (off) => mounted ? setState(() => _duckingOff = off) : null,
-      onError: (Object _) =>
-          mounted ? setState(() => _duckingOff = false) : null,
-    );
-  }
-
-  Future<void> _setDucking(bool off) async {
-    try {
-      await widget.ducking.setOff(off);
-      if (mounted) {
-        setState(() {
-          _duckingOff = off;
-          _duckingError = null;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(
-          () => _duckingError = 'Não deu para mudar a opção do Windows.',
-        );
-      }
-    }
-  }
 
   Future<void> _save() async {
     final url = Uri.tryParse(_url.text.trim());
@@ -176,20 +139,6 @@ class _SetupPageState extends State<SetupPage> {
               const SizedBox(height: 12),
               Text(_error!, style: const TextStyle(color: Colors.red)),
             ],
-            const SizedBox(height: 24),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Não abaixar o volume dos outros programas'),
-              subtitle: const Text(
-                'Sem isto, o Windows trata o DenDen como uma chamada e abaixa '
-                'o som do jogo e do Discord em 80%. Muda a opção do Windows '
-                'em Som → Comunicações.',
-              ),
-              value: _duckingOff ?? false,
-              onChanged: _duckingOff == null ? null : _setDucking,
-            ),
-            if (_duckingError != null)
-              Text(_duckingError!, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

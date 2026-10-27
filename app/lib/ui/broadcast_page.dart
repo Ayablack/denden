@@ -199,9 +199,12 @@ class _BroadcastPageState extends State<BroadcastPage> {
     ),
   );
 
+  /// Respiro maior embaixo para o último botão não colar na borda.
+  static const _padding = EdgeInsets.fromLTRB(16, 16, 16, 40);
+
   Widget _setup() => ListView(
     shrinkWrap: true,
-    padding: const EdgeInsets.all(16),
+    padding: _padding,
     children: [
       if (_screens.length > 1)
         DropdownButtonFormField<CaptureSource>(
@@ -272,7 +275,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
     final monthBytes = reply?.monthEgressBytes;
     return ListView(
       shrinkWrap: true,
-      padding: const EdgeInsets.all(16),
+      padding: _padding,
       children: [
         const Center(child: Text('Passe este código no Discord:')),
         Center(

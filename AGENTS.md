@@ -17,6 +17,7 @@ Projeto pessoal, de custo zero: o consumo precisa ficar dentro da franquia gratu
   - `lib/usage/`: formatação e estatísticas de consumo.
   - `lib/lab/`: laboratório e testes de estresse.
   - `packages/flutter_webrtc/`: **cópia local com correções próprias. Não atualize nem substitua.**
+  - `windows/runner/sem_reducao_volume.cpp`: faz o áudio do libwebrtc não contar como chamada, para o Windows não abaixar o som dos outros programas. Não remova.
 - `backend/worker/`: Worker em TypeScript.
   - `src/group.ts`: Durable Object (salas, limites, checagem no SFU, duração máxima).
   - `src/usage.ts`: contas puras de consumo e níveis de limite.
@@ -61,5 +62,5 @@ Limitações do app num ambiente Linux:
 6. Siga o estilo do código ao redor, inclusive a quantidade de comentários e os nomes em português.
 7. Teste junto com o código: lógica nova ou corrigida ganha teste. Rode a suíte antes de abrir o PR e diga no PR o que rodou e o resultado.
 8. Não adicione dependências novas sem justificar no PR.
-9. Abra PR contra `main`. Nunca faça push direto no `main`.
+9. Pull request só em repositório de outra pessoa. Neste repositório (o original, `Ayablack/denden`), quem não é o dono abre PR contra `main` e nunca faz push direto no `main`. No seu próprio repositório (fork ou projeto seu), pode subir direto, sem PR.
 10. Em caso de dúvida sobre comportamento, pare e pergunte no PR em vez de adivinhar.

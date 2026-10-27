@@ -1,60 +1,10 @@
 import 'package:denden/rooms/settings_store.dart';
 import 'package:denden/rooms/worker_api.dart';
-import 'package:denden/sistema/reducao_volume.dart';
 import 'package:denden/ui/setup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class FakeDucking implements VolumeDucking {
-  FakeDucking({this.off = false});
-
-  bool off;
-
-  @override
-  Future<bool> isOff() async => off;
-
-  @override
-  Future<void> setOff(bool value) async => off = value;
-}
-
 void main() {
-  testWidgets('interruptor desliga a redução de volume do Windows', (
-    tester,
-  ) async {
-    final ducking = FakeDucking();
-    await tester.pumpWidget(
-      MaterialApp(
-        home: SetupPage(
-          initial: const AppSettings(),
-          check: (_, _) async {},
-          save: (_) async {},
-          onDone: (_) {},
-          ducking: ducking,
-        ),
-      ),
-    );
-    await tester.pump();
-    final tile = find.byType(SwitchListTile);
-    expect(tester.widget<SwitchListTile>(tile).value, isFalse);
-    await tester.ensureVisible(tile);
-    await tester.tap(tile);
-    await tester.pump();
-    expect(ducking.off, isTrue);
-    expect(tester.widget<SwitchListTile>(tile).value, isTrue);
-  });
-
-  test('lê a opção na saída do reg query', () {
-    expect(
-      duckingFromRegQuery(
-        'HKEY_CURRENT_USER\\Software\\Microsoft\\Multimedia\\Audio\r\n'
-        '    UserDuckingPreference    REG_DWORD    0x3\r\n',
-      ),
-      3,
-    );
-    // Sem o valor, vale o padrão do Windows (reduzir 80%).
-    expect(duckingFromRegQuery('ERRO: valor não encontrado'), 1);
-  });
-
   Future<void> open(
     WidgetTester tester, {
     required Future<void> Function(Uri, String) check,
@@ -68,7 +18,6 @@ void main() {
           check: check,
           save: (s) async => saved.add(s),
           onDone: done.add,
-          ducking: FakeDucking(),
         ),
       ),
     );
@@ -120,7 +69,6 @@ void main() {
           check: (_, _) async {},
           save: (_) async {},
           onDone: (_) {},
-          ducking: FakeDucking(),
         ),
       ),
     );
@@ -151,7 +99,6 @@ void main() {
           check: (_, _) async => called = true,
           save: (_) async {},
           onDone: (_) {},
-          ducking: FakeDucking(),
         ),
       ),
     );
